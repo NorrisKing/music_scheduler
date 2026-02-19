@@ -30,6 +30,7 @@ function DeviceIcon({ type }: { type: string }) {
 }
 
 export default function NewScheduleScreen() {
+  const { accountId } = useLocalSearchParams<{ accountId?: string }>();
   const [accounts, setAccounts] = useState<SpotifyAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<SpotifyAccount | null>(null);
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
@@ -44,8 +45,14 @@ export default function NewScheduleScreen() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    api.getAccounts().then(setAccounts).catch(console.error);
-  }, []);
+    api.getAccounts().then((data) => {
+      setAccounts(data);
+      if (accountId) {
+        const preselected = data.find((a) => a.id === accountId);
+        if (preselected) setSelectedAccount(preselected);
+      }
+    }).catch(console.error);
+  }, [accountId]);
 
   useEffect(() => {
     if (!selectedAccount) return;
