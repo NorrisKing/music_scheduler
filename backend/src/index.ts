@@ -135,10 +135,14 @@ app.get('/schedules', (c) => {
   return c.json(db.getSchedules());
 });
 
-app.get('/schedules/:accountId', (c) => {
-  const { accountId } = c.req.param();
-  return c.json(db.getSchedulesByAccount(accountId));
+app.get('/schedules/:id', (c) => {
+  const { id } = c.req.param();
+  const schedule = db.getSchedule(id);
+  if (!schedule) return c.json({ error: 'Schedule not found' }, 404);
+  return c.json(schedule);
 });
+
+app.get('/schedules/by-account/:accountId', (c) => {
 
 app.post('/schedules', zValidator('json', ScheduleInput), (c) => {
   const data = c.req.valid('json');
