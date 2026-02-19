@@ -98,5 +98,11 @@ export async function startPlaylist(
     });
   }
 
+  // Always set repeat to context (playlist loops) for smooth continuous playback
+  await fetch('https://api.spotify.com/v1/me/player/repeat?state=context', {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
   return true;
 }
