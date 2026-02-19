@@ -39,6 +39,25 @@ export default function SchedulesScreen() {
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
+  const handleDeleteAccount = () => {
+    if (!accountId) return;
+    Alert.alert(
+      'Supprimer le compte',
+      `Supprimer ${accountName} ? Toutes ses planifications seront supprimées.`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            await api.deleteAccount(accountId);
+            router.replace('/');
+          },
+        },
+      ]
+    );
+  };
+
   const handleToggle = async (s: Schedule) => {
     await api.updateSchedule(s.id, { active: !s.active });
     await load();
