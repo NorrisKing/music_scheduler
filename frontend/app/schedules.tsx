@@ -102,7 +102,7 @@ export default function SchedulesScreen() {
             <Text className="text-xs text-muted-foreground mt-0.5">{item.playlistName}</Text>
           )}
         </View>
-        <TouchableOpacity onPress={() => handleToggle(item)} hitSlop={8}>
+          <TouchableOpacity onPress={(e) => { e.stopPropagation(); handleToggle(item); }} hitSlop={8}>
           {item.active
             ? <ToggleRightIcon size={28} color="#1DB954" />
             : <ToggleLeftIcon size={28} color="#6b7280" />}
