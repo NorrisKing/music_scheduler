@@ -4,10 +4,10 @@
       "id": "norrisking",
       "displayName": "NorrisKing",
       "email": "nonosayso@hotmail.com",
-      "accessToken": "BQD_7go6P-sYIiblfZdBalU7pTerNAIK0tbe04Mct-weCzuXWvYnMet5oacGDmvVwR7OQU2tplyN7rhLtcylcjggKNj6oTQjvB08cJdkh52VtXRCTv0Tql0jxfQ_BVun7bvFdZ_mPuFV4XF5AIsZWPW_6J0Hob_XRs1VBBzJ8lTaOEis7rttrQKsd2b8eCUHE2nw3qFNcvbmdxI_hO_Zi6MQo_NjmJpnFQqy7xNJ56-NYciP1BNNLp8aDC1zcr6b8w",
-      "refreshToken": "AQA_GWXtVenPE1kim304Is5bjvIK2Pxp0rJHLco4yULclWOKRz-xMj1KbDx68yvDUjiRxcSQ-ahjEKLJpizq_v86Pk8zd_qINTr-E-dG3DgwHo5tRxYDEyEajsGG9uo3BhE",
-      "expiresAt": 1771492253903,
-      "addedAt": 1771488653966
+      "accessToken": "BQAgNN6TCjjs82VomxFsppptgPx5t0QU2wDevtS4vbQET1X8KlArX-cRLOiFerHr0V6mqYshC12EPfwZwrt_4f6YWq9nqc4SuyDDct2zYtIgt8Zz0OQ5WOsLvRSVDTkKgmnsSEDuA_6-H6cOs7O-iWzIXQBbPfmN6Qg8vuWtNcms14CMacostVtHij28LtYFMvQL3MlmMZs_98Run000WLE6p7Rc5k2jWrx-VOnk3Xj03iDeAJcldms5a-9jpdNk4g",
+      "refreshToken": "AQDVD5CPLoNaArKYiovx4iwKFqvsZhc1BwFVWhlVfiayAn3845sd-Ead-0jxi0UYQBozHTVQh3uksAtjNP81bfxqLiHxR4StecyoYUXs_2q7KWGYnl9Z8bAD-J56b9zIk4Q",
+      "expiresAt": 1771496974441,
+      "addedAt": 1771493374514
     }
   },
   "schedules": {
@@ -107,6 +107,31 @@
       "active": true,
       "shuffle": true,
       "lastTriggeredAt": 1771491302183
+    },
+    "a090951a-10e5-4130-802f-1d2fcbd845ee": {
+      "id": "a090951a-10e5-4130-802f-1d2fcbd845ee",
+      "cronExpression": "30 17 * * *",
+      "createdAt": 1771493202582,
+      "name": "Norris king 5/7",
+      "accountId": "norrisking",
+      "playlistId": "7gNrXdC6UWv58zlpXjqO13",
+      "playlistName": "Rubadub Ph",
+      "playlistImageUrl": "https://i.scdn.co/image/ab67616d00001e02fd40af3f3aac12ab42677d44",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "hour": 17,
+      "minute": 30,
+      "active": true,
+      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
+      "deviceName": "MKTG-ARNAUD00",
+      "shuffle": true
     }
   }
 }
