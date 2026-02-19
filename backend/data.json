@@ -260,29 +260,6 @@
       "minute": 0,
       "active": true,
       "shuffle": true
-    },
-    "c746b380-d8f3-4879-bbe1-fb4292877b73": {
-      "id": "c746b380-d8f3-4879-bbe1-fb4292877b73",
-      "cronExpression": "0 19 * * *",
-      "createdAt": 1771497608839,
-      "name": "Week 10/12",
-      "accountId": "312n5jyadwr3f3k5ssdiw6nda5rq",
-      "playlistId": "0LCad6dcDNLZo388x4Bk09",
-      "playlistName": "2026-01-ROOFTOP-10pm/12",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e02408b5b93ea59befa5a1ad6eaab67616d00001e02b739f9eae2b9629cb2555a48ab67616d00001e02e0e350a91321f7a61743be99ab67616d00001e02fc11a290da738c92f48d69d8",
-      "days": [
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "hour": 19,
-      "minute": 0,
-      "active": true,
-      "shuffle": true
     }
   }
 }
