@@ -179,46 +179,62 @@ export default function NewScheduleScreen() {
         )}
 
         {/* 2. Playlist */}
-        {selectedAccount && (
-          <>
-            <SectionTitle>2. Playlist</SectionTitle>
-            {loadingPlaylists ? (
-              <ActivityIndicator color="#1DB954" />
-            ) : playlists.length === 0 ? (
-              <Text className="text-muted-foreground">Aucune playlist trouvée.</Text>
-            ) : (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-1">
-                <View className="flex-row gap-2 px-1">
-                  {playlists.map((p) => (
-                    <TouchableOpacity
-                      key={p.id}
-                      onPress={() => setSelectedPlaylist(p)}
-                      className={`w-32 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-                      {p.images?.[0]?.url ? (
-                          <View className="h-24 w-24 rounded-xl mb-2 overflow-hidden">
-                            <img src={p.images[0].url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          </View>
-                        ) : (
-                        <View className="h-24 w-24 rounded-xl mb-2 bg-muted items-center justify-center">
-                          <MusicIcon size={32} color="#6b7280" />
-                        </View>
+          {selectedAccount && (
+            <>
+              <SectionTitle>2. Playlist</SectionTitle>
+              {loadingPlaylists ? (
+                <ActivityIndicator color="#1DB954" />
+              ) : playlists.length === 0 ? (
+                <Text className="text-muted-foreground">Aucune playlist trouvée.</Text>
+              ) : (
+                <>
+                  <View className="mb-3 flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2">
+                    <MusicIcon size={16} color="#6b7280" />
+                    <TextInput
+                      value={playlistSearch}
+                      onChangeText={setPlaylistSearch}
+                      placeholder="Rechercher une playlist…"
+                      placeholderTextColor="#6b7280"
+                      className="flex-1 text-foreground text-sm"
+                    />
+                    {playlistSearch.length > 0 && (
+                      <TouchableOpacity onPress={() => setPlaylistSearch('')}>
+                        <Text className="text-muted-foreground text-base px-1">✕</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  <View className="gap-2" style={{ maxHeight: 320 }}>
+                    <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
+                      {playlists
+                        .filter((p) => p.name.toLowerCase().includes(playlistSearch.toLowerCase()))
+                        .map((p) => (
+                          <TouchableOpacity
+                            key={p.id}
+                            onPress={() => setSelectedPlaylist(p)}
+                            className={`mb-2 flex-row items-center gap-3 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                            {p.images?.[0]?.url ? (
+                              <img src={p.images[0].url} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                            ) : (
+                              <View className="h-12 w-12 rounded-lg bg-muted items-center justify-center flex-shrink-0">
+                                <MusicIcon size={20} color="#6b7280" />
+                              </View>
+                            )}
+                            <View className="flex-1">
+                              <Text className="text-foreground font-semibold text-sm" numberOfLines={1}>{p.name}</Text>
+                              <Text className="text-muted-foreground text-xs">{p.tracks.total} titres</Text>
+                            </View>
+                            {selectedPlaylist?.id === p.id && <CheckCircleIcon size={18} color="#1DB954" />}
+                          </TouchableOpacity>
+                        ))}
+                      {playlists.filter((p) => p.name.toLowerCase().includes(playlistSearch.toLowerCase())).length === 0 && (
+                        <Text className="text-center text-muted-foreground py-4">Aucune playlist trouvée pour "{playlistSearch}"</Text>
                       )}
-                      <Text className="text-foreground text-xs font-semibold" numberOfLines={2}>
-                        {p.name}
-                      </Text>
-                      <Text className="text-muted-foreground text-xs">{p.tracks.total} titres</Text>
-                      {selectedPlaylist?.id === p.id && (
-                        <View className="absolute top-2 right-2">
-                          <CheckCircleIcon size={18} color="#1DB954" />
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-            )}
-          </>
-        )}
+                    </ScrollView>
+                  </View>
+                </>
+              )}
+            </>
+          )}
 
         {/* 3. Jours */}
         {selectedAccount && (
