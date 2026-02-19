@@ -84,6 +84,30 @@ export default function NewScheduleScreen() {
     if (!selectedPlaylist) return Alert.alert('Erreur', 'Sélectionnez une playlist');
     if (selectedDays.length === 0) return Alert.alert('Erreur', 'Sélectionnez au moins un jour');
 
+    // Check for time conflicts on the same account
+    try {
+      const existing = await api.getSchedules();
+      const conflict = existing.find(
+        (s) =>
+          s.accountId === selectedAccount.id &&
+          s.hour === hour &&
+          s.minute === minute &&
+          s.days.some((d) => selectedDays.includes(d))
+      );
+      if (conflict) {
+        const conflictDays = conflict.days
+          .filter((d) => selectedDays.includes(d))
+          .map((d) => ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][d])
+          .join(', ');
+        return Alert.alert(
+          'Heure déjà prise',
+          `Une planification "${conflict.name || conflict.playlistName}" est déjà programmée à ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')} pour : ${conflictDays}`
+        );
+      }
+    } catch {
+      // ignore conflict check errors
+    }
+
     setSaving(true);
     try {
       await api.createSchedule({
