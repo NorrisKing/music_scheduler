@@ -9,7 +9,7 @@ import {
   Switch,
   Image,
 } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon } from 'lucide-react-native';
 import { api, type SpotifyAccount, type SpotifyPlaylist, type SpotifyDevice } from '@/lib/api';
 
