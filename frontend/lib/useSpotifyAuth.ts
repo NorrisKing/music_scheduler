@@ -52,10 +52,18 @@ function loginWeb(clientId: string): Promise<{ accountId: string; displayName: s
     const state = Math.random().toString(36).substring(2, 15);
     const redirectUri = getRedirectUri();
 
-    // Persist verifier + state so we can finish the exchange after redirect
-    sessionStorage.setItem('spotify_pkce_verifier', verifier);
-    sessionStorage.setItem('spotify_pkce_state', state);
-    sessionStorage.setItem('spotify_pkce_redirect_uri', redirectUri);
+    // Clear any leftover session from a previous login attempt
+      sessionStorage.removeItem('spotify_oauth_code');
+      sessionStorage.removeItem('spotify_oauth_state');
+      sessionStorage.removeItem('spotify_oauth_error');
+      sessionStorage.removeItem('spotify_pkce_verifier');
+      sessionStorage.removeItem('spotify_pkce_state');
+      sessionStorage.removeItem('spotify_pkce_redirect_uri');
+
+      // Persist verifier + state so we can finish the exchange after redirect
+      sessionStorage.setItem('spotify_pkce_verifier', verifier);
+      sessionStorage.setItem('spotify_pkce_state', state);
+      sessionStorage.setItem('spotify_pkce_redirect_uri', redirectUri);
 
     const params = new URLSearchParams({
       client_id: clientId,
