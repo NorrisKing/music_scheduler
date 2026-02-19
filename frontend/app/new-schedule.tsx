@@ -86,6 +86,7 @@ export default function NewScheduleScreen() {
     if (!selectedAccount) return Alert.alert('Erreur', 'Sélectionnez un compte Spotify');
     if (!selectedPlaylist) return Alert.alert('Erreur', 'Sélectionnez une playlist');
     if (selectedDays.length === 0) return Alert.alert('Erreur', 'Sélectionnez au moins un jour');
+    setConflictError(null);
 
     // Check for time conflicts on the same account
     try {
@@ -102,10 +103,10 @@ export default function NewScheduleScreen() {
           .filter((d) => selectedDays.includes(d))
           .map((d) => ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][d])
           .join(', ');
-        return Alert.alert(
-          'Heure déjà prise',
-          `Une planification "${conflict.name || conflict.playlistName}" est déjà programmée à ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')} pour : ${conflictDays}`
+        setConflictError(
+          `"${conflict.name || conflict.playlistName}" est déjà planifiée à ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')} (${conflictDays})`
         );
+        return;
       }
     } catch {
       // ignore conflict check errors
