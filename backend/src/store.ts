@@ -30,6 +30,7 @@ export interface Schedule {
   lastTriggeredAt?: number;
   deviceId?: string; // Spotify device ID to play on
   deviceName?: string;
+  shuffle?: boolean;  // play in random order
 }
 
 interface Store {
