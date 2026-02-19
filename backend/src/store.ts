@@ -15,6 +15,7 @@ export interface SpotifyAccount {
 
 export interface Schedule {
   id: string;
+  name?: string;       // user-defined label
   accountId: string;
   playlistId: string;
   playlistName: string;
