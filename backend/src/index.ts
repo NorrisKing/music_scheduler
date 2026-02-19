@@ -127,6 +127,7 @@ const ScheduleInput = z.object({
   active: z.boolean().default(true),
   deviceId: z.string().optional(),
   deviceName: z.string().optional(),
+  shuffle: z.boolean().optional(),
 });
 
 app.get('/schedules', (c) => {
