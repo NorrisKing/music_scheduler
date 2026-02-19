@@ -254,7 +254,32 @@ export default function NewScheduleScreen() {
           </>
         )}
 
-          {/* 5. Appareil (optionnel) */}
+        {/* 6. Options de lecture */}
+        {selectedAccount && (
+          <>
+            <SectionTitle>6. Options de lecture</SectionTitle>
+            <View className="rounded-2xl border border-border bg-card p-4 gap-4">
+              {/* Shuffle */}
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center gap-2 flex-1">
+                  <ShuffleIcon size={18} color={shuffle ? '#1DB954' : '#6b7280'} />
+                  <View>
+                    <Text className="text-foreground font-semibold">Lecture aléatoire</Text>
+                    <Text className="text-xs text-muted-foreground">Mélange les titres de la playlist</Text>
+                  </View>
+                </View>
+                <Switch
+                  value={shuffle}
+                  onValueChange={setShuffle}
+                  trackColor={{ false: '#374151', true: '#1DB954' }}
+                  thumbColor="white"
+                />
+              </View>
+            </View>
+          </>
+        )}
+
+        {/* 7. Appareil (optionnel) */}
         {selectedAccount && (
           <>
             <SectionTitle>5. Appareil <Text className="text-xs text-muted-foreground font-normal">(optionnel)</Text></SectionTitle>
