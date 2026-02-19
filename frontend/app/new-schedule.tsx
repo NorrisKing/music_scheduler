@@ -31,6 +31,7 @@ function DeviceIcon({ type }: { type: string }) {
 
 export default function NewScheduleScreen() {
   const { accountId } = useLocalSearchParams<{ accountId?: string }>();
+  const [name, setName] = useState('');
   const [accounts, setAccounts] = useState<SpotifyAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<SpotifyAccount | null>(null);
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
