@@ -7,7 +7,7 @@ import {
   Alert,
   ActivityIndicator,
   Switch,
-  Image,
+  TextInput,
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon, ShuffleIcon } from 'lucide-react-native';
