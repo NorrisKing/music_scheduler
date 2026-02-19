@@ -58,12 +58,14 @@ export default function SchedulesScreen() {
     );
   };
 
-  const handleToggle = async (s: Schedule) => {
-    await api.updateSchedule(s.id, { active: !s.active });
+  const handleToggle = async (id: string, active: boolean, e: any) => {
+    e?.stopPropagation?.();
+    await api.updateSchedule(id, { active: !active });
     await load();
   };
 
-  const handleDelete = (s: Schedule) => {
+  const handleDelete = (s: Schedule, e: any) => {
+    e?.stopPropagation?.();
     Alert.alert('Supprimer', `Supprimer "${s.name || s.playlistName}" ?`, [
       { text: 'Annuler', style: 'cancel' },
       {
@@ -77,82 +79,82 @@ export default function SchedulesScreen() {
     ]);
   };
 
-  const handleTrigger = async (s: Schedule) => {
+  const handleTrigger = async (id: string, e: any) => {
+    e?.stopPropagation?.();
     try {
-      await api.triggerSchedule(s.id);
+      await api.triggerSchedule(id);
       Alert.alert('OK', 'Lecture démarrée !');
-    } catch (e: any) {
-      Alert.alert('Erreur', e.message || 'Spotify est-il ouvert ?');
+    } catch (err: any) {
+      Alert.alert('Erreur', err.message || 'Spotify est-il ouvert ?');
     }
   };
 
   const renderSchedule = ({ item }: { item: Schedule }) => (
-    <TouchableOpacity
-      onPress={() => router.push({ pathname: '/edit-schedule', params: { id: item.id } })}
-      className={`mb-3 rounded-2xl border bg-card ${item.active ? 'border-border' : 'border-border/40 opacity-60'}`}
-      activeOpacity={0.75}
+    <div
+      onClick={() => router.push({ pathname: '/edit-schedule', params: { id: item.id } })}
+      style={{ cursor: 'pointer', marginBottom: 12 }}
     >
-      {/* Nom + toggle */}
-      <View className="flex-row items-center justify-between px-4 pt-4 pb-2">
-        <View className="flex-1 mr-2">
-          <Text className="text-foreground font-bold text-base" numberOfLines={1}>
-            {item.name || item.playlistName}
+      <View
+        className={`rounded-2xl border bg-card ${item.active ? 'border-border' : 'border-border/40 opacity-60'}`}
+      >
+        {/* Nom + toggle */}
+        <View className="flex-row items-center justify-between px-4 pt-4 pb-2">
+          <View className="flex-1 mr-2">
+            <Text className="text-foreground font-bold text-base" numberOfLines={1}>
+              {item.name || item.playlistName}
+            </Text>
+            {item.name && (
+              <Text className="text-xs text-muted-foreground mt-0.5">{item.playlistName}</Text>
+            )}
+          </View>
+          <div onClick={(e) => { e.stopPropagation(); handleToggle(item.id, item.active, e); }}>
+            {item.active
+              ? <ToggleRightIcon size={28} color="#1DB954" />
+              : <ToggleLeftIcon size={28} color="#6b7280" />}
+          </div>
+        </View>
+
+        {/* Heure + jours */}
+        <View className="flex-row items-center gap-4 px-4 pb-3">
+          <Text className="font-mono text-2xl font-bold text-[#1DB954]">
+            {pad(item.hour)}:{pad(item.minute)}
           </Text>
-          {item.name && (
-            <Text className="text-xs text-muted-foreground mt-0.5">{item.playlistName}</Text>
-          )}
+          <View className="flex-row gap-1">
+            {DAYS_SHORT.map((d, i) => (
+              <View
+                key={i}
+                className={`h-6 w-6 items-center justify-center rounded-full ${
+                  item.days.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'
+                }`}>
+                <Text className={`text-[10px] font-bold ${item.days.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
+                  {d}
+                </Text>
+              </View>
+            ))}
+          </View>
+          {item.shuffle && <ShuffleIcon size={14} color="#6b7280" />}
         </View>
-          <TouchableOpacity onPress={(e) => { e.stopPropagation(); handleToggle(item); }} hitSlop={8}>
-          {item.active
-            ? <ToggleRightIcon size={28} color="#1DB954" />
-            : <ToggleLeftIcon size={28} color="#6b7280" />}
-        </TouchableOpacity>
-      </View>
 
-      {/* Heure + jours */}
-      <View className="flex-row items-center gap-4 px-4 pb-3">
-        <Text className="font-mono text-2xl font-bold text-[#1DB954]">
-          {pad(item.hour)}:{pad(item.minute)}
-        </Text>
-        <View className="flex-row gap-1">
-          {DAYS_SHORT.map((d, i) => (
-            <View
-              key={i}
-              className={`h-6 w-6 items-center justify-center rounded-full ${
-                item.days.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'
-              }`}>
-              <Text className={`text-[10px] font-bold ${item.days.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
-                {d}
-              </Text>
+        {/* Footer */}
+        <View className="flex-row items-center border-t border-border/50 px-4 py-2 gap-2">
+          <Text className="flex-1 text-xs text-muted-foreground" numberOfLines={1}>
+            {item.deviceName || 'Appareil actif'}
+          </Text>
+          <div onClick={(e) => { e.stopPropagation(); handleTrigger(item.id, e); }}>
+            <View className="flex-row items-center gap-1 rounded-lg bg-[#1DB954]/15 px-3 py-1.5">
+              <PlayCircleIcon size={14} color="#1DB954" />
+              <Text className="text-xs font-semibold text-[#1DB954]">Lancer</Text>
             </View>
-          ))}
+          </div>
+          <div onClick={(e) => { e.stopPropagation(); handleDelete(item, e); }}>
+            <View className="rounded-lg bg-red-500/10 px-3 py-1.5">
+              <Trash2Icon size={14} color="#ef4444" />
+            </View>
+          </div>
+          <ChevronRightIcon size={16} color="#6b7280" />
         </View>
-        {item.shuffle && <ShuffleIcon size={14} color="#6b7280" />}
       </View>
-
-      {/* Footer */}
-      <View className="flex-row items-center border-t border-border/50 px-4 py-2 gap-2">
-        <Text className="flex-1 text-xs text-muted-foreground" numberOfLines={1}>
-          {item.deviceName || 'Appareil actif'}
-        </Text>
-        <TouchableOpacity
-          onPress={(e) => { e.stopPropagation(); handleTrigger(item); }}
-          className="flex-row items-center gap-1 rounded-lg bg-[#1DB954]/15 px-3 py-1.5"
-          hitSlop={6}
-        >
-          <PlayCircleIcon size={14} color="#1DB954" />
-          <Text className="text-xs font-semibold text-[#1DB954]">Lancer</Text>
-        </TouchableOpacity>
-      <TouchableOpacity
-          onPress={(e) => { e.stopPropagation(); handleDelete(item); }}
-          className="rounded-lg bg-red-500/10 px-3 py-1.5"
-          hitSlop={6}
-        >
-          <Trash2Icon size={14} color="#ef4444" />
-        </TouchableOpacity>
-        <ChevronRightIcon size={16} color="#6b7280" />
-      </View>
-    </TouchableOpacity>
+    </div>
   );
 
   const title = accountName ? `${accountName}` : 'Planifications';
