@@ -1,39 +1,38 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 
-// This page receives the OAuth redirect from Spotify (web mode).
-// It reads the code+state from the URL, stores them, then closes itself.
+// On web, Spotify redirects back to this URL with ?code=...&state=...
+// Instead of using expo-router params (which load async), read directly from window.location.search
 export default function SpotifyCallbackScreen() {
-  const router = useRouter();
-  const params = useLocalSearchParams<{ code?: string; state?: string; error?: string }>();
+  const handled = useRef(false);
 
   useEffect(() => {
-    const { code, state, error } = params;
+    if (handled.current) return;
+    handled.current = true;
+
+    if (typeof window === 'undefined') return;
+
+    const search = window.location.search;
+    const urlParams = new URLSearchParams(search);
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
+    const error = urlParams.get('error');
 
     if (error) {
-      // Store error so accounts page can read it
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem('spotify_oauth_error', error);
-      }
-      router.replace('/accounts');
-      return;
+      sessionStorage.setItem('spotify_oauth_error', error);
+    } else if (code && state) {
+      sessionStorage.setItem('spotify_oauth_code', code);
+      sessionStorage.setItem('spotify_oauth_state', state);
     }
 
-    if (code && state) {
-      if (typeof window !== 'undefined') {
-        window.sessionStorage.setItem('spotify_oauth_code', code);
-        window.sessionStorage.setItem('spotify_oauth_state', state);
-      }
-    }
-
-    router.replace('/accounts');
+    // Hard redirect to /accounts so the page fully reloads with sessionStorage populated
+    window.location.replace('/accounts');
   }, []);
 
   return (
-    <View className="flex-1 items-center justify-center bg-background">
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#09090b' }}>
       <ActivityIndicator size="large" color="#1DB954" />
-      <Text className="mt-4 text-muted-foreground">Connexion en cours...</Text>
+      <Text style={{ marginTop: 16, color: '#a1a1aa' }}>Connexion en cours...</Text>
     </View>
   );
 }
