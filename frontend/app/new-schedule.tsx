@@ -40,6 +40,7 @@ export default function NewScheduleScreen() {
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5]); // Mon-Fri default
   const [hour, setHour] = useState(8);
   const [minute, setMinute] = useState(0);
+  const [shuffle, setShuffle] = useState(true);
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
   const [saving, setSaving] = useState(false);
