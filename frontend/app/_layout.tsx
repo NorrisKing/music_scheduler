@@ -14,7 +14,21 @@ export default function RootLayout() {
     <ErrorBoundary>
       <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="accounts"
+            options={{ title: 'Comptes Spotify', headerBackTitle: 'Retour' }}
+          />
+          <Stack.Screen
+            name="schedules"
+            options={{ title: 'Planifications', headerBackTitle: 'Retour' }}
+          />
+          <Stack.Screen
+            name="new-schedule"
+            options={{ title: 'Nouvelle planification', headerBackTitle: 'Retour', presentation: 'modal' }}
+          />
+        </Stack>
       </ThemeProvider>
     </ErrorBoundary>
   );
