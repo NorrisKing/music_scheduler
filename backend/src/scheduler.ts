@@ -3,7 +3,7 @@ import { db, type Schedule } from './store.js';
 import { startPlaylist } from './spotify.js';
 
 // Map of schedule id -> cron task
-const activeTasks = new Map<string, cron.ScheduledTask>();
+const activeTasks = new Map<string, ReturnType<typeof cron.schedule>>();
 
 function buildCronExpression(days: number[], hour: number, minute: number): string {
   const daysStr = days.length === 7 ? '*' : days.join(',');
