@@ -170,12 +170,10 @@ export default function NewScheduleScreen() {
                       onPress={() => setSelectedPlaylist(p)}
                       className={`w-32 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
                       {p.images?.[0]?.url ? (
-                        <Image
-                          source={{ uri: p.images[0].url }}
-                          className="h-24 w-24 rounded-xl mb-2"
-                          resizeMode="cover"
-                        />
-                      ) : (
+                          <View className="h-24 w-24 rounded-xl mb-2 overflow-hidden">
+                            <img src={p.images[0].url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </View>
+                        ) : (
                         <View className="h-24 w-24 rounded-xl mb-2 bg-muted items-center justify-center">
                           <MusicIcon size={32} color="#6b7280" />
                         </View>
