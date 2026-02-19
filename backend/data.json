@@ -131,7 +131,8 @@
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
-      "shuffle": true
+      "shuffle": true,
+      "lastTriggeredAt": 1771493401887
     }
   }
 }
