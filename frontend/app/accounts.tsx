@@ -104,7 +104,9 @@ export default function AccountsScreen() {
   };
 
   const renderAccount = ({ item }: { item: SpotifyAccount }) => (
-    <View className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4">
+    <TouchableOpacity
+      onPress={() => router.push({ pathname: '/new-schedule', params: { accountId: item.id } })}
+      className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4 active:opacity-70">
       <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1DB954]/20">
         <UserCircleIcon size={28} color="#1DB954" />
       </View>
@@ -113,11 +115,14 @@ export default function AccountsScreen() {
         <Text className="text-sm text-muted-foreground">{item.email}</Text>
       </View>
       <TouchableOpacity
-        onPress={() => handleDelete(item)}
+        onPress={(e) => { e.stopPropagation(); handleDelete(item); }}
         className="rounded-lg p-2">
         <TrashIcon size={20} color="#ef4444" />
       </TouchableOpacity>
-    </View>
+      <View className="rounded-lg p-2">
+        <CalendarPlusIcon size={20} color="#1DB954" />
+      </View>
+    </TouchableOpacity>
   );
 
   return (
