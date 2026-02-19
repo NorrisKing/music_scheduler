@@ -143,8 +143,8 @@ export default function SchedulesScreen() {
           <PlayCircleIcon size={14} color="#1DB954" />
           <Text className="text-xs font-semibold text-[#1DB954]">Lancer</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleDelete(item)}
+      <TouchableOpacity
+          onPress={(e) => { e.stopPropagation(); handleDelete(item); }}
           className="rounded-lg bg-red-500/10 px-3 py-1.5"
           hitSlop={6}
         >
