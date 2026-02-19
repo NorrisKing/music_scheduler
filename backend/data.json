@@ -4,10 +4,19 @@
       "id": "norrisking",
       "displayName": "NorrisKing",
       "email": "nonosayso@hotmail.com",
-      "accessToken": "BQAgNN6TCjjs82VomxFsppptgPx5t0QU2wDevtS4vbQET1X8KlArX-cRLOiFerHr0V6mqYshC12EPfwZwrt_4f6YWq9nqc4SuyDDct2zYtIgt8Zz0OQ5WOsLvRSVDTkKgmnsSEDuA_6-H6cOs7O-iWzIXQBbPfmN6Qg8vuWtNcms14CMacostVtHij28LtYFMvQL3MlmMZs_98Run000WLE6p7Rc5k2jWrx-VOnk3Xj03iDeAJcldms5a-9jpdNk4g",
-      "refreshToken": "AQDVD5CPLoNaArKYiovx4iwKFqvsZhc1BwFVWhlVfiayAn3845sd-Ead-0jxi0UYQBozHTVQh3uksAtjNP81bfxqLiHxR4StecyoYUXs_2q7KWGYnl9Z8bAD-J56b9zIk4Q",
-      "expiresAt": 1771496974441,
+      "accessToken": "BQBNibZcnta0Nup4ZdeMvS8UKgq3YWmpTNn6oW0hhjEFIIoptUZzQmiu_Cae-v7d-m2Q5LApYxm_odhOWUmxNBnSKxZ6A3k-Eb86zUzvr4WqyeKIq0Pr-4NmdnA2pKayRBn6iHHt6PzmX1wm0eqyHe42NcjEHQ4l7xEKzqfCssUpFY8NSYaZeU5xwqtruNKWoWfssAco0Dx9VTr6SB_tHbA66vxgDpwX35KZsSWoV76XH8Gzfi1A9x3Jkk3jYXq_sg",
+      "refreshToken": "AQDmQzFeLzuPU_9w-T0lA6feq3nRr_5E5PutfG3iLeXZAUsrBRjyhSlB_eOyMGZ5TMQJYHCPMpKPh4n1JED7d28ALDhS15WquOHxrPtbn9axeWhVqA46xI83zwILng9EM8wZVw",
+      "expiresAt": 1771501092670,
       "addedAt": 1771493374514
+    },
+    "312n5jyadwr3f3k5ssdiw6nda5rq": {
+      "id": "312n5jyadwr3f3k5ssdiw6nda5rq",
+      "displayName": "Dr. Wine",
+      "email": "drwineplatforms@gmail.com",
+      "accessToken": "BQAQls893F0R0Hc7NXwhWuqqbAfqMTxlJ8QtlEibn1eFikbuquZNnBsgHPTV7Mo92molcbxmTzXpxjCUhEaNx9wW8lrGWEU6GbTz7KYcGqZ9eAhFBkmOUjk9SS-ELK2YpI4VSwUsB3pmvHOuqaS1OeuBtt1Ugfzrx18b31kqnQ-nJojZhHGbQiUKTxWuC261bPJu9vjvqhEWqXAdQWHXNGWJKD97-2oq5xUhrGbsJQDazmiAa3boNYEdGBtdv0mOLzPMQn8CM1eYlRkDlUBlaiAx2Q",
+      "refreshToken": "AQBQoC4mpTm_6BZwNo_37TZBoh75kj5qRYHOySclj7Mm11qYJIOVMa0JBdFUUpshdPX4iS-e0RZyMYTQM1ihizcdfg8tba9JUFkljkjk_8y3Yipy234FT5od_eRKx_sAxck",
+      "expiresAt": 1771500846483,
+      "addedAt": 1771497246558
     }
   },
   "schedules": {
@@ -110,7 +119,7 @@
     },
     "a090951a-10e5-4130-802f-1d2fcbd845ee": {
       "id": "a090951a-10e5-4130-802f-1d2fcbd845ee",
-      "cronExpression": "30 17 * * *",
+      "cronExpression": "40 18 * * *",
       "createdAt": 1771493202582,
       "name": "Norris king 5/7",
       "accountId": "norrisking",
@@ -126,13 +135,13 @@
         5,
         6
       ],
-      "hour": 17,
-      "minute": 30,
+      "hour": 18,
+      "minute": 40,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771493401887
+      "lastTriggeredAt": 1771497601916
     },
     "927a5edd-07f3-4633-89b7-4d3fe3303f9b": {
       "id": "927a5edd-07f3-4633-89b7-4d3fe3303f9b",
@@ -184,7 +193,7 @@
     },
     "5d7f3148-926e-4989-b18b-af82915e0936": {
       "id": "5d7f3148-926e-4989-b18b-af82915e0936",
-      "cronExpression": "15 18 * * 1,2,3,4,5",
+      "cronExpression": "40 18 * * 1,2,3,4,5",
       "createdAt": 1771496039483,
       "name": "Toutes les playlists",
       "accountId": "norrisking",
@@ -199,12 +208,81 @@
         5
       ],
       "hour": 18,
-      "minute": 15,
+      "minute": 40,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771496101874
+      "lastTriggeredAt": 1771497602259
+    },
+    "ce7af4e1-61a7-4c41-ad75-b08bd8eca0ff": {
+      "id": "ce7af4e1-61a7-4c41-ad75-b08bd8eca0ff",
+      "cronExpression": "0 17 * * *",
+      "createdAt": 1771497360187,
+      "name": "Week 5/7pm",
+      "accountId": "312n5jyadwr3f3k5ssdiw6nda5rq",
+      "playlistId": "4pURF6Yry9axerTOOCLevX",
+      "playlistName": "2026-01-ROOFTOP 5pm/7",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e024d402106684a7cbcd4746264ab67616d00001e02849fe5cc65acdca803d9e96aab67616d00001e0299cbbb8b17cdf54922acc29eab67616d00001e02ac21b83cda539eb76f2fafd2",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "hour": 17,
+      "minute": 0,
+      "active": true,
+      "shuffle": true
+    },
+    "e738c5c5-a173-4031-a1ec-e79eea99acdc": {
+      "id": "e738c5c5-a173-4031-a1ec-e79eea99acdc",
+      "cronExpression": "0 19 * * *",
+      "createdAt": 1771497429807,
+      "name": "Week 7/10pm",
+      "accountId": "312n5jyadwr3f3k5ssdiw6nda5rq",
+      "playlistId": "5fZFTIgJeRVA3GGz5DJcyr",
+      "playlistName": "2026-01-ROOFTOP 7pm/10",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e028fe5e2edf8d4174f5269fed0ab67616d00001e029a3230676070317ddb15ad2fab67616d00001e02afb3ecfe9aa3d9ab3b4368beab67616d00001e02cb84635f749ada1f15782f1f",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "hour": 19,
+      "minute": 0,
+      "active": true,
+      "shuffle": true
+    },
+    "c746b380-d8f3-4879-bbe1-fb4292877b73": {
+      "id": "c746b380-d8f3-4879-bbe1-fb4292877b73",
+      "cronExpression": "0 19 * * *",
+      "createdAt": 1771497608839,
+      "name": "Week 10/12",
+      "accountId": "312n5jyadwr3f3k5ssdiw6nda5rq",
+      "playlistId": "0LCad6dcDNLZo388x4Bk09",
+      "playlistName": "2026-01-ROOFTOP-10pm/12",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e02408b5b93ea59befa5a1ad6eaab67616d00001e02b739f9eae2b9629cb2555a48ab67616d00001e02e0e350a91321f7a61743be99ab67616d00001e02fc11a290da738c92f48d69d8",
+      "days": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "hour": 19,
+      "minute": 0,
+      "active": true,
+      "shuffle": true
     }
   }
 }
