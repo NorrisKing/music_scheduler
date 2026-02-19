@@ -144,6 +144,26 @@ app.get('/schedules/:id', (c) => {
 
 app.post('/schedules', zValidator('json', ScheduleInput), (c) => {
   const data = c.req.valid('json');
+
+  // Check for time conflict on same account
+  const existing = db.getSchedulesByAccount(data.accountId);
+  const conflict = existing.find(
+    (s) =>
+      s.hour === data.hour &&
+      s.minute === data.minute &&
+      s.days.some((d) => data.days.includes(d))
+  );
+  if (conflict) {
+    const conflictDays = conflict.days
+      .filter((d) => data.days.includes(d))
+      .map((d) => ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][d])
+      .join(', ');
+    return c.json(
+      { error: `Conflit : "${conflict.name || conflict.playlistName}" est déjà planifiée à ${String(data.hour).padStart(2,'0')}:${String(data.minute).padStart(2,'0')} (${conflictDays})` },
+      409
+    );
+  }
+
   const cronExpression = scheduler.buildCronExpression(data.days, data.hour, data.minute);
 
   const schedule = {
