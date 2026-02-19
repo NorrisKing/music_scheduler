@@ -408,20 +408,27 @@ export default function EditScheduleScreen() {
           </>
         )}
 
-        {/* Résumé */}
-        {selectedAccount && (
-          <View className="mt-6 rounded-2xl border border-[#1DB954] bg-[#1DB954]/5 p-4">
-            <Text className="mb-2 font-bold text-foreground">Résumé</Text>
-            <Text className="text-sm text-muted-foreground">
-              Compte : <Text className="text-foreground">{selectedAccount.displayName}</Text>{'\n'}
-              Playlist : <Text className="text-foreground">{selectedPlaylist?.name || '–'}</Text>{'\n'}
-              Jours : <Text className="text-foreground">{selectedDays.map((d) => DAYS[d]).join(', ') || '–'}</Text>{'\n'}
-              Heure : <Text className="text-foreground font-mono">{pad(hour)}:{pad(minute)}</Text>{'\n'}
-              Lecture : <Text className="text-foreground">{shuffle ? 'Aléatoire' : "Dans l'ordre"}</Text>
-              {selectedDevice ? `\nAppareil : ${selectedDevice.name}` : ''}
-            </Text>
-          </View>
-        )}
+          {/* Résumé */}
+          {selectedAccount && (
+            <View className="mt-6 rounded-2xl border border-[#1DB954] bg-[#1DB954]/5 p-4">
+              <Text className="mb-2 font-bold text-foreground">Résumé</Text>
+              <Text className="text-sm text-muted-foreground">
+                Compte : <Text className="text-foreground">{selectedAccount.displayName}</Text>{'\n'}
+                Playlist : <Text className="text-foreground">{selectedPlaylist?.name || '–'}</Text>{'\n'}
+                Jours : <Text className="text-foreground">{selectedDays.map((d) => DAYS[d]).join(', ') || '–'}</Text>{'\n'}
+                Heure : <Text className="text-foreground font-mono">{pad(hour)}:{pad(minute)}</Text>{'\n'}
+                Lecture : <Text className="text-foreground">{shuffle ? 'Aléatoire' : "Dans l'ordre"}</Text>
+                {selectedDevice ? `\nAppareil : ${selectedDevice.name}` : ''}
+              </Text>
+            </View>
+          )}
+
+          {conflictError && (
+            <View className="mt-4 rounded-2xl border border-red-500/50 bg-red-500/10 px-4 py-3">
+              <Text className="text-sm font-semibold text-red-400">Conflit d'horaire</Text>
+              <Text className="text-sm text-red-300 mt-1">{conflictError}</Text>
+            </View>
+          )}
 
         <TouchableOpacity
           onPress={handleSave}
