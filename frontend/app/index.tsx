@@ -1,118 +1,78 @@
-import { THEME } from '@/lib/theme';
 import { Link, Stack } from 'expo-router';
-import { MoonStarIcon, StarIcon, SunIcon } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { CalendarDaysIcon, UsersIcon, MusicIcon } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
-import * as React from 'react';
-import { Image, type ImageStyle, View, Text, TouchableOpacity } from 'react-native';
-import { BACKEND_URL, apiRequest } from '@/lib/api';
 
-const LOGO = {
-  light: require('@/assets/images/react-native-reusables-light.png'),
-  dark: require('@/assets/images/react-native-reusables-dark.png'),
-};
-
-const SCREEN_OPTIONS = {
-  light: {
-    title: 'React Native Reusables',
-    headerTransparent: true,
-    headerShadowVisible: true,
-    headerStyle: { backgroundColor: THEME.light.background },
-    headerRight: () => <ThemeToggle />,
-  },
-  dark: {
-    title: 'React Native Reusables',
-    headerTransparent: true,
-    headerShadowVisible: true,
-    headerStyle: { backgroundColor: THEME.dark.background },
-    headerRight: () => <ThemeToggle />,
-  },
-};
-
-const IMAGE_STYLE: ImageStyle = {
-  height: 76,
-  width: 76,
-};
-
-export default function Screen() {
-  const { colorScheme } = useColorScheme();
-  const [apiResponse, setApiResponse] = React.useState<string>('');
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  // Example: Test API connection
-  const testApiConnection = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${BACKEND_URL}/`);
-      const text = await response.text();
-      setApiResponse(text);
-    } catch (error) {
-      setApiResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export default function HomeScreen() {
+  const { colorScheme, toggleColorScheme } = useColorScheme();
 
   return (
     <>
-      <Stack.Screen options={SCREEN_OPTIONS[colorScheme ?? 'light']} />
-      <View className="flex-1 items-center justify-center gap-8 p-4">
-        <Image source={LOGO[colorScheme ?? 'light']} style={IMAGE_STYLE} resizeMode="contain" />
-        <View className="gap-2 p-4">
-          <Text className="ios:text-foreground font-mono text-sm text-muted-foreground">
-            1. Edit <Text className="font-mono">app/index.tsx</Text> to get started.
-          </Text>
-          <Text className="ios:text-foreground font-mono text-sm text-muted-foreground">
-            2. Save to see your changes instantly.
-          </Text>
-          <Text className="ios:text-foreground mt-2 font-mono text-xs text-muted-foreground">
-            API: {BACKEND_URL}
+      <Stack.Screen
+        options={{
+          title: 'Spotify Scheduler',
+          headerRight: () => (
+            <TouchableOpacity onPress={toggleColorScheme} className="p-2">
+              <Text className="text-foreground">{colorScheme === 'dark' ? '☀️' : '🌙'}</Text>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <View className="flex-1 bg-background p-6">
+        {/* Header */}
+        <View className="mb-8 items-center pt-6">
+          <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-[#1DB954]">
+            <MusicIcon size={40} color="white" />
+          </View>
+          <Text className="text-foreground text-3xl font-bold">Spotify Scheduler</Text>
+          <Text className="mt-2 text-center text-muted-foreground">
+            Programmez vos playlists sur plusieurs comptes Spotify
           </Text>
         </View>
-        <View className="items-center gap-2 p-4">
-          <TouchableOpacity
-            onPress={testApiConnection}
-            disabled={isLoading}
-            className="rounded-md bg-secondary px-4 py-2">
-            <Text className="text-secondary-foreground">
-              {isLoading ? 'Testing...' : 'Test API Connection'}
-            </Text>
-          </TouchableOpacity>
-          {apiResponse && (
-            <Text className="ios:text-foreground font-mono text-xs text-muted-foreground">
-              Response: {apiResponse}
-            </Text>
-          )}
+
+        {/* Nav cards */}
+        <View className="gap-4">
+          <Link href="/accounts" asChild>
+            <TouchableOpacity className="flex-row items-center gap-4 rounded-2xl border border-border bg-card p-5">
+              <View className="h-12 w-12 items-center justify-center rounded-xl bg-[#1DB954]/15">
+                <UsersIcon size={24} color="#1DB954" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-foreground text-lg font-semibold">Comptes Spotify</Text>
+                <Text className="text-muted-foreground text-sm">
+                  Connecter et gérer vos comptes
+                </Text>
+              </View>
+              <Text className="text-muted-foreground">›</Text>
+            </TouchableOpacity>
+          </Link>
+
+          <Link href="/schedules" asChild>
+            <TouchableOpacity className="flex-row items-center gap-4 rounded-2xl border border-border bg-card p-5">
+              <View className="h-12 w-12 items-center justify-center rounded-xl bg-blue-500/15">
+                <CalendarDaysIcon size={24} color="#3b82f6" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-foreground text-lg font-semibold">Planifications</Text>
+                <Text className="text-muted-foreground text-sm">
+                  Programmer vos playlists
+                </Text>
+              </View>
+              <Text className="text-muted-foreground">›</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
-        <View className="flex-row gap-2">
-          <Link href="https://reactnativereusables.com" asChild>
-            <TouchableOpacity className="rounded-md bg-primary px-4 py-2">
-              <Text className="text-primary-foreground">Browse the Docs</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="https://github.com/founded-labs/react-native-reusables" asChild>
-            <TouchableOpacity className="flex-row items-center gap-2 rounded-md px-4 py-2">
-              <Text>Star the Repo</Text>
-              <StarIcon size={16} />
-            </TouchableOpacity>
-          </Link>
+
+        {/* Info */}
+        <View className="mt-8 rounded-2xl bg-muted p-4">
+          <Text className="mb-1 font-semibold text-foreground">Comment ça marche ?</Text>
+          <Text className="text-sm text-muted-foreground">
+            1. Connectez vos comptes Spotify{'\n'}
+            2. Créez une planification (playlist + jours + heure){'\n'}
+            3. Le serveur déclenchera la lecture automatiquement
+          </Text>
         </View>
       </View>
     </>
-  );
-}
-
-const THEME_ICONS = {
-  light: SunIcon,
-  dark: MoonStarIcon,
-};
-
-function ThemeToggle() {
-  const { colorScheme, toggleColorScheme } = useColorScheme();
-  const IconComponent = THEME_ICONS[colorScheme ?? 'light'];
-
-  return (
-    <TouchableOpacity onPress={toggleColorScheme} className="rounded-full p-2 web:mx-4">
-      <IconComponent size={20} />
-    </TouchableOpacity>
   );
 }
