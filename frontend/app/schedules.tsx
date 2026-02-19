@@ -136,7 +136,7 @@ export default function SchedulesScreen() {
           {item.deviceName || 'Appareil actif'}
         </Text>
         <TouchableOpacity
-          onPress={() => handleTrigger(item)}
+          onPress={(e) => { e.stopPropagation(); handleTrigger(item); }}
           className="flex-row items-center gap-1 rounded-lg bg-[#1DB954]/15 px-3 py-1.5"
           hitSlop={6}
         >
