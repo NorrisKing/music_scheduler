@@ -42,6 +42,7 @@ export default function NewScheduleScreen() {
   const [hour, setHour] = useState(8);
   const [minute, setMinute] = useState(0);
   const [shuffle, setShuffle] = useState(true);
+  const [playlistSearch, setPlaylistSearch] = useState('');
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
   const [saving, setSaving] = useState(false);
