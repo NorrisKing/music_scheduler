@@ -159,7 +159,14 @@ export default function SchedulesScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title }} />
+      <Stack.Screen options={{
+          title,
+          headerRight: accountId ? () => (
+            <TouchableOpacity onPress={handleDeleteAccount} className="pr-2">
+              <TrashIcon size={20} color="#ef4444" />
+            </TouchableOpacity>
+          ) : undefined,
+        }} />
       <View className="flex-1 bg-background p-4">
         {loading ? (
           <ActivityIndicator className="mt-8" color="#1DB954" />
