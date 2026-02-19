@@ -22,15 +22,15 @@ function startTask(schedule: Schedule) {
 
   try {
     const task = cron.schedule(expression, async () => {
-      console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
-      const success = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId);
-      if (success) {
-        db.markTriggered(schedule.id);
-        console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started`);
-      } else {
-        console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
-      }
-    });
+        console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
+        const success = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId);
+        if (success) {
+          db.markTriggered(schedule.id);
+          console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started`);
+        } else {
+          console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
+        }
+      }, { timezone: 'Europe/Paris' });
 
     activeTasks.set(schedule.id, task);
     console.log(`[Scheduler] Registered: ${schedule.id} (${expression})`);
