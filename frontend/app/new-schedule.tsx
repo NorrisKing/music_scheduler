@@ -76,6 +76,7 @@ export default function NewScheduleScreen() {
   }, [selectedAccount]);
 
   const toggleDay = (day: number) => {
+    setConflictError(null);
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort((a, b) => a - b)
     );
