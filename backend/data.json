@@ -86,6 +86,27 @@
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "lastTriggeredAt": 1771490100427
+    },
+    "0775a64c-3c0f-44bf-96f6-942ce2095e2f": {
+      "id": "0775a64c-3c0f-44bf-96f6-942ce2095e2f",
+      "cronExpression": "55 16 * * 1,2,3,4,5",
+      "createdAt": 1771491128419,
+      "accountId": "norrisking",
+      "playlistId": "0Hf9ZzQvLWUYtkP6NDuY2q",
+      "playlistName": "Azure House 1",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e020a2ef92425a00acff6b60a16ab67616d00001e024d402106684a7cbcd4746264ab67616d00001e02849fe5cc65acdca803d9e96aab67616d00001e0299cbbb8b17cdf54922acc29e",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 16,
+      "minute": 55,
+      "active": true,
+      "shuffle": true,
+      "lastTriggeredAt": 1771491302183
     }
   }
 }
