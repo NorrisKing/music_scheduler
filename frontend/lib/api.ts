@@ -10,6 +10,7 @@ export interface SpotifyAccount {
 
 export interface Schedule {
   id: string;
+  name?: string;
   accountId: string;
   playlistId: string;
   playlistName: string;
