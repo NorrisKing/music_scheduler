@@ -50,6 +50,7 @@ export default function EditScheduleScreen() {
   const [playlistSearch, setPlaylistSearch] = useState('');
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
+  const [conflictError, setConflictError] = useState<string | null>(null);
 
   useEffect(() => {
     async function init() {
