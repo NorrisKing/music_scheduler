@@ -105,7 +105,7 @@ export default function AccountsScreen() {
 
   const renderAccount = ({ item }: { item: SpotifyAccount }) => (
     <TouchableOpacity
-      onPress={() => router.push({ pathname: '/new-schedule', params: { accountId: item.id } })}
+      onPress={() => router.push({ pathname: '/schedules', params: { accountId: item.id, accountName: item.displayName } })}
       className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4 active:opacity-70">
       <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1DB954]/20">
         <UserCircleIcon size={28} color="#1DB954" />
