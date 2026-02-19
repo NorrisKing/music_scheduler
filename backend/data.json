@@ -133,6 +133,54 @@
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
       "lastTriggeredAt": 1771493401887
+    },
+    "927a5edd-07f3-4633-89b7-4d3fe3303f9b": {
+      "id": "927a5edd-07f3-4633-89b7-4d3fe3303f9b",
+      "cronExpression": "40 17 * * 1,2,3,4,5",
+      "createdAt": 1771493684495,
+      "name": "Norris King 7/9",
+      "accountId": "norrisking",
+      "playlistId": "4BWoBPb2Xt2cLV4wB5xsGk",
+      "playlistName": "AZURE BEACH CLUB OPENING",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0233ac7e4332b6aec69e3e8d1bab67616d00001e02af2c61c6afcaf83d316bc6d1ab67616d00001e02c8df97e50b7e93eacca1fe03ab67616d00001e02e548353152ce7baaf8676715",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 17,
+      "minute": 40,
+      "active": true,
+      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
+      "deviceName": "MKTG-ARNAUD00",
+      "shuffle": true,
+      "lastTriggeredAt": 1771494001936
+    },
+    "a9d014c4-6978-4e1b-b3f0-bf246865b7d2": {
+      "id": "a9d014c4-6978-4e1b-b3f0-bf246865b7d2",
+      "cronExpression": "45 17 * * 1,2,3,4,5",
+      "createdAt": 1771493868624,
+      "name": "Norris 9/11",
+      "accountId": "norrisking",
+      "playlistId": "7Auo0yFx3DK6IZVSehbGNP",
+      "playlistName": "ON GOING DW BGC",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e020db4898026f2f0d478abf0e7ab67616d00001e0245dbb36f987c184145d37a1bab67616d00001e02b9488880209215f21b24dd39ab67616d00001e02d636df0dfaf90530035cfe1c",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 17,
+      "minute": 45,
+      "active": true,
+      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
+      "deviceName": "MKTG-ARNAUD00",
+      "shuffle": true,
+      "lastTriggeredAt": 1771494302021
     }
   }
 }
