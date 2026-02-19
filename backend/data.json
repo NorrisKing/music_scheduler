@@ -136,13 +136,13 @@
     },
     "927a5edd-07f3-4633-89b7-4d3fe3303f9b": {
       "id": "927a5edd-07f3-4633-89b7-4d3fe3303f9b",
-      "cronExpression": "40 17 * * 1,2,3,4,5",
+      "cronExpression": "20 18 * * 1,2,3,4,5",
       "createdAt": 1771493684495,
       "name": "Norris King 7/9",
       "accountId": "norrisking",
-      "playlistId": "4BWoBPb2Xt2cLV4wB5xsGk",
-      "playlistName": "AZURE BEACH CLUB OPENING",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0233ac7e4332b6aec69e3e8d1bab67616d00001e02af2c61c6afcaf83d316bc6d1ab67616d00001e02c8df97e50b7e93eacca1fe03ab67616d00001e02e548353152ce7baaf8676715",
+      "playlistId": "7sjkclxgdgzzUOMQYDFMn7",
+      "playlistName": "AZURE BEACH CLUB EVENING",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e022034f0e2b8e0e37fa951212bab67616d00001e02408b5b93ea59befa5a1ad6eaab67616d00001e02b739f9eae2b9629cb2555a48ab67616d00001e02fc11a290da738c92f48d69d8",
       "days": [
         1,
         2,
@@ -150,23 +150,23 @@
         4,
         5
       ],
-      "hour": 17,
-      "minute": 40,
+      "hour": 18,
+      "minute": 20,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771494001936
+      "lastTriggeredAt": 1771496401708
     },
     "a9d014c4-6978-4e1b-b3f0-bf246865b7d2": {
       "id": "a9d014c4-6978-4e1b-b3f0-bf246865b7d2",
-      "cronExpression": "45 17 * * 1,2,3,4,5",
+      "cronExpression": "25 18 * * 1,2,3,4,5",
       "createdAt": 1771493868624,
       "name": "Norris 9/11",
       "accountId": "norrisking",
-      "playlistId": "7Auo0yFx3DK6IZVSehbGNP",
-      "playlistName": "ON GOING DW BGC",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e020db4898026f2f0d478abf0e7ab67616d00001e0245dbb36f987c184145d37a1bab67616d00001e02b9488880209215f21b24dd39ab67616d00001e02d636df0dfaf90530035cfe1c",
+      "playlistId": "4QR5u1MKph50uuSso4XFJR",
+      "playlistName": "BIRTHDAY OCT 15th-A",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e02328a716634119db567aced88ab67616d00001e026128eff79f9d69bcda13c066ab67616d00001e0263adcf9d5b78a35b8bc38905ab67616d00001e02a0ca29b1a10b3f954cc3d7e8",
       "days": [
         1,
         2,
@@ -174,13 +174,37 @@
         4,
         5
       ],
-      "hour": 17,
-      "minute": 45,
+      "hour": 18,
+      "minute": 25,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771494302021
+      "lastTriggeredAt": 1771496701722
+    },
+    "5d7f3148-926e-4989-b18b-af82915e0936": {
+      "id": "5d7f3148-926e-4989-b18b-af82915e0936",
+      "cronExpression": "15 18 * * 1,2,3,4,5",
+      "createdAt": 1771496039483,
+      "name": "Toutes les playlists",
+      "accountId": "norrisking",
+      "playlistId": "6pmuFaiJifUmO2DKWqqerN",
+      "playlistName": "FRENCH 2024",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e022433cb43f0f2f0f23b7c8b82ab67616d00001e0231d6b27ffaa0b2f89234698aab67616d00001e02531f955e7c2937755078dcc6ab67616d00001e02bafa6f9e619af7f36e4c104d",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 18,
+      "minute": 15,
+      "active": true,
+      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
+      "deviceName": "MKTG-ARNAUD00",
+      "shuffle": true,
+      "lastTriggeredAt": 1771496101874
     }
   }
 }
