@@ -10,7 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon } from 'lucide-react-native';
+import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon, ShuffleIcon } from 'lucide-react-native';
 import { api, type SpotifyAccount, type SpotifyPlaylist, type SpotifyDevice } from '@/lib/api';
 
 const DAYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
