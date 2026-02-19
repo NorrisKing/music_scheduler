@@ -1,21 +1,47 @@
-/**
- * API Configuration
- *
- * The backend URL is automatically configured:
- * - In development: Read from EXPO_PUBLIC_BACKEND_URL (set by ngrok script)
- * - In production: Use your deployed API URL
- */
+export const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3002';
 
-// Get the backend URL from environment variables
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3002';
+export interface SpotifyAccount {
+  id: string;
+  displayName: string;
+  email: string;
+  expiresAt: number;
+  addedAt: number;
+}
 
-/**
- * Simple fetch wrapper for API calls
- */
-export async function apiRequest<T = any>(endpoint: string, options?: RequestInit): Promise<T> {
-  const url = `${BACKEND_URL}${endpoint}`;
+export interface Schedule {
+  id: string;
+  accountId: string;
+  playlistId: string;
+  playlistName: string;
+  playlistImageUrl?: string;
+  cronExpression: string;
+  days: number[];
+  hour: number;
+  minute: number;
+  active: boolean;
+  createdAt: number;
+  lastTriggeredAt?: number;
+  deviceId?: string;
+  deviceName?: string;
+}
 
-  const response = await fetch(url, {
+export interface SpotifyPlaylist {
+  id: string;
+  name: string;
+  images: { url: string }[];
+  tracks: { total: number };
+  owner: { display_name: string };
+}
+
+export interface SpotifyDevice {
+  id: string;
+  name: string;
+  type: string;
+  is_active: boolean;
+}
+
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const res = await fetch(`${BACKEND_URL}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -23,20 +49,35 @@ export async function apiRequest<T = any>(endpoint: string, options?: RequestIni
       ...options?.headers,
     },
   });
-
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.statusText}`);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || res.statusText);
   }
-
-  return response.json();
+  return res.json();
 }
 
-/**
- * Example usage:
- *
- * import { apiRequest } from '@/lib/api';
- *
- * const data = await apiRequest('/users');
- */
+export const api = {
+  exchangeToken: (body: { code: string; codeVerifier: string; redirectUri: string }) =>
+    request<{ accountId: string; displayName: string; email: string }>('/auth/spotify/token', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 
-export { BACKEND_URL };
+  getAccounts: () => request<SpotifyAccount[]>('/accounts'),
+  deleteAccount: (id: string) => request<{ ok: boolean }>(`/accounts/${id}`, { method: 'DELETE' }),
+
+  getPlaylists: (accountId: string) =>
+    request<{ items: SpotifyPlaylist[] }>(`/accounts/${accountId}/playlists`),
+  getDevices: (accountId: string) =>
+    request<{ devices: SpotifyDevice[] }>(`/accounts/${accountId}/devices`),
+
+  getSchedules: () => request<Schedule[]>('/schedules'),
+  createSchedule: (data: Omit<Schedule, 'id' | 'createdAt' | 'cronExpression' | 'lastTriggeredAt'>) =>
+    request<Schedule>('/schedules', { method: 'POST', body: JSON.stringify(data) }),
+  updateSchedule: (id: string, data: Partial<Schedule>) =>
+    request<Schedule>(`/schedules/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteSchedule: (id: string) =>
+    request<{ ok: boolean }>(`/schedules/${id}`, { method: 'DELETE' }),
+  triggerSchedule: (id: string) =>
+    request<{ ok: boolean }>(`/schedules/${id}/trigger`, { method: 'POST' }),
+};
