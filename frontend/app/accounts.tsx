@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import { Stack } from 'expo-router';
-import { PlusCircleIcon, TrashIcon, UserCircleIcon } from 'lucide-react-native';
+import { Stack, router } from 'expo-router';
+import { PlusCircleIcon, TrashIcon, UserCircleIcon, CalendarPlusIcon } from 'lucide-react-native';
 import { api, type SpotifyAccount } from '@/lib/api';
 import { useSpotifyAuth, finishWebLogin } from '@/lib/useSpotifyAuth';
 
