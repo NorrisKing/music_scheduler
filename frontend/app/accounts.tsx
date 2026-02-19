@@ -85,45 +85,20 @@ export default function AccountsScreen() {
     }
   };
 
-  const handleDelete = (account: SpotifyAccount) => {
-    Alert.alert(
-      'Supprimer le compte',
-      `Supprimer ${account.displayName} ? Toutes ses planifications seront supprimées.`,
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: async () => {
-            await api.deleteAccount(account.id);
-            await load();
-          },
-        },
-      ]
-    );
-  };
-
-  const renderAccount = ({ item }: { item: SpotifyAccount }) => (
-    <TouchableOpacity
-      onPress={() => router.push({ pathname: '/schedules', params: { accountId: item.id, accountName: item.displayName } })}
-      className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4 active:opacity-70">
-      <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1DB954]/20">
-        <UserCircleIcon size={28} color="#1DB954" />
-      </View>
-      <View className="flex-1">
-        <Text className="text-foreground font-semibold">{item.displayName}</Text>
-        <Text className="text-sm text-muted-foreground">{item.email}</Text>
-      </View>
+    const renderAccount = ({ item }: { item: SpotifyAccount }) => (
       <TouchableOpacity
-        onPress={(e) => { e.stopPropagation(); handleDelete(item); }}
-        className="rounded-lg p-2">
-        <TrashIcon size={20} color="#ef4444" />
+        onPress={() => router.push({ pathname: '/schedules', params: { accountId: item.id, accountName: item.displayName } })}
+        className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4 active:opacity-70">
+        <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1DB954]/20">
+          <UserCircleIcon size={28} color="#1DB954" />
+        </View>
+        <View className="flex-1">
+          <Text className="text-foreground font-semibold">{item.displayName}</Text>
+          <Text className="text-sm text-muted-foreground">{item.email}</Text>
+        </View>
+        <ChevronRightIcon size={20} color="#6b7280" />
       </TouchableOpacity>
-      <View className="rounded-lg p-2">
-        <CalendarPlusIcon size={20} color="#1DB954" />
-      </View>
-    </TouchableOpacity>
-  );
+    );
 
   return (
     <>
