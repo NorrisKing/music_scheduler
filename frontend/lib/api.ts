@@ -23,6 +23,7 @@ export interface Schedule {
   lastTriggeredAt?: number;
   deviceId?: string;
   deviceName?: string;
+  shuffle?: boolean;
 }
 
 export interface SpotifyPlaylist {
