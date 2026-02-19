@@ -117,6 +117,7 @@ app.get('/accounts/:id/devices', async (c) => {
 
 // ─── Schedules ────────────────────────────────────────────────────────────────
 const ScheduleInput = z.object({
+  name: z.string().optional(),
   accountId: z.string(),
   playlistId: z.string(),
   playlistName: z.string(),
