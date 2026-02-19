@@ -254,7 +254,7 @@ export default function NewScheduleScreen() {
           </>
         )}
 
-        {/* 5. Appareil (optionnel) */}
+          {/* 5. Appareil (optionnel) */}
         {selectedAccount && (
           <>
             <SectionTitle>5. Appareil <Text className="text-xs text-muted-foreground font-normal">(optionnel)</Text></SectionTitle>
