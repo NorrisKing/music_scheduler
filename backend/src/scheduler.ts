@@ -30,7 +30,7 @@ function startTask(schedule: Schedule) {
         } else {
           console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
         }
-      }, { timezone: 'Europe/Paris' });
+      }, { timezone: 'Asia/Manila' });
 
     activeTasks.set(schedule.id, task);
     console.log(`[Scheduler] Registered: ${schedule.id} (${expression})`);
