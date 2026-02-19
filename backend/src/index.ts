@@ -142,8 +142,6 @@ app.get('/schedules/:id', (c) => {
   return c.json(schedule);
 });
 
-app.get('/schedules/by-account/:accountId', (c) => {
-
 app.post('/schedules', zValidator('json', ScheduleInput), (c) => {
   const data = c.req.valid('json');
   const cronExpression = scheduler.buildCronExpression(data.days, data.hour, data.minute);
