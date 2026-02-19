@@ -197,7 +197,7 @@ app.post('/schedules/:id/trigger', async (c) => {
   if (!schedule) return c.json({ error: 'Schedule not found' }, 404);
 
   const { startPlaylist } = await import('./spotify.js');
-  const ok = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId);
+    const ok = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId, schedule.shuffle);
   if (ok) {
     db.markTriggered(id);
     return c.json({ ok: true });
