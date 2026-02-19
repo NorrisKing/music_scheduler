@@ -6,11 +6,12 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { PlusCircleIcon, TrashIcon, UserCircleIcon } from 'lucide-react-native';
 import { api, type SpotifyAccount } from '@/lib/api';
-import { useSpotifyAuth } from '@/lib/useSpotifyAuth';
+import { useSpotifyAuth, finishWebLogin } from '@/lib/useSpotifyAuth';
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || '';
 
@@ -31,9 +32,35 @@ export default function AccountsScreen() {
     }
   }, []);
 
+  // On web: check if we're returning from a Spotify OAuth redirect
   useEffect(() => {
-    load();
-  }, [load]);
+    if (Platform.OS !== 'web') {
+      load();
+      return;
+    }
+
+    const hasCode = typeof window !== 'undefined' &&
+      (sessionStorage.getItem('spotify_oauth_code') || sessionStorage.getItem('spotify_oauth_error'));
+
+    if (hasCode) {
+      setConnecting(true);
+      finishWebLogin()
+        .then(async (result) => {
+          if (result) {
+            Alert.alert('Compte connecté', `${result.displayName} ajouté avec succès !`);
+          }
+        })
+        .catch((e: any) => {
+          Alert.alert('Erreur', e.message || 'Connexion échouée');
+        })
+        .finally(async () => {
+          setConnecting(false);
+          await load();
+        });
+    } else {
+      load();
+    }
+  }, []);
 
   const handleConnect = async () => {
     if (!CLIENT_ID) {
@@ -46,6 +73,7 @@ export default function AccountsScreen() {
     setConnecting(true);
     try {
       const result = await login();
+      // On web this never reaches here (page redirects); on native it does
       if (result) {
         Alert.alert('Compte connecté', `${result.displayName} ajouté avec succès !`);
         await load();
@@ -96,8 +124,17 @@ export default function AccountsScreen() {
     <>
       <Stack.Screen options={{ title: 'Comptes Spotify' }} />
       <View className="flex-1 bg-background p-4">
-        {loading ? (
-          <ActivityIndicator className="mt-8" color="#1DB954" />
+        {loading || connecting ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#1DB954" />
+            {connecting && (
+              <Text className="mt-4 text-muted-foreground">
+                {sessionStorage && sessionStorage.getItem('spotify_pkce_verifier')
+                  ? 'Connexion à Spotify...'
+                  : 'Finalisation de la connexion...'}
+              </Text>
+            )}
+          </View>
         ) : (
           <FlatList
             data={accounts}
@@ -127,7 +164,7 @@ export default function AccountsScreen() {
 
         <TouchableOpacity
           onPress={handleConnect}
-          disabled={!ready || connecting}
+          disabled={!ready || connecting || loading}
           className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-50">
           {connecting ? (
             <ActivityIndicator color="white" />
