@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -7,35 +8,34 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { Stack, router, useFocusEffect } from 'expo-router';
-import { PlusCircleIcon, CalendarIcon, ClockIcon, PlayCircleIcon, Trash2Icon, ToggleLeftIcon, ToggleRightIcon, ChevronRightIcon, ShuffleIcon } from 'lucide-react-native';
-import { api, type Schedule, type SpotifyAccount } from '@/lib/api';
+import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { PlusCircleIcon, CalendarIcon, PlayCircleIcon, Trash2Icon, ToggleLeftIcon, ToggleRightIcon, ChevronRightIcon, ShuffleIcon } from 'lucide-react-native';
+import { api, type Schedule } from '@/lib/api';
 
 const DAYS_SHORT = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
-const DAYS_FR = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
 function pad(n: number) {
   return String(n).padStart(2, '0');
 }
 
 export default function SchedulesScreen() {
+  const { accountId, accountName } = useLocalSearchParams<{ accountId?: string; accountName?: string }>();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [accounts, setAccounts] = useState<Record<string, SpotifyAccount>>({});
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     try {
-      const [scheds, accts] = await Promise.all([api.getSchedules(), api.getAccounts()]);
-      setSchedules(scheds.sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute)));
-      const map: Record<string, SpotifyAccount> = {};
-      for (const a of accts) map[a.id] = a;
-      setAccounts(map);
+      const all = await api.getSchedules();
+      const filtered = accountId
+        ? all.filter((s) => s.accountId === accountId)
+        : all;
+      setSchedules(filtered.sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute)));
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [accountId]);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
@@ -63,100 +63,84 @@ export default function SchedulesScreen() {
       await api.triggerSchedule(s.id);
       Alert.alert('OK', 'Lecture démarrée !');
     } catch (e: any) {
-      Alert.alert('Erreur', e.message || 'Impossible de lancer la lecture. Spotify est-il ouvert ?');
+      Alert.alert('Erreur', e.message || 'Spotify est-il ouvert ?');
     }
   };
 
-  const renderSchedule = ({ item }: { item: Schedule }) => {
-    const account = accounts[item.accountId];
-    return (
-      <TouchableOpacity
-        onPress={() => router.push({ pathname: '/edit-schedule', params: { id: item.id } })}
-        className={`mb-3 rounded-2xl border bg-card ${item.active ? 'border-border' : 'border-border/40 opacity-60'}`}
-        activeOpacity={0.75}
-      >
-        {/* Top bar : nom + toggle */}
-        <View className="flex-row items-center justify-between px-4 pt-4 pb-2">
-          <View className="flex-1 mr-2">
-            <Text className="text-foreground font-bold text-base" numberOfLines={1}>
-              {item.name || item.playlistName}
-            </Text>
-            <View className="flex-row items-center gap-2 mt-0.5">
-              {account && (
-                <Text className="text-xs text-muted-foreground">{account.displayName}</Text>
-              )}
-              {item.name && (
-                <Text className="text-xs text-muted-foreground">· {item.playlistName}</Text>
-              )}
-            </View>
-          </View>
-          <TouchableOpacity onPress={() => handleToggle(item)} hitSlop={8}>
-            {item.active
-              ? <ToggleRightIcon size={28} color="#1DB954" />
-              : <ToggleLeftIcon size={28} color="#6b7280" />}
-          </TouchableOpacity>
-        </View>
-
-        {/* Heure + jours */}
-        <View className="flex-row items-center gap-4 px-4 pb-3">
-          <Text className="font-mono text-2xl font-bold text-[#1DB954]">
-            {pad(item.hour)}:{pad(item.minute)}
+  const renderSchedule = ({ item }: { item: Schedule }) => (
+    <TouchableOpacity
+      onPress={() => router.push({ pathname: '/edit-schedule', params: { id: item.id } })}
+      className={`mb-3 rounded-2xl border bg-card ${item.active ? 'border-border' : 'border-border/40 opacity-60'}`}
+      activeOpacity={0.75}
+    >
+      {/* Nom + toggle */}
+      <View className="flex-row items-center justify-between px-4 pt-4 pb-2">
+        <View className="flex-1 mr-2">
+          <Text className="text-foreground font-bold text-base" numberOfLines={1}>
+            {item.name || item.playlistName}
           </Text>
-          <View className="flex-row gap-1">
-            {DAYS_SHORT.map((d, i) => (
-              <View
-                key={i}
-                className={`h-6 w-6 items-center justify-center rounded-full ${
-                  item.days.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'
-                }`}>
-                <Text className={`text-[10px] font-bold ${item.days.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
-                  {d}
-                </Text>
-              </View>
-            ))}
-          </View>
-          {item.shuffle && <ShuffleIcon size={14} color="#6b7280" />}
-        </View>
-
-        {/* Footer : appareil + actions */}
-        <View className="flex-row items-center border-t border-border/50 px-4 py-2 gap-2">
-          {item.deviceName ? (
-            <Text className="flex-1 text-xs text-muted-foreground" numberOfLines={1}>
-              {item.deviceName}
-            </Text>
-          ) : (
-            <Text className="flex-1 text-xs text-muted-foreground">Appareil actif</Text>
+          {item.name && (
+            <Text className="text-xs text-muted-foreground mt-0.5">{item.playlistName}</Text>
           )}
-          <TouchableOpacity
-            onPress={() => handleTrigger(item)}
-            className="flex-row items-center gap-1 rounded-lg bg-[#1DB954]/15 px-3 py-1.5"
-            hitSlop={6}
-          >
-            <PlayCircleIcon size={14} color="#1DB954" />
-            <Text className="text-xs font-semibold text-[#1DB954]">Lancer</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleDelete(item)}
-            className="rounded-lg bg-red-500/10 px-3 py-1.5"
-            hitSlop={6}
-          >
-            <Trash2Icon size={14} color="#ef4444" />
-          </TouchableOpacity>
-          <ChevronRightIcon size={16} color="#6b7280" />
         </View>
-      </TouchableOpacity>
-    );
-  };
+        <TouchableOpacity onPress={() => handleToggle(item)} hitSlop={8}>
+          {item.active
+            ? <ToggleRightIcon size={28} color="#1DB954" />
+            : <ToggleLeftIcon size={28} color="#6b7280" />}
+        </TouchableOpacity>
+      </View>
 
-  // Group by account
-  const byAccount = schedules.reduce<Record<string, Schedule[]>>((acc, s) => {
-    (acc[s.accountId] = acc[s.accountId] || []).push(s);
-    return acc;
-  }, {});
+      {/* Heure + jours */}
+      <View className="flex-row items-center gap-4 px-4 pb-3">
+        <Text className="font-mono text-2xl font-bold text-[#1DB954]">
+          {pad(item.hour)}:{pad(item.minute)}
+        </Text>
+        <View className="flex-row gap-1">
+          {DAYS_SHORT.map((d, i) => (
+            <View
+              key={i}
+              className={`h-6 w-6 items-center justify-center rounded-full ${
+                item.days.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'
+              }`}>
+              <Text className={`text-[10px] font-bold ${item.days.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
+                {d}
+              </Text>
+            </View>
+          ))}
+        </View>
+        {item.shuffle && <ShuffleIcon size={14} color="#6b7280" />}
+      </View>
+
+      {/* Footer */}
+      <View className="flex-row items-center border-t border-border/50 px-4 py-2 gap-2">
+        <Text className="flex-1 text-xs text-muted-foreground" numberOfLines={1}>
+          {item.deviceName || 'Appareil actif'}
+        </Text>
+        <TouchableOpacity
+          onPress={() => handleTrigger(item)}
+          className="flex-row items-center gap-1 rounded-lg bg-[#1DB954]/15 px-3 py-1.5"
+          hitSlop={6}
+        >
+          <PlayCircleIcon size={14} color="#1DB954" />
+          <Text className="text-xs font-semibold text-[#1DB954]">Lancer</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleDelete(item)}
+          className="rounded-lg bg-red-500/10 px-3 py-1.5"
+          hitSlop={6}
+        >
+          <Trash2Icon size={14} color="#ef4444" />
+        </TouchableOpacity>
+        <ChevronRightIcon size={16} color="#6b7280" />
+      </View>
+    </TouchableOpacity>
+  );
+
+  const title = accountName ? `${accountName}` : 'Planifications';
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Planifications' }} />
+      <Stack.Screen options={{ title }} />
       <View className="flex-1 bg-background p-4">
         {loading ? (
           <ActivityIndicator className="mt-8" color="#1DB954" />
@@ -167,29 +151,20 @@ export default function SchedulesScreen() {
               Aucune planification
             </Text>
             <Text className="mt-2 text-center text-muted-foreground">
-              Créez votre première planification pour automatiser la lecture de vos playlists
+              Créez votre première planification pour ce compte
             </Text>
           </View>
         ) : (
           <FlatList
-            data={Object.entries(byAccount)}
-            keyExtractor={([accountId]) => accountId}
-            renderItem={({ item: [accountId, items] }) => (
-              <View className="mb-2">
-                {Object.keys(byAccount).length > 1 && (
-                  <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                    {accounts[accountId]?.displayName || accountId}
-                  </Text>
-                )}
-                {items.map((s) => renderSchedule({ item: s }))}
-              </View>
-            )}
+            data={schedules}
+            keyExtractor={(s) => s.id}
+            renderItem={renderSchedule}
             contentContainerStyle={{ paddingBottom: 100 }}
           />
         )}
 
         <TouchableOpacity
-          onPress={() => router.push('/new-schedule')}
+          onPress={() => router.push({ pathname: '/new-schedule', params: accountId ? { accountId } : {} })}
           className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4">
           <PlusCircleIcon size={22} color="white" />
           <Text className="text-base font-bold text-white">Nouvelle planification</Text>
