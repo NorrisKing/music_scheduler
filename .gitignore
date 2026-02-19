@@ -19,9 +19,9 @@ Thumbs.db
 *.swo
 
 # Environment
-.env
-.env.local
-.env.*.local
+# .env # Removed by Orchids to allow .env files
+# .env.local # Removed by Orchids to allow .env files
+# .env.*.local # Removed by Orchids to allow .env files
 
 # Orchids
 .orchids/
