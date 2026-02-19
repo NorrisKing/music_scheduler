@@ -323,7 +323,8 @@ export default function NewScheduleScreen() {
               Compte : <Text className="text-foreground">{selectedAccount.displayName}</Text>{'\n'}
               Playlist : <Text className="text-foreground">{selectedPlaylist?.name || '–'}</Text>{'\n'}
               Jours : <Text className="text-foreground">{selectedDays.map((d) => DAYS[d]).join(', ') || '–'}</Text>{'\n'}
-              Heure : <Text className="text-foreground font-mono">{pad(hour)}:{pad(minute)}</Text>
+              Heure : <Text className="text-foreground font-mono">{pad(hour)}:{pad(minute)}</Text>{'\n'}
+              Lecture : <Text className="text-foreground">{shuffle ? 'Aléatoire' : 'Dans l\'ordre'}</Text>
               {selectedDevice ? `\nAppareil : ${selectedDevice.name}` : ''}
             </Text>
           </View>
