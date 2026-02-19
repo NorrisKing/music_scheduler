@@ -45,11 +45,20 @@ export async function getSpotifyPlaylists(accountId: string) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return null;
 
-  const res = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) return null;
-  return res.json();
+  const allItems: any[] = [];
+  let url: string | null = 'https://api.spotify.com/v1/me/playlists?limit=50';
+
+  while (url) {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) break;
+    const data: any = await res.json();
+    allItems.push(...data.items);
+    url = data.next ?? null;
+  }
+
+  return { items: allItems, total: allItems.length };
 }
 
 export async function getSpotifyDevices(accountId: string) {
