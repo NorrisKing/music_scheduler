@@ -87,7 +87,8 @@ export default function NewScheduleScreen() {
     setSaving(true);
     try {
       await api.createSchedule({
-        accountId: selectedAccount.id,
+          name: name.trim() || undefined,
+          accountId: selectedAccount.id,
         playlistId: selectedPlaylist.id,
         playlistName: selectedPlaylist.name,
         playlistImageUrl: selectedPlaylist.images?.[0]?.url,
