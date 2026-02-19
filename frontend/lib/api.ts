@@ -74,6 +74,7 @@ export const api = {
     request<{ devices: SpotifyDevice[] }>(`/accounts/${accountId}/devices`),
 
   getSchedules: () => request<Schedule[]>('/schedules'),
+  getSchedule: (id: string) => request<Schedule>(`/schedules/${id}`),
   createSchedule: (data: Omit<Schedule, 'id' | 'createdAt' | 'cronExpression' | 'lastTriggeredAt'>) =>
     request<Schedule>('/schedules', { method: 'POST', body: JSON.stringify(data) }),
   updateSchedule: (id: string, data: Partial<Schedule>) =>
