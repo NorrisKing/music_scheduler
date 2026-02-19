@@ -113,6 +113,18 @@ export default function NewScheduleScreen() {
       <Stack.Screen options={{ title: 'Nouvelle planification' }} />
       <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
 
+        {/* Nom */}
+        <SectionTitle>Nom de la planification</SectionTitle>
+        <View className="rounded-2xl border border-border bg-card px-4 py-3">
+          <TextInput
+            value={name}
+            onChangeText={setName}
+            placeholder="Ex : Matin ambiance, Soirée rock…"
+            placeholderTextColor="#6b7280"
+            className="text-foreground text-base"
+          />
+        </View>
+
         {/* 1. Compte */}
         <SectionTitle>1. Compte Spotify</SectionTitle>
         {accounts.length === 0 ? (
