@@ -117,6 +117,7 @@ export default function EditScheduleScreen() {
   };
 
   const toggleDay = (day: number) => {
+    setConflictError(null);
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort((a, b) => a - b)
     );
@@ -126,6 +127,32 @@ export default function EditScheduleScreen() {
     if (!selectedAccount) return Alert.alert('Erreur', 'Sélectionnez un compte Spotify');
     if (!selectedPlaylist) return Alert.alert('Erreur', 'Sélectionnez une playlist');
     if (selectedDays.length === 0) return Alert.alert('Erreur', 'Sélectionnez au moins un jour');
+    setConflictError(null);
+
+    // Check for time conflicts (exclude current schedule)
+    try {
+      const existing = await api.getSchedules();
+      const conflict = existing.find(
+        (s) =>
+          s.id !== id &&
+          s.accountId === selectedAccount.id &&
+          s.hour === hour &&
+          s.minute === minute &&
+          s.days.some((d) => selectedDays.includes(d))
+      );
+      if (conflict) {
+        const conflictDays = conflict.days
+          .filter((d) => selectedDays.includes(d))
+          .map((d) => ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][d])
+          .join(', ');
+        setConflictError(
+          `"${conflict.name || conflict.playlistName}" est déjà planifiée à ${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')} (${conflictDays})`
+        );
+        return;
+      }
+    } catch {
+      // ignore
+    }
 
     setSaving(true);
     try {
