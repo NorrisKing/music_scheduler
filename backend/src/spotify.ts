@@ -63,7 +63,12 @@ export async function getSpotifyDevices(accountId: string) {
   return res.json();
 }
 
-export async function startPlaylist(accountId: string, playlistId: string, deviceId?: string) {
+export async function startPlaylist(
+  accountId: string,
+  playlistId: string,
+  deviceId?: string,
+  shuffle?: boolean
+) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
 
@@ -71,6 +76,7 @@ export async function startPlaylist(accountId: string, playlistId: string, devic
     ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
 
+  // Start the playlist
   const res = await fetch(url, {
     method: 'PUT',
     headers: {
@@ -82,5 +88,15 @@ export async function startPlaylist(accountId: string, playlistId: string, devic
     }),
   });
 
-  return res.ok || res.status === 204;
+  if (!res.ok && res.status !== 204) return false;
+
+  // Enable/disable shuffle after starting
+  if (shuffle !== undefined) {
+    await fetch(`https://api.spotify.com/v1/me/player/shuffle?state=${shuffle}`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+
+  return true;
 }
