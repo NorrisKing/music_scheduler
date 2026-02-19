@@ -191,6 +191,28 @@ app.put(
     const updates = c.req.valid('json');
     const updated = { ...existing, ...updates };
 
+    // Check for time conflict (exclude self)
+    if (updates.hour !== undefined || updates.minute !== undefined || updates.days) {
+      const accountSchedules = db.getSchedulesByAccount(updated.accountId);
+      const conflict = accountSchedules.find(
+        (s) =>
+          s.id !== id &&
+          s.hour === updated.hour &&
+          s.minute === updated.minute &&
+          s.days.some((d: number) => updated.days.includes(d))
+      );
+      if (conflict) {
+        const conflictDays = conflict.days
+          .filter((d: number) => updated.days.includes(d))
+          .map((d: number) => ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'][d])
+          .join(', ');
+        return c.json(
+          { error: `Conflit : "${conflict.name || conflict.playlistName}" est déjà planifiée à ${String(updated.hour).padStart(2,'0')}:${String(updated.minute).padStart(2,'0')} (${conflictDays})` },
+          409
+        );
+      }
+    }
+
     if (updates.days || updates.hour !== undefined || updates.minute !== undefined) {
       updated.cronExpression = scheduler.buildCronExpression(
         updated.days,
