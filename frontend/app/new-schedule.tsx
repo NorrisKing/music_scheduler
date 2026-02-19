@@ -95,8 +95,9 @@ export default function NewScheduleScreen() {
         minute,
         active: true,
         deviceId: selectedDevice?.id,
-        deviceName: selectedDevice?.name,
-      });
+          deviceName: selectedDevice?.name,
+          shuffle,
+        });
       router.back();
     } catch (e: any) {
       Alert.alert('Erreur', e.message || 'Impossible de créer la planification');
