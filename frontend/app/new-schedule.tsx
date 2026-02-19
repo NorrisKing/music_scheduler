@@ -46,6 +46,7 @@ export default function NewScheduleScreen() {
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [conflictError, setConflictError] = useState<string | null>(null);
 
   useEffect(() => {
     api.getAccounts().then((data) => {
