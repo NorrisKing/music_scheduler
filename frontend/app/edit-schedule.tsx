@@ -97,22 +97,6 @@ export default function EditScheduleScreen() {
     init();
   }, [id]);
 
-  const loadAccountData = async (account: SpotifyAccount) => {
-    setLoadingPlaylists(true);
-    setLoadingDevices(true);
-    try {
-      const [pl, dv] = await Promise.all([
-        api.getPlaylists(account.id),
-        api.getDevices(account.id),
-      ]);
-      setPlaylists(pl.items || []);
-      setDevices(dv.devices || []);
-    } finally {
-      setLoadingPlaylists(false);
-      setLoadingDevices(false);
-    }
-  };
-
   const toggleDay = (day: number) => {
     setConflictError(null);
     setSelectedDays((prev) =>
