@@ -102,7 +102,21 @@ export default function AccountsScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Comptes Spotify' }} />
+      <Stack.Screen options={{
+        title: 'Comptes Spotify',
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => {
+              if (window.confirm('Se déconnecter de l\'application ?')) {
+                localStorage.removeItem('auth');
+                window.location.reload();
+              }
+            }}
+            style={{ marginRight: 8, padding: 4 }}>
+            <LogOutIcon size={22} color="#ef4444" />
+          </TouchableOpacity>
+        ),
+      }} />
       <View className="flex-1 bg-background p-4">
         {loading || connecting ? (
           <View className="flex-1 items-center justify-center">
