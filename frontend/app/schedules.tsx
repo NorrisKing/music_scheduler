@@ -48,7 +48,7 @@ export default function SchedulesScreen() {
 
   const handleDeleteAccount = async () => {
     if (!accountId) return;
-    if (!window.confirm(`Supprimer ${accountName} ? Toutes ses planifications seront supprimées.`)) return;
+    if (!window.confirm(`Supprimer ${resolvedName} ? Toutes ses planifications seront supprimées.`)) return;
     await api.deleteAccount(accountId);
     router.replace('/');
   };
