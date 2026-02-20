@@ -132,6 +132,8 @@ export default function EditScheduleScreen() {
       }
     };
 
+  const pageTitle = name.trim() || selectedPlaylist?.name || 'Modifier la planification';
+
   if (loading) {
     return (
       <>
@@ -149,7 +151,7 @@ export default function EditScheduleScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Modifier la planification' }} />
+      <Stack.Screen options={{ title: pageTitle }} />
       <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
 
         {/* Nom */}
