@@ -13,9 +13,9 @@
       "id": "312n5jyadwr3f3k5ssdiw6nda5rq",
       "displayName": "Dr. Wine",
       "email": "drwineplatforms@gmail.com",
-      "accessToken": "BQAQls893F0R0Hc7NXwhWuqqbAfqMTxlJ8QtlEibn1eFikbuquZNnBsgHPTV7Mo92molcbxmTzXpxjCUhEaNx9wW8lrGWEU6GbTz7KYcGqZ9eAhFBkmOUjk9SS-ELK2YpI4VSwUsB3pmvHOuqaS1OeuBtt1Ugfzrx18b31kqnQ-nJojZhHGbQiUKTxWuC261bPJu9vjvqhEWqXAdQWHXNGWJKD97-2oq5xUhrGbsJQDazmiAa3boNYEdGBtdv0mOLzPMQn8CM1eYlRkDlUBlaiAx2Q",
-      "refreshToken": "AQBQoC4mpTm_6BZwNo_37TZBoh75kj5qRYHOySclj7Mm11qYJIOVMa0JBdFUUpshdPX4iS-e0RZyMYTQM1ihizcdfg8tba9JUFkljkjk_8y3Yipy234FT5od_eRKx_sAxck",
-      "expiresAt": 1771500846483,
+      "accessToken": "BQCAcvsohhdeHOriV5lmDxWfLK67UjplKr7ZznQ2PZtxKb1hFWiLu6gLEQPIJXZakB8atqh3EhBYIceOOPar3z1ipzaorsIU2e_zoFEhXk_MPafOEdEYCWEH6092e1s1Zi3xyOL2-8pwbe0B-5n5BrJ3qAvPgUFsx8j3v8rMDhzZ7_pq8gOEM_wL1k_WtxIyKEWeQR9bEK6vrNL2fGkbTNuxN4AsITzQI1hXEeaizpJnYj5KdX_ozRnh0Id59_cvxeJ1GPJMfGaOkoOiDu56LcuOFg",
+      "refreshToken": "AQC_7hzcftZHXGPgIiW6fwmcA8Ir4M3iNl7cGIUKVtBsG9U5XG6a2HR_gmoXN6qBOHxMCEfzXJJenErRVaYUsDp9Jq-ltgbXBXSbdev7To62N4UCPGnwOvUx64cWIgryjZadQA",
+      "expiresAt": 1771570673147,
       "addedAt": 1771497246558
     }
   },
@@ -108,7 +108,7 @@
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771497601916
+      "lastTriggeredAt": 1771567201853
     },
     "927a5edd-07f3-4633-89b7-4d3fe3303f9b": {
       "id": "927a5edd-07f3-4633-89b7-4d3fe3303f9b",
