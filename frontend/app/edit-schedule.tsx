@@ -36,7 +36,6 @@ export default function EditScheduleScreen() {
   const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState('');
-  const [accounts, setAccounts] = useState<SpotifyAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<SpotifyAccount | null>(null);
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[]>([]);
   const [devices, setDevices] = useState<SpotifyDevice[]>([]);
