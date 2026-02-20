@@ -105,9 +105,9 @@ export default function EditScheduleScreen() {
   };
 
     const handleSave = async () => {
-      if (!selectedAccount) return Alert.alert('Erreur', 'Sélectionnez un compte Spotify');
-      if (!selectedPlaylist) return Alert.alert('Erreur', 'Sélectionnez une playlist');
-      if (selectedDays.length === 0) return Alert.alert('Erreur', 'Sélectionnez au moins un jour');
+      if (!selectedAccount) return window.alert('Sélectionnez un compte Spotify');
+      if (!selectedPlaylist) return window.alert('Sélectionnez une playlist');
+      if (selectedDays.length === 0) return window.alert('Sélectionnez au moins un jour');
       setConflictError(null);
       setSaving(true);
       try {
