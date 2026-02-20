@@ -64,19 +64,11 @@ export default function SchedulesScreen() {
     await load();
   };
 
-  const handleDelete = (s: Schedule, e: any) => {
+  const handleDelete = async (s: Schedule, e: any) => {
     e?.stopPropagation?.();
-    Alert.alert('Supprimer', `Supprimer "${s.name || s.playlistName}" ?`, [
-      { text: 'Annuler', style: 'cancel' },
-      {
-        text: 'Supprimer',
-        style: 'destructive',
-        onPress: async () => {
-          await api.deleteSchedule(s.id);
-          await load();
-        },
-      },
-    ]);
+    if (!window.confirm(`Supprimer "${s.name || s.playlistName}" ?`)) return;
+    await api.deleteSchedule(s.id);
+    await load();
   };
 
   const handleTrigger = async (id: string, e: any) => {
