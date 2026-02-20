@@ -144,7 +144,7 @@ export default function SchedulesScreen() {
     </div>
   );
 
-  const title = accountName ? `${accountName}` : 'Planifications';
+  const title = resolvedName || 'Planifications';
 
   return (
     <>
