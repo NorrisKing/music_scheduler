@@ -363,12 +363,12 @@ export default function NewScheduleScreen() {
 
           {conflictError && (
             <View className="mt-4 rounded-2xl border border-red-500/50 bg-red-500/10 px-4 py-3">
-              <Text className="text-sm font-semibold text-red-400">Conflit d'horaire</Text>
+              <Text className="text-sm font-semibold text-red-400">Erreur</Text>
               <Text className="text-sm text-red-300 mt-1">{conflictError}</Text>
             </View>
           )}
 
-        <TouchableOpacity
+          <TouchableOpacity
           onPress={handleSave}
           disabled={saving || !selectedAccount}
           className="mt-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-40">
