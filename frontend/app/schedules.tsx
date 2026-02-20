@@ -18,23 +18,31 @@ function pad(n: number) {
 }
 
 export default function SchedulesScreen() {
-  const { accountId, accountName } = useLocalSearchParams<{ accountId?: string; accountName?: string }>();
+  const { accountId, accountName: accountNameParam } = useLocalSearchParams<{ accountId?: string; accountName?: string }>();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [resolvedName, setResolvedName] = useState<string>(accountNameParam || '');
 
   const load = useCallback(async () => {
     try {
-      const all = await api.getSchedules();
+      const [all, accounts] = await Promise.all([
+        api.getSchedules(),
+        api.getAccounts(),
+      ]);
       const filtered = accountId
         ? all.filter((s) => s.accountId === accountId)
         : all;
       setSchedules(filtered.sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute)));
+      if (accountId && !accountNameParam) {
+        const found = accounts.find((a) => a.id === accountId);
+        if (found) setResolvedName(found.displayName);
+      }
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }, [accountId]);
+  }, [accountId, accountNameParam]);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
