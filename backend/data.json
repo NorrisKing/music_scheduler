@@ -20,27 +20,6 @@
     }
   },
   "schedules": {
-    "fd1ac385-7ba2-4912-9a1f-47b4c5136a14": {
-      "id": "fd1ac385-7ba2-4912-9a1f-47b4c5136a14",
-      "cronExpression": "20 16 * * 1,2,3,4,5",
-      "createdAt": 1771488969527,
-      "accountId": "norrisking",
-      "playlistId": "5Sur4gr4BwDNseN6YrYtPC",
-      "playlistName": "Azure house 6",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0291df1f3bf6dcf9ecfe0a96b7ab67616d00001e02b111968c9fb4deb98803f970ab67616d00001e02d0813661b10eb07b6f66ca69ab67616d00001e02fb68208cb1f40321ff1fedb5",
-      "days": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
-      "hour": 16,
-      "minute": 20,
-      "active": false,
-      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
-      "deviceName": "MKTG-ARNAUD00"
-    },
     "d51b45b1-a903-4741-ba15-08fe2992069a": {
       "id": "d51b45b1-a903-4741-ba15-08fe2992069a",
       "cronExpression": "40 13 * * 4,5",
@@ -107,7 +86,7 @@
     },
     "a090951a-10e5-4130-802f-1d2fcbd845ee": {
       "id": "a090951a-10e5-4130-802f-1d2fcbd845ee",
-      "cronExpression": "40 18 * * *",
+      "cronExpression": "0 14 * * *",
       "createdAt": 1771493202582,
       "name": "Norris king 5/7",
       "accountId": "norrisking",
@@ -123,8 +102,8 @@
         5,
         6
       ],
-      "hour": 18,
-      "minute": 40,
+      "hour": 14,
+      "minute": 0,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
@@ -157,7 +136,7 @@
     },
     "a9d014c4-6978-4e1b-b3f0-bf246865b7d2": {
       "id": "a9d014c4-6978-4e1b-b3f0-bf246865b7d2",
-      "cronExpression": "25 18 * * 1,2,3,4,5",
+      "cronExpression": "55 13 * * 1,2,3,4,5",
       "createdAt": 1771493868624,
       "name": "Norris 9/11",
       "accountId": "norrisking",
@@ -171,13 +150,13 @@
         4,
         5
       ],
-      "hour": 18,
-      "minute": 25,
+      "hour": 13,
+      "minute": 55,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771496701722
+      "lastTriggeredAt": 1771566901934
     },
     "5d7f3148-926e-4989-b18b-af82915e0936": {
       "id": "5d7f3148-926e-4989-b18b-af82915e0936",
