@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon } from 'lucide-react-native';
+import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon, LogOutIcon } from 'lucide-react-native';
 import { api, type SpotifyAccount } from '@/lib/api';
 import { useSpotifyAuth, finishWebLogin } from '@/lib/useSpotifyAuth';
 
