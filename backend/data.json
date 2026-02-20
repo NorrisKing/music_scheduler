@@ -20,22 +20,6 @@
     }
   },
   "schedules": {
-    "81bd83dc-991a-4bec-a548-627f391f31de": {
-      "id": "81bd83dc-991a-4bec-a548-627f391f31de",
-      "cronExpression": "0 13 * * 4",
-      "createdAt": 1771488815964,
-      "accountId": "norrisking",
-      "playlistId": "5Sur4gr4BwDNseN6YrYtPC",
-      "playlistName": "Azure house 6",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0291df1f3bf6dcf9ecfe0a96b7ab67616d00001e02b111968c9fb4deb98803f970ab67616d00001e02d0813661b10eb07b6f66ca69ab67616d00001e02fb68208cb1f40321ff1fedb5",
-      "days": [
-        4
-      ],
-      "hour": 13,
-      "minute": 0,
-      "active": true,
-      "shuffle": true
-    },
     "fd1ac385-7ba2-4912-9a1f-47b4c5136a14": {
       "id": "fd1ac385-7ba2-4912-9a1f-47b4c5136a14",
       "cronExpression": "20 16 * * 1,2,3,4,5",
@@ -169,7 +153,7 @@
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771496401708
+      "lastTriggeredAt": 1771566601983
     },
     "a9d014c4-6978-4e1b-b3f0-bf246865b7d2": {
       "id": "a9d014c4-6978-4e1b-b3f0-bf246865b7d2",
@@ -263,29 +247,6 @@
       "hour": 19,
       "minute": 0,
       "active": false,
-      "shuffle": true
-    },
-    "b3301e1b-680e-4bb4-a0fe-ce1f772fdedf": {
-      "id": "b3301e1b-680e-4bb4-a0fe-ce1f772fdedf",
-      "cronExpression": "45 18 * * 1,2,3,4,5",
-      "createdAt": 1771498857813,
-      "name": "Test",
-      "accountId": "norrisking",
-      "playlistId": "5Sur4gr4BwDNseN6YrYtPC",
-      "playlistName": "Azure house 6",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0291df1f3bf6dcf9ecfe0a96b7ab67616d00001e02b111968c9fb4deb98803f970ab67616d00001e02d0813661b10eb07b6f66ca69ab67616d00001e02fb68208cb1f40321ff1fedb5",
-      "days": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
-      "hour": 18,
-      "minute": 45,
-      "active": true,
-      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
-      "deviceName": "MKTG-ARNAUD00",
       "shuffle": true
     }
   }
