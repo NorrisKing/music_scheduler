@@ -183,31 +183,22 @@ export default function EditScheduleScreen() {
           />
         </View>
 
-        {/* 1. Compte */}
-        <SectionTitle>1. Compte Spotify</SectionTitle>
-        <View className="gap-2">
-          {accounts.map((a) => (
-            <TouchableOpacity
-              key={a.id}
-              onPress={() => {
-                setSelectedAccount(a);
-                setSelectedPlaylist(null);
-                setSelectedDevice(null);
-                setPlaylistSearch('');
-                loadAccountData(a);
-              }}
-              className={`flex-row items-center gap-3 rounded-2xl border p-4 ${selectedAccount?.id === a.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-              <View className="h-10 w-10 rounded-full bg-[#1DB954]/20 items-center justify-center">
-                <Text className="font-bold text-[#1DB954]">{a.displayName[0]?.toUpperCase()}</Text>
+          {/* 1. Compte */}
+          {selectedAccount && (
+            <>
+              <SectionTitle>1. Compte Spotify</SectionTitle>
+              <View className="flex-row items-center gap-3 rounded-2xl border border-[#1DB954] bg-[#1DB954]/10 p-4">
+                <View className="h-10 w-10 rounded-full bg-[#1DB954]/20 items-center justify-center">
+                  <Text className="font-bold text-[#1DB954]">{selectedAccount.displayName[0]?.toUpperCase()}</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className="font-semibold text-foreground">{selectedAccount.displayName}</Text>
+                  <Text className="text-xs text-muted-foreground">{selectedAccount.email}</Text>
+                </View>
+                <CheckCircleIcon size={20} color="#1DB954" />
               </View>
-              <View className="flex-1">
-                <Text className="font-semibold text-foreground">{a.displayName}</Text>
-                <Text className="text-xs text-muted-foreground">{a.email}</Text>
-              </View>
-              {selectedAccount?.id === a.id && <CheckCircleIcon size={20} color="#1DB954" />}
-            </TouchableOpacity>
-          ))}
-        </View>
+            </>
+          )}
 
         {/* 2. Playlist */}
         {selectedAccount && (
