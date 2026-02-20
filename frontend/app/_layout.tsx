@@ -6,9 +6,29 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { ErrorBoundary } from './error-boundary';
+import { useState, useEffect } from 'react';
+import LoginScreen from './login';
+
+function isAuthenticated() {
+  if (typeof window === 'undefined') return false;
+  return localStorage.getItem('auth') === '1';
+}
 
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
+  const [authed, setAuthed] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    setAuthed(isAuthenticated());
+    setChecked(true);
+  }, []);
+
+  if (!checked) return null;
+
+  if (!authed) {
+    return <LoginScreen onLogin={() => setAuthed(true)} />;
+  }
 
   return (
     <ErrorBoundary>
