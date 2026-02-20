@@ -62,9 +62,9 @@ export default function SchedulesScreen() {
     e?.stopPropagation?.();
     try {
       await api.triggerSchedule(id);
-      Alert.alert('OK', 'Lecture démarrée !');
+      window.alert('Lecture démarrée !');
     } catch (err: any) {
-      Alert.alert('Erreur', err.message || 'Spotify est-il ouvert ?');
+      window.alert(err.message || 'Spotify est-il ouvert ?');
     }
   };
 
