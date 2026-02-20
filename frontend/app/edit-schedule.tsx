@@ -57,7 +57,6 @@ export default function EditScheduleScreen() {
           api.getSchedule(id),
           api.getAccounts(),
         ]);
-        setAccounts(accts);
         setName(schedule.name || '');
         setSelectedDays(schedule.days);
         setHour(schedule.hour);
