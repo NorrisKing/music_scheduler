@@ -22,7 +22,7 @@
   "schedules": {
     "81bd83dc-991a-4bec-a548-627f391f31de": {
       "id": "81bd83dc-991a-4bec-a548-627f391f31de",
-      "cronExpression": "15 16 * * 4",
+      "cronExpression": "0 13 * * 4",
       "createdAt": 1771488815964,
       "accountId": "norrisking",
       "playlistId": "5Sur4gr4BwDNseN6YrYtPC",
@@ -31,9 +31,10 @@
       "days": [
         4
       ],
-      "hour": 16,
-      "minute": 15,
-      "active": true
+      "hour": 13,
+      "minute": 0,
+      "active": true,
+      "shuffle": true
     },
     "fd1ac385-7ba2-4912-9a1f-47b4c5136a14": {
       "id": "fd1ac385-7ba2-4912-9a1f-47b4c5136a14",
@@ -52,31 +53,33 @@
       ],
       "hour": 16,
       "minute": 20,
-      "active": true,
+      "active": false,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00"
     },
     "d51b45b1-a903-4741-ba15-08fe2992069a": {
       "id": "d51b45b1-a903-4741-ba15-08fe2992069a",
-      "cronExpression": "30 16 * * 4",
+      "cronExpression": "40 13 * * 4,5",
       "createdAt": 1771489557907,
       "accountId": "norrisking",
       "playlistId": "5Sur4gr4BwDNseN6YrYtPC",
       "playlistName": "Azure house 6",
       "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0291df1f3bf6dcf9ecfe0a96b7ab67616d00001e02b111968c9fb4deb98803f970ab67616d00001e02d0813661b10eb07b6f66ca69ab67616d00001e02fb68208cb1f40321ff1fedb5",
       "days": [
-        4
+        4,
+        5
       ],
-      "hour": 16,
-      "minute": 30,
+      "hour": 13,
+      "minute": 40,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
-      "lastTriggeredAt": 1771489800709
+      "lastTriggeredAt": 1771489800709,
+      "shuffle": true
     },
     "88efdd42-0ea1-4ef5-864f-d052b5d6952e": {
       "id": "88efdd42-0ea1-4ef5-864f-d052b5d6952e",
-      "cronExpression": "35 16 * * 1,2,3,4,5",
+      "cronExpression": "45 13 * * 1,2,3,4,5",
       "createdAt": 1771489889243,
       "accountId": "norrisking",
       "playlistId": "0nNB43pkWjKKCe9ex6lmXI",
@@ -89,12 +92,13 @@
         4,
         5
       ],
-      "hour": 16,
-      "minute": 35,
+      "hour": 13,
+      "minute": 45,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
-      "lastTriggeredAt": 1771490100427
+      "lastTriggeredAt": 1771490100427,
+      "shuffle": true
     },
     "0775a64c-3c0f-44bf-96f6-942ce2095e2f": {
       "id": "0775a64c-3c0f-44bf-96f6-942ce2095e2f",
@@ -145,7 +149,7 @@
     },
     "927a5edd-07f3-4633-89b7-4d3fe3303f9b": {
       "id": "927a5edd-07f3-4633-89b7-4d3fe3303f9b",
-      "cronExpression": "20 18 * * 1,2,3,4,5",
+      "cronExpression": "50 13 * * 1,2,3,4,5",
       "createdAt": 1771493684495,
       "name": "Norris King 7/9",
       "accountId": "norrisking",
@@ -159,8 +163,8 @@
         4,
         5
       ],
-      "hour": 18,
-      "minute": 20,
+      "hour": 13,
+      "minute": 50,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
@@ -235,7 +239,7 @@
       ],
       "hour": 17,
       "minute": 0,
-      "active": true,
+      "active": false,
       "shuffle": true
     },
     "e738c5c5-a173-4031-a1ec-e79eea99acdc": {
@@ -258,7 +262,7 @@
       ],
       "hour": 19,
       "minute": 0,
-      "active": true,
+      "active": false,
       "shuffle": true
     },
     "b3301e1b-680e-4bb4-a0fe-ce1f772fdedf": {
