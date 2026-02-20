@@ -53,7 +53,13 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(text || res.statusText);
+    try {
+      const json = JSON.parse(text);
+      throw new Error(json.error || text || res.statusText);
+    } catch (e: any) {
+      if (e.message && e.message !== text) throw e;
+      throw new Error(text || res.statusText);
+    }
   }
   return res.json();
 }
