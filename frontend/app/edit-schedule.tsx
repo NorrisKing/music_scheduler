@@ -154,6 +154,13 @@ export default function EditScheduleScreen() {
       <Stack.Screen options={{ title: pageTitle }} />
       <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
 
+        {/* Titre affiché en haut */}
+        {(name.trim() || selectedPlaylist?.name) && (
+          <Text className="mb-4 text-xl font-bold text-foreground" numberOfLines={2}>
+            {name.trim() || selectedPlaylist?.name}
+          </Text>
+        )}
+
         {/* Nom */}
         <SectionTitle>Nom de la planification</SectionTitle>
         <View className="rounded-2xl border border-border bg-card px-4 py-3">
