@@ -67,10 +67,12 @@ export default function EditScheduleScreen() {
         setMinute(schedule.minute);
         setShuffle(schedule.shuffle ?? true);
 
-        const account = accts.find((a) => a.id === schedule.accountId) || null;
-          setSelectedAccount(account);
+          const account = accts.find((a) => a.id === schedule.accountId) || null;
+            setSelectedAccount(account);
+            setSavedDeviceId(schedule.deviceId || null);
+            setSavedDeviceName(schedule.deviceName || null);
 
-          // Pré-sélectionner la playlist depuis les données sauvegardées, immédiatement
+            // Pré-sélectionner la playlist depuis les données sauvegardées, immédiatement
           const savedPlaylist: SpotifyPlaylist = {
             id: schedule.playlistId,
             name: schedule.playlistName,
