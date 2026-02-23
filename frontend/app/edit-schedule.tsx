@@ -66,30 +66,41 @@ export default function EditScheduleScreen() {
         setShuffle(schedule.shuffle ?? true);
 
         const account = accts.find((a) => a.id === schedule.accountId) || null;
-        setSelectedAccount(account);
+          setSelectedAccount(account);
 
-        if (account) {
-          setLoadingPlaylists(true);
-          setLoadingDevices(true);
-          const [pl, dv] = await Promise.all([
-            api.getPlaylists(account.id),
-            api.getDevices(account.id),
-          ]);
-          const playlistItems = pl.items || [];
-          const deviceItems = dv.devices || [];
-          setPlaylists(playlistItems);
-          setDevices(deviceItems);
-          setSelectedPlaylist(playlistItems.find((p) => p.id === schedule.playlistId) || {
+          // Pré-sélectionner la playlist depuis les données sauvegardées, immédiatement
+          const savedPlaylist: SpotifyPlaylist = {
             id: schedule.playlistId,
             name: schedule.playlistName,
             images: schedule.playlistImageUrl ? [{ url: schedule.playlistImageUrl }] : [],
             tracks: { total: 0 },
             owner: { display_name: '' },
-          });
-          setSelectedDevice(deviceItems.find((d) => d.id === schedule.deviceId) || null);
-          setLoadingPlaylists(false);
-          setLoadingDevices(false);
-        }
+          };
+          setSelectedPlaylist(savedPlaylist);
+
+          if (account) {
+            setLoadingPlaylists(true);
+            setLoadingDevices(true);
+            try {
+              const [pl, dv] = await Promise.all([
+                api.getPlaylists(account.id),
+                api.getDevices(account.id),
+              ]);
+              const playlistItems = pl.items || [];
+              const deviceItems = dv.devices || [];
+              setPlaylists(playlistItems);
+              setDevices(deviceItems);
+              // Remplacer par la version complète si trouvée dans la liste Spotify
+              const found = playlistItems.find((p) => p.id === schedule.playlistId);
+              if (found) setSelectedPlaylist(found);
+              setSelectedDevice(deviceItems.find((d) => d.id === schedule.deviceId) || null);
+            } catch {
+              // Si chargement des playlists échoue, on garde la playlist sauvegardée
+            } finally {
+              setLoadingPlaylists(false);
+              setLoadingDevices(false);
+            }
+          }
       } catch (e) {
         console.error(e);
       } finally {
