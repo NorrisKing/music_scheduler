@@ -368,19 +368,46 @@ export default function EditScheduleScreen() {
         )}
 
         {/* 6. Appareil */}
-        {selectedAccount && (
-          <>
-            <SectionTitle>6. Appareil <Text className="text-xs text-muted-foreground font-normal">(optionnel)</Text></SectionTitle>
-            {loadingDevices ? (
-              <ActivityIndicator color="#1DB954" />
-            ) : (
+          {selectedAccount && (
+            <>
+              <View className="flex-row items-center justify-between mt-6 mb-3">
+                <Text className="text-base font-bold text-foreground">
+                  6. Appareil <Text className="text-xs text-muted-foreground font-normal">(optionnel)</Text>
+                </Text>
+                <TouchableOpacity onPress={refreshDevices} disabled={loadingDevices} className="flex-row items-center gap-1 px-3 py-1 rounded-xl bg-muted">
+                  {loadingDevices
+                    ? <ActivityIndicator size="small" color="#1DB954" />
+                    : <Text className="text-xs text-[#1DB954] font-semibold">Actualiser</Text>
+                  }
+                </TouchableOpacity>
+              </View>
               <View className="gap-2">
+                {/* Option : appareil actif */}
                 <TouchableOpacity
                   onPress={() => setSelectedDevice(null)}
                   className={`flex-row items-center gap-3 rounded-2xl border p-3 ${!selectedDevice ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
                   <Text className="text-foreground font-semibold flex-1">Appareil actif au moment du déclenchement</Text>
                   {!selectedDevice && <CheckCircleIcon size={18} color="#1DB954" />}
                 </TouchableOpacity>
+
+                {/* Appareil sauvegardé (si non trouvé dans la liste Spotify) */}
+                {savedDeviceId && !devices.find((d) => d.id === savedDeviceId) && (
+                  <TouchableOpacity
+                    onPress={() => setSelectedDevice({ id: savedDeviceId, name: savedDeviceName || savedDeviceId, type: 'Unknown', is_active: false })}
+                    className={`flex-row items-center gap-3 rounded-2xl border p-3 ${selectedDevice?.id === savedDeviceId ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                    <SpeakerIcon size={16} color="#6b7280" />
+                    <View className="flex-1">
+                      <Text className="text-foreground font-semibold">{savedDeviceName || savedDeviceId}</Text>
+                      <Text className="text-xs text-muted-foreground">Appareil enregistré · non détecté actuellement</Text>
+                    </View>
+                    {selectedDevice?.id === savedDeviceId && <CheckCircleIcon size={18} color="#1DB954" />}
+                  </TouchableOpacity>
+                )}
+
+                {/* Appareils Spotify actifs */}
+                {devices.length === 0 && !loadingDevices && (
+                  <Text className="text-xs text-muted-foreground px-1">Aucun appareil Spotify actif détecté. Ouvre Spotify sur un appareil puis appuie sur "Actualiser".</Text>
+                )}
                 {devices.map((d) => (
                   <TouchableOpacity
                     key={d.id}
@@ -395,9 +422,8 @@ export default function EditScheduleScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
-            )}
-          </>
-        )}
+            </>
+          )}
 
           {/* Résumé */}
           {selectedAccount && (
