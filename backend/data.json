@@ -22,7 +22,7 @@
   "schedules": {
     "88efdd42-0ea1-4ef5-864f-d052b5d6952e": {
       "id": "88efdd42-0ea1-4ef5-864f-d052b5d6952e",
-      "cronExpression": "20 13 * * 1,2,3,4,5",
+      "cronExpression": "45 13 * * 1,2,3,4,5",
       "createdAt": 1771489889243,
       "accountId": "norrisking",
       "playlistId": "0nNB43pkWjKKCe9ex6lmXI",
@@ -36,7 +36,7 @@
         5
       ],
       "hour": 13,
-      "minute": 20,
+      "minute": 45,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
@@ -66,7 +66,7 @@
     },
     "a090951a-10e5-4130-802f-1d2fcbd845ee": {
       "id": "a090951a-10e5-4130-802f-1d2fcbd845ee",
-      "cronExpression": "30 13 * * *",
+      "cronExpression": "35 13 * * *",
       "createdAt": 1771493202582,
       "name": "Norris king 5/7",
       "accountId": "norrisking",
@@ -83,7 +83,7 @@
         6
       ],
       "hour": 13,
-      "minute": 30,
+      "minute": 35,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
@@ -92,7 +92,7 @@
     },
     "927a5edd-07f3-4633-89b7-4d3fe3303f9b": {
       "id": "927a5edd-07f3-4633-89b7-4d3fe3303f9b",
-      "cronExpression": "25 13 * * 1,2,3,4,5",
+      "cronExpression": "40 13 * * 1,2,3,4,5",
       "createdAt": 1771493684495,
       "name": "Norris King 7/9",
       "accountId": "norrisking",
@@ -107,7 +107,7 @@
         5
       ],
       "hour": 13,
-      "minute": 25,
+      "minute": 40,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
