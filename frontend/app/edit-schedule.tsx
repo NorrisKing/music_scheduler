@@ -139,7 +139,7 @@ export default function EditScheduleScreen() {
   if (loading) {
     return (
       <>
-        <Stack.Screen options={{ title: 'Modifier la planification' }} />
+        <Stack.Screen options={{ title: pageTitle }} />
         <View className="flex-1 items-center justify-center bg-background">
           <ActivityIndicator color="#1DB954" />
         </View>
