@@ -121,6 +121,25 @@ export default function EditScheduleScreen() {
     );
   };
 
+  const refreshDevices = async () => {
+    if (!selectedAccount) return;
+    setLoadingDevices(true);
+    try {
+      const dv = await api.getDevices(selectedAccount.id);
+      const deviceItems = dv.devices || [];
+      setDevices(deviceItems);
+      // Mettre à jour l'appareil sélectionné si trouvé dans la nouvelle liste
+      if (selectedDevice) {
+        const found = deviceItems.find((d) => d.id === selectedDevice.id);
+        if (found) setSelectedDevice(found);
+      }
+    } catch {
+      // silencieux
+    } finally {
+      setLoadingDevices(false);
+    }
+  };
+
     const handleSave = async () => {
       if (!selectedAccount) return window.alert('Sélectionnez un compte Spotify');
       if (!selectedPlaylist) return window.alert('Sélectionnez une playlist');
