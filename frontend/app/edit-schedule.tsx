@@ -134,7 +134,7 @@ export default function EditScheduleScreen() {
       }
     };
 
-  const pageTitle = name.trim() || selectedPlaylist?.name || 'Modifier la planification';
+  const pageTitle = name.trim() || selectedPlaylist?.name || schedulePlaylistName || 'Modifier la planification';
 
   if (loading) {
     return (
