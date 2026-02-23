@@ -20,26 +20,6 @@
     }
   },
   "schedules": {
-    "d51b45b1-a903-4741-ba15-08fe2992069a": {
-      "id": "d51b45b1-a903-4741-ba15-08fe2992069a",
-      "cronExpression": "40 13 * * 4,5",
-      "createdAt": 1771489557907,
-      "accountId": "norrisking",
-      "playlistId": "5Sur4gr4BwDNseN6YrYtPC",
-      "playlistName": "Azure house 6",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0291df1f3bf6dcf9ecfe0a96b7ab67616d00001e02b111968c9fb4deb98803f970ab67616d00001e02d0813661b10eb07b6f66ca69ab67616d00001e02fb68208cb1f40321ff1fedb5",
-      "days": [
-        4,
-        5
-      ],
-      "hour": 13,
-      "minute": 40,
-      "active": true,
-      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
-      "deviceName": "MKTG-ARNAUD00",
-      "lastTriggeredAt": 1771489800709,
-      "shuffle": true
-    },
     "88efdd42-0ea1-4ef5-864f-d052b5d6952e": {
       "id": "88efdd42-0ea1-4ef5-864f-d052b5d6952e",
       "cronExpression": "45 13 * * 1,2,3,4,5",
@@ -133,30 +113,6 @@
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
       "lastTriggeredAt": 1771566601983
-    },
-    "a9d014c4-6978-4e1b-b3f0-bf246865b7d2": {
-      "id": "a9d014c4-6978-4e1b-b3f0-bf246865b7d2",
-      "cronExpression": "55 13 * * 1,2,3,4,5",
-      "createdAt": 1771493868624,
-      "name": "Norris 9/11",
-      "accountId": "norrisking",
-      "playlistId": "4QR5u1MKph50uuSso4XFJR",
-      "playlistName": "BIRTHDAY OCT 15th-A",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e02328a716634119db567aced88ab67616d00001e026128eff79f9d69bcda13c066ab67616d00001e0263adcf9d5b78a35b8bc38905ab67616d00001e02a0ca29b1a10b3f954cc3d7e8",
-      "days": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
-      "hour": 13,
-      "minute": 55,
-      "active": true,
-      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
-      "deviceName": "MKTG-ARNAUD00",
-      "shuffle": true,
-      "lastTriggeredAt": 1771566901934
     },
     "5d7f3148-926e-4989-b18b-af82915e0936": {
       "id": "5d7f3148-926e-4989-b18b-af82915e0936",
