@@ -157,9 +157,9 @@ export default function EditScheduleScreen() {
       <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
 
         {/* Titre affiché en haut */}
-        {(name.trim() || selectedPlaylist?.name) && (
+        {(name.trim() || selectedPlaylist?.name || schedulePlaylistName) && (
           <Text className="mb-4 text-xl font-bold text-foreground" numberOfLines={2}>
-            {name.trim() || selectedPlaylist?.name}
+            {name.trim() || selectedPlaylist?.name || schedulePlaylistName}
           </Text>
         )}
 
