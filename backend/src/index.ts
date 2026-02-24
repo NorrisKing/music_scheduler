@@ -84,6 +84,13 @@ app.post(
   }
 );
 
+// ─── Auth: OAuth callback relay (redirect URI pointe ici, puis redirige vers le frontend) ───
+app.get('/auth/spotify/callback', (c) => {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
+  const params = new URL(c.req.url).search; // preserve ?code=...&state=...
+  return c.redirect(`${frontendUrl}/spotify-callback${params}`);
+});
+
 // ─── Accounts ─────────────────────────────────────────────────────────────────
 app.get('/accounts', (c) => {
   const accounts = db.getAccounts().map(({ accessToken, refreshToken, ...safe }) => safe);
