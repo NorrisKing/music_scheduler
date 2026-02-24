@@ -13,8 +13,10 @@ const SPOTIFY_SCOPES = [
 
 function getRedirectUri(): string {
   if (Platform.OS === 'web') {
-    const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3002';
-    return `${backendUrl}/auth/spotify/callback`;
+    const redirectUri = process.env.EXPO_PUBLIC_REDIRECT_URI;
+    if (redirectUri) return redirectUri;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8081';
+    return `${origin}/spotify-callback`;
   }
   return 'spotifyscheduler://spotify-callback';
 }
