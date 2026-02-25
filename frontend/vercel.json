@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run vercel-build",
+  "buildCommand": "bunx expo export -p web",
   "outputDirectory": "dist",
   "framework": null,
   "routes": [
