@@ -8,6 +8,15 @@
       "refreshToken": "AQC_7hzcftZHXGPgIiW6fwmcA8Ir4M3iNl7cGIUKVtBsG9U5XG6a2HR_gmoXN6qBOHxMCEfzXJJenErRVaYUsDp9Jq-ltgbXBXSbdev7To62N4UCPGnwOvUx64cWIgryjZadQA",
       "expiresAt": 1771570673147,
       "addedAt": 1771497246558
+    },
+    "norrisking": {
+      "id": "norrisking",
+      "displayName": "NorrisKing",
+      "email": "nonosayso@hotmail.com",
+      "accessToken": "BQAOICfxLvRju79HDR66x4fz5AXcux5hkFx5-E_s5oB1U6w3W4yc4VbP8xWJBO_gLakWlGB1OQXyd00k0W676ZgbWDR80cow77Bz2swtiJXc7GUG9KvB73y0pA9YtHYcBRwo-hnSkT1Rnk1cb05iK8In3VGibwmcerlN_FptxD_futMwWt4L9mfl4UcocKM7uMA8gD5pho2ZoVGu2pmBY9iPGtI_J92lKkXkDopdswZo8aiMMpS-52pn1uG1rcx6_w",
+      "refreshToken": "AQBoXDEBJAI2iNf-rfb-hgoMi0xUfPILXOuDAtbA8-kicHU1ZgIsDwpbp_F4jgg-jyTeEg0MhTr7b5KieIilj1JRQwcYu0Ed2rlhwutfuEI2YiBS-BKE9tVTzJu0qa1GCMw",
+      "expiresAt": 1771995015762,
+      "addedAt": 1771991415917
     }
   },
   "schedules": {
@@ -56,6 +65,75 @@
       "minute": 0,
       "active": false,
       "shuffle": true
+    },
+    "d36c1adf-f3c2-4986-87f3-063ed282f55a": {
+      "id": "d36c1adf-f3c2-4986-87f3-063ed282f55a",
+      "cronExpression": "10 12 * * 1,2,3,4,5",
+      "createdAt": 1771991458548,
+      "accountId": "norrisking",
+      "playlistId": "0HWtkohtSjTfZq6VbEdmax",
+      "playlistName": "Caviar Bar #3-6",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e024f72ef5912a5110fce8ae951ab67616d00001e025c9ff508ca092273c5d1b046ab67616d00001e0271c181cdcfc66d28fbb93a17ab67616d00001e02a764e64c92370dbcf396ccf2",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 12,
+      "minute": 10,
+      "active": true,
+      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
+      "deviceName": "MKTG-ARNAUD00",
+      "shuffle": true,
+      "lastTriggeredAt": 1771991701166
+    },
+    "5e056730-da26-41d1-959a-cb3c6d7fe784": {
+      "id": "5e056730-da26-41d1-959a-cb3c6d7fe784",
+      "cronExpression": "0 12 * * 1,2,3,4,5",
+      "createdAt": 1771991494701,
+      "accountId": "norrisking",
+      "playlistId": "0Hf9ZzQvLWUYtkP6NDuY2q",
+      "playlistName": "Azure House 1",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e020a2ef92425a00acff6b60a16ab67616d00001e024d402106684a7cbcd4746264ab67616d00001e02849fe5cc65acdca803d9e96aab67616d00001e0299cbbb8b17cdf54922acc29e",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 12,
+      "minute": 0,
+      "active": true,
+      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
+      "deviceName": "MKTG-ARNAUD00",
+      "shuffle": true,
+      "lastTriggeredAt": 1771992001734
+    },
+    "292d83c5-3494-4c33-b84d-da9af4768e43": {
+      "id": "292d83c5-3494-4c33-b84d-da9af4768e43",
+      "cronExpression": "5 12 * * 1,2,3,4,5",
+      "createdAt": 1771991555339,
+      "accountId": "norrisking",
+      "playlistId": "3RwujeXu4ld8kp1c0UIje3",
+      "playlistName": "Caviar Bar #1-5",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e02289cdee898bd1506bee27fdcab67616d00001e0241b2ea0fdb6904fc5bfa290eab67616d00001e0282f355d32cb7780a9a786022ab67616d00001e02f77ba9e6942357083a368b74",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 12,
+      "minute": 5,
+      "active": true,
+      "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
+      "deviceName": "MKTG-ARNAUD00",
+      "shuffle": true,
+      "lastTriggeredAt": 1771992301822
     }
   }
 }
