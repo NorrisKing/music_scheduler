@@ -87,16 +87,16 @@
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771991701166
+      "lastTriggeredAt": 1771992601793
     },
     "5e056730-da26-41d1-959a-cb3c6d7fe784": {
       "id": "5e056730-da26-41d1-959a-cb3c6d7fe784",
-      "cronExpression": "0 12 * * 1,2,3,4,5",
+      "cronExpression": "30 12 * * 1,2,3,4,5",
       "createdAt": 1771991494701,
       "accountId": "norrisking",
-      "playlistId": "0Hf9ZzQvLWUYtkP6NDuY2q",
-      "playlistName": "Azure House 1",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e020a2ef92425a00acff6b60a16ab67616d00001e024d402106684a7cbcd4746264ab67616d00001e02849fe5cc65acdca803d9e96aab67616d00001e0299cbbb8b17cdf54922acc29e",
+      "playlistId": "1ipaZdKeRJWqasma0rZIS1",
+      "playlistName": "HIVE 1",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e0269c585dc0dee55afda0888c2ab67616d00001e02a71f742d3e2f7c715c85e54dab67616d00001e02d4450e41c77b7e1fda2638bfab67616d00001e02f7fb204f31a42bc626f454cc",
       "days": [
         1,
         2,
@@ -105,12 +105,12 @@
         5
       ],
       "hour": 12,
-      "minute": 0,
+      "minute": 30,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771992001734
+      "lastTriggeredAt": 1771993801630
     },
     "292d83c5-3494-4c33-b84d-da9af4768e43": {
       "id": "292d83c5-3494-4c33-b84d-da9af4768e43",
