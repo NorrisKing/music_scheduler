@@ -313,7 +313,7 @@ export default function NewScheduleScreen() {
         {/* 7. Appareil (optionnel) */}
         {selectedAccount && (
           <>
-            <SectionTitle>7. Appareil <Text className="text-xs text-muted-foreground font-normal">(optionnel)</Text></SectionTitle>
+            <SectionTitle>6. Appareil <Text className="text-xs text-muted-foreground font-normal">(optionnel)</Text></SectionTitle>
             {loadingDevices ? (
               <ActivityIndicator color="#1DB954" />
             ) : devices.length === 0 ? (
