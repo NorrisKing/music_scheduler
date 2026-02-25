@@ -288,7 +288,7 @@ export default function NewScheduleScreen() {
         {/* 6. Options de lecture */}
         {selectedAccount && (
           <>
-            <SectionTitle>6. Options de lecture</SectionTitle>
+            <SectionTitle>5. Options de lecture</SectionTitle>
             <View className="rounded-2xl border border-border bg-card p-4 gap-4">
               {/* Shuffle */}
               <View className="flex-row items-center justify-between">
