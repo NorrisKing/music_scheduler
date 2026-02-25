@@ -8,6 +8,7 @@
     "ios": "expo start -c --ios",
     "web": "expo start -c --web",
     "export": "expo export --platform web",
+    "vercel-build": "npx expo export -p web",
     "clean": "rm -rf .expo node_modules",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
