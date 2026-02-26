@@ -21,16 +21,20 @@ export default function AccountsScreen() {
   const [connecting, setConnecting] = useState(false);
   const { login, ready } = useSpotifyAuth(CLIENT_ID);
 
-  const load = useCallback(async () => {
-    try {
-      const data = await api.getAccounts();
-      setAccounts(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    const [error, setError] = useState<string | null>(null);
+
+    const load = useCallback(async () => {
+      try {
+        setError(null);
+        const data = await api.getAccounts();
+        setAccounts(data);
+      } catch (e: any) {
+        console.error(e);
+        setError(e.message || 'Impossible de charger les comptes');
+      } finally {
+        setLoading(false);
+      }
+    }, []);
 
   const connectingRef = useRef(false);
 
