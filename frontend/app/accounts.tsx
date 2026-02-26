@@ -151,17 +151,25 @@ export default function AccountsScreen() {
                 </Text>
               )}
             </View>
-          ) : error ? (
-            <View className="flex-1 items-center justify-center p-4">
-              <Text className="text-red-500 font-bold mb-2">Erreur de connexion au serveur</Text>
-              <Text className="text-muted-foreground text-center mb-6">{error}</Text>
-              <TouchableOpacity
-                onPress={load}
-                className="bg-card border border-border px-6 py-2 rounded-xl">
-                <Text className="text-foreground">Réessayer</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
+            ) : error ? (
+              <View className="flex-1 items-center justify-center p-4">
+                <Text className="text-red-500 font-bold mb-2">Erreur de connexion au serveur</Text>
+                <Text className="text-muted-foreground text-center mb-6">{error}</Text>
+                <View className="flex-row gap-4">
+                  <TouchableOpacity
+                    onPress={load}
+                    className="bg-card border border-border px-6 py-2 rounded-xl">
+                    <Text className="text-foreground">Réessayer</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleReset}
+                    className="bg-red-500/10 border border-red-500/20 px-6 py-2 rounded-xl">
+                    <Text className="text-red-500">Réinitialiser</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+
           <FlatList
             data={accounts}
             keyExtractor={(i) => i.id}
