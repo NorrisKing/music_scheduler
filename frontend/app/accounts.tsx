@@ -127,18 +127,28 @@ export default function AccountsScreen() {
         ),
       }} />
       <View className="flex-1 bg-background p-4">
-        {loading || connecting ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#1DB954" />
-            {connecting && (
-              <Text className="mt-4 text-muted-foreground">
-                {sessionStorage && sessionStorage.getItem('spotify_pkce_verifier')
-                  ? 'Connexion à Spotify...'
-                  : 'Finalisation de la connexion...'}
-              </Text>
-            )}
-          </View>
-        ) : (
+          {loading || connecting ? (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" color="#1DB954" />
+              {connecting && (
+                <Text className="mt-4 text-muted-foreground">
+                  {sessionStorage && sessionStorage.getItem('spotify_pkce_verifier')
+                    ? 'Connexion à Spotify...'
+                    : 'Finalisation de la connexion...'}
+                </Text>
+              )}
+            </View>
+          ) : error ? (
+            <View className="flex-1 items-center justify-center p-4">
+              <Text className="text-red-500 font-bold mb-2">Erreur de connexion au serveur</Text>
+              <Text className="text-muted-foreground text-center mb-6">{error}</Text>
+              <TouchableOpacity
+                onPress={load}
+                className="bg-card border border-border px-6 py-2 rounded-xl">
+                <Text className="text-foreground">Réessayer</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
           <FlatList
             data={accounts}
             keyExtractor={(i) => i.id}
