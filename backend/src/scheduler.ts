@@ -48,9 +48,10 @@ function stopTask(scheduleId: string) {
   }
 }
 
-export function initScheduler() {
+export async function initScheduler() {
   // Load all active schedules at startup
-  const schedules = db.getSchedules().filter((s) => s.active);
+  const all = await db.getSchedules();
+  const schedules = all.filter((s) => s.active);
   for (const schedule of schedules) {
     startTask(schedule);
   }
@@ -60,8 +61,8 @@ export function initScheduler() {
 export const scheduler = {
   register: startTask,
   unregister: stopTask,
-  reload(scheduleId: string) {
-    const schedule = db.getSchedule(scheduleId);
+  async reload(scheduleId: string) {
+    const schedule = await db.getSchedule(scheduleId);
     if (schedule) {
       startTask(schedule);
     } else {
