@@ -179,7 +179,7 @@ export default function AccountsScreen() {
           {(__DEV__ || true) && (
             <View className="absolute bottom-2 left-0 right-0 items-center">
               <Text style={{ fontSize: 8, color: '#333' }}>
-                Backend: {api.BACKEND_URL}
+                Backend: {BACKEND_URL}
               </Text>
             </View>
           )}
