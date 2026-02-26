@@ -25,7 +25,7 @@ function startTask(schedule: Schedule) {
         console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
           const success = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId, schedule.shuffle);
         if (success) {
-          db.markTriggered(schedule.id);
+          await db.markTriggered(schedule.id);
           console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started`);
         } else {
           console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
