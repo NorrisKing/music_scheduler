@@ -68,7 +68,7 @@ app.post(
     }
     const profile: any = await profileRes.json();
 
-    db.upsertAccount({
+    await db.upsertAccount({
       id: profile.id,
       displayName: profile.display_name || profile.id,
       email: profile.email || '',
@@ -94,18 +94,19 @@ app.get('/auth/spotify/callback', (c) => {
 });
 
 // ─── Accounts ─────────────────────────────────────────────────────────────────
-app.get('/accounts', (c) => {
-  const accounts = db.getAccounts().map(({ accessToken, refreshToken, ...safe }) => safe);
+app.get('/accounts', async (c) => {
+  const accounts = (await db.getAccounts()).map(({ accessToken, refreshToken, ...safe }) => safe);
   return c.json(accounts);
 });
 
-app.delete('/accounts/:id', (c) => {
+app.delete('/accounts/:id', async (c) => {
   const { id } = c.req.param();
   // Stop all schedules for this account
-  for (const s of db.getSchedulesByAccount(id)) {
+  const accountSchedules = await db.getSchedulesByAccount(id);
+  for (const s of accountSchedules) {
     scheduler.unregister(s.id);
   }
-  db.deleteAccount(id);
+  await db.deleteAccount(id);
   return c.json({ ok: true });
 });
 
@@ -140,22 +141,22 @@ const ScheduleInput = z.object({
   shuffle: z.boolean().optional(),
 });
 
-app.get('/schedules', (c) => {
-  return c.json(db.getSchedules());
+app.get('/schedules', async (c) => {
+  return c.json(await db.getSchedules());
 });
 
-app.get('/schedules/:id', (c) => {
+app.get('/schedules/:id', async (c) => {
   const { id } = c.req.param();
-  const schedule = db.getSchedule(id);
+  const schedule = await db.getSchedule(id);
   if (!schedule) return c.json({ error: 'Schedule not found' }, 404);
   return c.json(schedule);
 });
 
-app.post('/schedules', zValidator('json', ScheduleInput), (c) => {
+app.post('/schedules', zValidator('json', ScheduleInput), async (c) => {
   const data = c.req.valid('json');
 
   // Check for time conflict on same account
-  const existing = db.getSchedulesByAccount(data.accountId);
+  const existing = await db.getSchedulesByAccount(data.accountId);
   const conflict = existing.find(
     (s) =>
       s.hour === data.hour &&
@@ -183,7 +184,7 @@ app.post('/schedules', zValidator('json', ScheduleInput), (c) => {
     active: data.active ?? true,
   };
 
-  db.upsertSchedule(schedule);
+  await db.upsertSchedule(schedule);
   if (schedule.active) scheduler.register(schedule);
 
   return c.json(schedule, 201);
@@ -192,9 +193,9 @@ app.post('/schedules', zValidator('json', ScheduleInput), (c) => {
 app.put(
   '/schedules/:id',
   zValidator('json', ScheduleInput.partial()),
-  (c) => {
+  async (c) => {
     const { id } = c.req.param();
-    const existing = db.getSchedule(id);
+    const existing = await db.getSchedule(id);
     if (!existing) return c.json({ error: 'Schedule not found' }, 404);
 
     const updates = c.req.valid('json');
@@ -202,7 +203,7 @@ app.put(
 
     // Check for time conflict (exclude self)
     if (updates.hour !== undefined || updates.minute !== undefined || updates.days) {
-      const accountSchedules = db.getSchedulesByAccount(updated.accountId);
+      const accountSchedules = await db.getSchedulesByAccount(updated.accountId);
       const conflict = accountSchedules.find(
         (s) =>
           s.id !== id &&
@@ -230,30 +231,30 @@ app.put(
       );
     }
 
-    db.upsertSchedule(updated);
-    scheduler.reload(id);
+    await db.upsertSchedule(updated);
+    await scheduler.reload(id);
 
     return c.json(updated);
   }
 );
 
-app.delete('/schedules/:id', (c) => {
+app.delete('/schedules/:id', async (c) => {
   const { id } = c.req.param();
   scheduler.unregister(id);
-  db.deleteSchedule(id);
+  await db.deleteSchedule(id);
   return c.json({ ok: true });
 });
 
 // ─── Trigger manually ─────────────────────────────────────────────────────────
 app.post('/schedules/:id/trigger', async (c) => {
   const { id } = c.req.param();
-  const schedule = db.getSchedule(id);
+  const schedule = await db.getSchedule(id);
   if (!schedule) return c.json({ error: 'Schedule not found' }, 404);
 
   const { startPlaylist } = await import('./spotify.js');
     const ok = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId, schedule.shuffle);
   if (ok) {
-    db.markTriggered(id);
+    await db.markTriggered(id);
     return c.json({ ok: true });
   }
   return c.json({ error: 'Failed to start playlist. Is Spotify active on a device?' }, 400);
