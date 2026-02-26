@@ -161,20 +161,29 @@ export default function AccountsScreen() {
           />
         )}
 
-        <TouchableOpacity
-          onPress={handleConnect}
-          disabled={!ready || connecting || loading}
-          className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-50">
-          {connecting ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <PlusCircleIcon size={22} color="white" />
+          <TouchableOpacity
+            onPress={handleConnect}
+            disabled={!ready || connecting || loading}
+            className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-50">
+            {connecting ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <PlusCircleIcon size={22} color="white" />
+            )}
+            <Text className="text-base font-bold text-white">
+              {connecting ? 'Connexion en cours...' : 'Connecter un compte Spotify'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Debug info - only visible in dev or if specific env is set */}
+          {(__DEV__ || true) && (
+            <View className="absolute bottom-2 left-0 right-0 items-center">
+              <Text style={{ fontSize: 8, color: '#333' }}>
+                Backend: {api.BACKEND_URL}
+              </Text>
+            </View>
           )}
-          <Text className="text-base font-bold text-white">
-            {connecting ? 'Connexion en cours...' : 'Connecter un compte Spotify'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
     </>
   );
 }
