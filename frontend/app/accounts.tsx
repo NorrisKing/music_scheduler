@@ -49,19 +49,23 @@ export default function AccountsScreen() {
       (sessionStorage.getItem('spotify_oauth_code') || sessionStorage.getItem('spotify_oauth_error'));
 
     if (hasCode && !connectingRef.current) {
+      console.log('Detected OAuth code in session storage, starting exchange...');
       connectingRef.current = true;
       setConnecting(true);
       finishWebLogin()
         .then(async (result) => {
           if (result) {
             console.log('Successfully connected:', result);
+            Alert.alert('Succès', `Compte ${result.displayName} connecté !`);
           }
         })
         .catch((e: any) => {
           console.error('Connection failed:', e);
+          setError(`Erreur d'échange de jeton: ${e.message}`);
           Alert.alert('Erreur', e.message || 'Connexion échouée');
         })
         .finally(async () => {
+          console.log('Finishing connection process, reloading accounts...');
           setConnecting(false);
           await load();
           connectingRef.current = false;
@@ -81,6 +85,7 @@ export default function AccountsScreen() {
     }
     setConnecting(true);
     try {
+      console.log('Starting Spotify login redirect...');
       const result = await login();
       // On web this never reaches here (page redirects); on native it does
       if (result) {
@@ -88,9 +93,17 @@ export default function AccountsScreen() {
         await load();
       }
     } catch (e: any) {
+      console.error('Login launch failed:', e);
       Alert.alert('Erreur', e.message || 'Connexion échouée');
     } finally {
       setConnecting(false);
+    }
+  };
+
+  const handleReset = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.clear();
+      window.location.reload();
     }
   };
 
