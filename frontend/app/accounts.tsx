@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon, LogOutIcon } from 'lucide-react-native';
-import { api, type SpotifyAccount } from '@/lib/api';
+import { api, BACKEND_URL, type SpotifyAccount } from '@/lib/api';
 import { useSpotifyAuth, finishWebLogin } from '@/lib/useSpotifyAuth';
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || '';
