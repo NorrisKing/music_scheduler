@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from './store.js';
@@ -9,6 +10,7 @@ import { randomUUID } from 'crypto';
 
 const app = new Hono();
 
+app.use('*', logger());
 app.use(
   '*',
   cors({
