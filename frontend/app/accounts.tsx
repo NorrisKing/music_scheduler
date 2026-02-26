@@ -32,6 +32,8 @@ export default function AccountsScreen() {
     }
   }, []);
 
+  const connectingRef = useRef(false);
+
   // On web: check if we're returning from a Spotify OAuth redirect
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -42,25 +44,28 @@ export default function AccountsScreen() {
     const hasCode = typeof window !== 'undefined' &&
       (sessionStorage.getItem('spotify_oauth_code') || sessionStorage.getItem('spotify_oauth_error'));
 
-    if (hasCode) {
+    if (hasCode && !connectingRef.current) {
+      connectingRef.current = true;
       setConnecting(true);
       finishWebLogin()
         .then(async (result) => {
           if (result) {
-            Alert.alert('Compte connecté', `${result.displayName} ajouté avec succès !`);
+            console.log('Successfully connected:', result);
           }
         })
         .catch((e: any) => {
+          console.error('Connection failed:', e);
           Alert.alert('Erreur', e.message || 'Connexion échouée');
         })
         .finally(async () => {
           setConnecting(false);
           await load();
+          connectingRef.current = false;
         });
-    } else {
+    } else if (!connectingRef.current) {
       load();
     }
-  }, []);
+  }, [load]);
 
   const handleConnect = async () => {
     if (!CLIENT_ID) {
