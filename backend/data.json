@@ -4,18 +4,18 @@
       "id": "312n5jyadwr3f3k5ssdiw6nda5rq",
       "displayName": "Dr. Wine",
       "email": "drwineplatforms@gmail.com",
-      "accessToken": "BQCAcvsohhdeHOriV5lmDxWfLK67UjplKr7ZznQ2PZtxKb1hFWiLu6gLEQPIJXZakB8atqh3EhBYIceOOPar3z1ipzaorsIU2e_zoFEhXk_MPafOEdEYCWEH6092e1s1Zi3xyOL2-8pwbe0B-5n5BrJ3qAvPgUFsx8j3v8rMDhzZ7_pq8gOEM_wL1k_WtxIyKEWeQR9bEK6vrNL2fGkbTNuxN4AsITzQI1hXEeaizpJnYj5KdX_ozRnh0Id59_cvxeJ1GPJMfGaOkoOiDu56LcuOFg",
-      "refreshToken": "AQC_7hzcftZHXGPgIiW6fwmcA8Ir4M3iNl7cGIUKVtBsG9U5XG6a2HR_gmoXN6qBOHxMCEfzXJJenErRVaYUsDp9Jq-ltgbXBXSbdev7To62N4UCPGnwOvUx64cWIgryjZadQA",
-      "expiresAt": 1771570673147,
+      "accessToken": "BQCnBu0zElyd1IFUhwvGK3J3i1wF20NGU8-SCVGNfUjUE_7ettopY1urZhb4eTUssGDHlLEa2j1pm0xYudfg9UdCQU4AtTfgWe8iOSTs99jU85mkqXlpcG_EWCtvVjlWmx3XG-f-AgHGxlUb1A7SQ1JScSonTZ6lQ-45TOrBEcZnslORdNZcCY2NEhDeSovzsq1QpO_-oKVvGIRQ4p9KUVxM_BLRDTC0OdNB1l6AVv-yhI-8C8GUcJIlvfBMYbGKMNi9ZYvoCWmtucjJWPTd3nDkdQ",
+      "refreshToken": "AQDCXMPMGZeqsDKpKTkBDb87YR66l0u1DK-vYGXFQ7jFbf_fgnL9o4fFuheY6--p4V3JMenIjPoAOPvt-FSj2eqXkG3LcQ3ZbFZX6TnYoSjS4t5rUC1k8x5JJmypfjKPomalDg",
+      "expiresAt": 1772089700605,
       "addedAt": 1771497246558
     },
     "norrisking": {
       "id": "norrisking",
       "displayName": "NorrisKing",
       "email": "nonosayso@hotmail.com",
-      "accessToken": "BQDMc2TMw4HpSXQ04b4us8teNBKG-DWIlx1OlBdIl5ANumD3YhXnHSze1WNhA5K0RrsV_uFLfx5vwCWxUz6JIzKVU6j61IPKt3wbXQ_b4gA2U4lkwpz0zi-nhYwNQ8zvLHgWcSxcrS6qOGS_akER7sxiqmx0H43MyuFnE7KbqBT8G70V7LapYgcNyLpJzsX4wOpTCVCvs70JPZDygwLGJbFFeUn_vMiGcLodyT5ATD_vm_C4ocAGiVEsRcoM4wQSHQ",
-      "refreshToken": "AQCPsTvSB1MzArBWKWpno96zLh37KMfQJN-UuxI0GvbLlRiCpHnDiLUqEm9Dm4v_DM7-G76VBgbnTX8WvmmMxD_1cNj2pFYL3IBm8dw5GU2rdBJzqVmMIgjORB1iZfnhUtyK3w",
-      "expiresAt": 1772011568212,
+      "accessToken": "BQBNn6_WERz7t_JLysE14p1oOtdhU0NqmL7zHkspU5QxS5wA_-uZA8TAZr-QB5tVQuhwg5N0TzA0QUQUAj2LI8mY__BfJAyO6TXB5YUyOlE7OcRh1jaNMvgCuUlmd---r1o1ykOtlgxqmX52Gcyuq5aBDaPybIgi_NXwNai7SsgjUTZe8JdheCSf8Jzzt9HEDUPJm0G_CeEJKaC-gRUZ_WfTG6J61oFLUW0dpCJTMB9xVHIfdqihgLyDq8vv9rnQpQ",
+      "refreshToken": "AQCf-hMDi1fYP4vJldgpdNoznoOmVo95qlY6fM5sJSLGVJJfIPnzQeORhThe3FbkdN6S4DFHkwyYcxLZtA6Miq6vR67jvDIIk6rJSVrzGVoCahjgFX-8Z474i6uXyQhn80_vpg",
+      "expiresAt": 1772089235708,
       "addedAt": 1771991415917
     }
   },
@@ -68,7 +68,7 @@
     },
     "d36c1adf-f3c2-4986-87f3-063ed282f55a": {
       "id": "d36c1adf-f3c2-4986-87f3-063ed282f55a",
-      "cronExpression": "10 12 * * 1,2,3,4,5",
+      "cronExpression": "25 14 * * 1,2,3,4,5",
       "createdAt": 1771991458548,
       "accountId": "norrisking",
       "playlistId": "0HWtkohtSjTfZq6VbEdmax",
@@ -81,17 +81,17 @@
         4,
         5
       ],
-      "hour": 12,
-      "minute": 10,
+      "hour": 14,
+      "minute": 25,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771992601793
+      "lastTriggeredAt": 1772087101759
     },
     "5e056730-da26-41d1-959a-cb3c6d7fe784": {
       "id": "5e056730-da26-41d1-959a-cb3c6d7fe784",
-      "cronExpression": "30 12 * * 1,2,3,4,5",
+      "cronExpression": "30 14 * * 1,2,3,4,5",
       "createdAt": 1771991494701,
       "accountId": "norrisking",
       "playlistId": "1ipaZdKeRJWqasma0rZIS1",
@@ -104,22 +104,22 @@
         4,
         5
       ],
-      "hour": 12,
+      "hour": 14,
       "minute": 30,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1771993801630
+      "lastTriggeredAt": 1772087401630
     },
-    "292d83c5-3494-4c33-b84d-da9af4768e43": {
-      "id": "292d83c5-3494-4c33-b84d-da9af4768e43",
-      "cronExpression": "30 16 * * 1,2,3,4,5",
-      "createdAt": 1771991555339,
+    "c5499f34-39e5-4f21-842a-8aa775e01c4a": {
+      "id": "c5499f34-39e5-4f21-842a-8aa775e01c4a",
+      "cronExpression": "15 14 * * 1,2,3,4,5",
+      "createdAt": 1772085852887,
       "accountId": "norrisking",
-      "playlistId": "3RwujeXu4ld8kp1c0UIje3",
-      "playlistName": "Caviar Bar #1-5",
-      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e02289cdee898bd1506bee27fdcab67616d00001e0241b2ea0fdb6904fc5bfa290eab67616d00001e0282f355d32cb7780a9a786022ab67616d00001e02f77ba9e6942357083a368b74",
+      "playlistId": "7gNrXdC6UWv58zlpXjqO13",
+      "playlistName": "Rubadub Ph",
+      "playlistImageUrl": "https://i.scdn.co/image/ab67616d00001e02fd40af3f3aac12ab42677d44",
       "days": [
         1,
         2,
@@ -127,13 +127,33 @@
         4,
         5
       ],
-      "hour": 16,
-      "minute": 30,
+      "hour": 14,
+      "minute": 15,
       "active": true,
       "deviceId": "499f365fc93b907ca51b8222a8c273402b3cd45e",
       "deviceName": "MKTG-ARNAUD00",
       "shuffle": true,
-      "lastTriggeredAt": 1772008201217
+      "lastTriggeredAt": 1772086501867
+    },
+    "d749d86a-7d9b-4ceb-9661-d3e714019a1e": {
+      "id": "d749d86a-7d9b-4ceb-9661-d3e714019a1e",
+      "cronExpression": "20 14 * * 1,2,3,4,5",
+      "createdAt": 1772086128737,
+      "accountId": "312n5jyadwr3f3k5ssdiw6nda5rq",
+      "playlistId": "1d1MMHbwIh9w7keU0sFj6q",
+      "playlistName": "Hip hop",
+      "playlistImageUrl": "https://mosaic.scdn.co/640/ab67616d00001e028863bc11d2aa12b54f5aeb36ab67616d00001e029b19c107109de740bad72df5ab67616d00001e02e49f4677129d4b8b9d9f50acab67616d00001e02fde79b88e2a659c394c5ae30",
+      "days": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hour": 14,
+      "minute": 20,
+      "active": true,
+      "shuffle": true
     }
   }
 }
