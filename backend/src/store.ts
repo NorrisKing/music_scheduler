@@ -1,7 +1,9 @@
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-const DATA_FILE = join(process.cwd(), 'data.json');
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export interface SpotifyAccount {
   id: string; // Spotify user ID
@@ -34,82 +36,130 @@ export interface Schedule {
   shuffle?: boolean;  // play in random order
 }
 
-interface Store {
-  accounts: Record<string, SpotifyAccount>;
-  schedules: Record<string, Schedule>;
+function mapAccountFromDb(data: any): SpotifyAccount {
+  return {
+    id: data.id,
+    displayName: data.display_name,
+    email: data.email,
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresAt: Number(data.expires_at),
+    addedAt: Number(data.added_at),
+  };
 }
 
-function loadStore(): Store {
-  if (existsSync(DATA_FILE)) {
-    try {
-      const raw = readFileSync(DATA_FILE, 'utf-8');
-      return JSON.parse(raw);
-    } catch {
-      // ignore parse error
-    }
-  }
-  return { accounts: {}, schedules: {} };
+function mapAccountToDb(account: SpotifyAccount) {
+  return {
+    id: account.id,
+    display_name: account.displayName,
+    email: account.email,
+    access_token: account.accessToken,
+    refresh_token: account.refreshToken,
+    expires_at: account.expiresAt,
+    added_at: account.addedAt,
+  };
 }
 
-function saveStore(store: Store) {
-  writeFileSync(DATA_FILE, JSON.stringify(store, null, 2), 'utf-8');
+function mapScheduleFromDb(data: any): Schedule {
+  return {
+    id: data.id,
+    name: data.name,
+    accountId: data.account_id,
+    playlistId: data.playlist_id,
+    playlistName: data.playlist_name,
+    playlistImageUrl: data.playlist_image_url,
+    cronExpression: data.cron_expression,
+    days: data.days,
+    hour: data.hour,
+    minute: data.minute,
+    active: data.active,
+    createdAt: Number(data.created_at),
+    lastTriggeredAt: data.last_triggered_at ? Number(data.last_triggered_at) : undefined,
+    deviceId: data.device_id,
+    deviceName: data.device_name,
+    shuffle: data.shuffle,
+  };
 }
 
-let store = loadStore();
+function mapScheduleToDb(schedule: Schedule) {
+  return {
+    id: schedule.id,
+    name: schedule.name,
+    account_id: schedule.accountId,
+    playlist_id: schedule.playlistId,
+    playlist_name: schedule.playlistName,
+    playlist_image_url: schedule.playlistImageUrl,
+    cron_expression: schedule.cronExpression,
+    days: schedule.days,
+    hour: schedule.hour,
+    minute: schedule.minute,
+    active: schedule.active,
+    created_at: schedule.createdAt,
+    last_triggered_at: schedule.lastTriggeredAt,
+    device_id: schedule.deviceId,
+    device_name: schedule.deviceName,
+    shuffle: schedule.shuffle,
+  };
+}
 
 export const db = {
   // Accounts
-  getAccounts(): SpotifyAccount[] {
-    return Object.values(store.accounts);
+  async getAccounts(): Promise<SpotifyAccount[]> {
+    const { data, error } = await supabase.from('spotify_accounts').select('*');
+    if (error) throw error;
+    return (data || []).map(mapAccountFromDb);
   },
-  getAccount(id: string): SpotifyAccount | undefined {
-    return store.accounts[id];
+  async getAccount(id: string): Promise<SpotifyAccount | undefined> {
+    const { data, error } = await supabase.from('spotify_accounts').select('*').eq('id', id).maybeSingle();
+    if (error) throw error;
+    return data ? mapAccountFromDb(data) : undefined;
   },
-  upsertAccount(account: SpotifyAccount) {
-    store.accounts[account.id] = account;
-    saveStore(store);
+  async upsertAccount(account: SpotifyAccount) {
+    const { error } = await supabase.from('spotify_accounts').upsert(mapAccountToDb(account));
+    if (error) throw error;
   },
-  deleteAccount(id: string) {
-    delete store.accounts[id];
-    // also remove related schedules
-    for (const key of Object.keys(store.schedules)) {
-      if (store.schedules[key].accountId === id) {
-        delete store.schedules[key];
-      }
-    }
-    saveStore(store);
+  async deleteAccount(id: string) {
+    const { error } = await supabase.from('spotify_accounts').delete().eq('id', id);
+    if (error) throw error;
+    // schedules will be deleted by cascade in DB
   },
-  updateAccountTokens(id: string, accessToken: string, expiresAt: number, refreshToken?: string) {
-    if (store.accounts[id]) {
-      store.accounts[id].accessToken = accessToken;
-      store.accounts[id].expiresAt = expiresAt;
-      if (refreshToken) store.accounts[id].refreshToken = refreshToken;
-      saveStore(store);
-    }
+  async updateAccountTokens(id: string, accessToken: string, expiresAt: number, refreshToken?: string) {
+    const updates: any = {
+      access_token: accessToken,
+      expires_at: expiresAt,
+    };
+    if (refreshToken) updates.refresh_token = refreshToken;
+
+    const { error } = await supabase.from('spotify_accounts').update(updates).eq('id', id);
+    if (error) throw error;
   },
 
   // Schedules
-  getSchedules(): Schedule[] {
-    return Object.values(store.schedules);
+  async getSchedules(): Promise<Schedule[]> {
+    const { data, error } = await supabase.from('schedules').select('*');
+    if (error) throw error;
+    return (data || []).map(mapScheduleFromDb);
   },
-  getSchedulesByAccount(accountId: string): Schedule[] {
-    return Object.values(store.schedules).filter((s) => s.accountId === accountId);
+  async getSchedulesByAccount(accountId: string): Promise<Schedule[]> {
+    const { data, error } = await supabase.from('schedules').select('*').eq('account_id', accountId);
+    if (error) throw error;
+    return (data || []).map(mapScheduleFromDb);
   },
-  getSchedule(id: string): Schedule | undefined {
-    return store.schedules[id];
+  async getSchedule(id: string): Promise<Schedule | undefined> {
+    const { data, error } = await supabase.from('schedules').select('*').eq('id', id).maybeSingle();
+    if (error) throw error;
+    return data ? mapScheduleFromDb(data) : undefined;
   },
-  upsertSchedule(schedule: Schedule) {
-    store.schedules[schedule.id] = schedule;
-    saveStore(store);
+  async upsertSchedule(schedule: Schedule) {
+    const { error } = await supabase.from('schedules').upsert(mapScheduleToDb(schedule));
+    if (error) throw error;
   },
-  deleteSchedule(id: string) {
-    delete store.schedules[id];
-    saveStore(store);
+  async deleteSchedule(id: string) {
+    const { error } = await supabase.from('schedules').delete().eq('id', id);
+    if (error) throw error;
   },
-  markTriggered(id: string) {
-    if (store.schedules[id]) {
-      store.schedules[id].lastTriggeredAt = Date.now();
-      saveStore(store);
-    }
+  async markTriggered(id: string) {
+    const { error } = await supabase.from('schedules').update({ last_triggered_at: Date.now() }).eq('id', id);
+    if (error) throw error;
   },
 };
