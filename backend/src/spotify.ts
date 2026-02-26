@@ -3,7 +3,7 @@ import { db } from './store.js';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
 export async function refreshTokenIfNeeded(accountId: string): Promise<string | null> {
-  const account = db.getAccount(accountId);
+  const account = await db.getAccount(accountId);
   if (!account) return null;
 
   // If token still valid (with 60s buffer)
@@ -33,7 +33,7 @@ export async function refreshTokenIfNeeded(accountId: string): Promise<string | 
 
     const data: any = await res.json();
     const expiresAt = Date.now() + data.expires_in * 1000;
-    db.updateAccountTokens(accountId, data.access_token, expiresAt, data.refresh_token);
+    await db.updateAccountTokens(accountId, data.access_token, expiresAt, data.refresh_token);
     return data.access_token;
   } catch (err) {
     console.error('Token refresh error:', err);
