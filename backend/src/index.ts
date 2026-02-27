@@ -35,6 +35,7 @@ app.post(
   ),
   async (c) => {
     const { code, codeVerifier, redirectUri } = c.req.valid('json');
+    console.log('Token exchange attempt:', { redirectUri, codeLength: code.length });
     const clientId = process.env.SPOTIFY_CLIENT_ID;
     if (!clientId) return c.json({ error: 'Missing SPOTIFY_CLIENT_ID' }, 500);
 
