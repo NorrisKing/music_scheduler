@@ -214,11 +214,14 @@ export default function AccountsScreen() {
             {(__DEV__ || true) && (
               <View className="absolute bottom-1 left-0 right-0 items-center bg-black/5 py-1">
                 <Text style={{ fontSize: 9, color: '#666', fontWeight: 'bold' }}>
-                  DEBUG - Serveur Backend : {BACKEND_URL}
+                  DEBUG - Backend: "{BACKEND_URL || 'VIDE'}"
+                </Text>
+                <Text style={{ fontSize: 8, color: '#999' }}>
+                  Env: "{process.env.EXPO_PUBLIC_BACKEND_URL || 'NON DÉTECTÉE'}"
                 </Text>
                 {!process.env.EXPO_PUBLIC_BACKEND_URL && (
                   <Text style={{ fontSize: 7, color: 'red' }}>
-                    Attention: EXPO_PUBLIC_BACKEND_URL n'est pas détectée
+                    ERREUR: EXPO_PUBLIC_BACKEND_URL manquante sur Vercel
                   </Text>
                 )}
               </View>
