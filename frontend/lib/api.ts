@@ -1,10 +1,14 @@
 // En production sur Vercel, on utilise EXPO_PUBLIC_BACKEND_URL (qui doit pointer vers Railway)
-// En développement local, on utilise localhost
-export const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL 
-  ? process.env.EXPO_PUBLIC_BACKEND_URL.replace(/\/$/, '') // On enlève le / à la fin s'il y en a un
+// On enlève les espaces et les slashs à la fin
+const rawUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+export const BACKEND_URL = rawUrl.trim()
+  ? rawUrl.trim().replace(/\/$/, '') 
   : 'http://localhost:3002';
 
 console.log('Backend configuré sur :', BACKEND_URL);
+if (BACKEND_URL.includes('vercel.app')) {
+  console.warn('ATTENTION: Le backend semble pointer vers Vercel au lieu de Railway !');
+}
 
 export interface SpotifyAccount {
   id: string;
