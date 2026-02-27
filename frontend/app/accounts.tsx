@@ -210,14 +210,20 @@ export default function AccountsScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Debug info - only visible in dev or if specific env is set */}
-          {(__DEV__ || true) && (
-            <View className="absolute bottom-2 left-0 right-0 items-center">
-              <Text style={{ fontSize: 8, color: '#333' }}>
-                Backend: {BACKEND_URL}
-              </Text>
-            </View>
-          )}
+            {/* Debug info - only visible in dev or if specific env is set */}
+            {(__DEV__ || true) && (
+              <View className="absolute bottom-1 left-0 right-0 items-center bg-black/5 py-1">
+                <Text style={{ fontSize: 9, color: '#666', fontWeight: 'bold' }}>
+                  DEBUG - Serveur Backend : {BACKEND_URL}
+                </Text>
+                {!process.env.EXPO_PUBLIC_BACKEND_URL && (
+                  <Text style={{ fontSize: 7, color: 'red' }}>
+                    Attention: EXPO_PUBLIC_BACKEND_URL n'est pas détectée
+                  </Text>
+                )}
+              </View>
+            )}
+
         </View>
     </>
   );
