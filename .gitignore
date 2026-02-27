@@ -23,8 +23,11 @@ Thumbs.db
 .env.local
 .env.*.local
 *.env
-backend/data.json
 data.json
+backend/data.json
+backend/.env
+frontend/.env.local
+
 
 # Orchids
 .orchids/
