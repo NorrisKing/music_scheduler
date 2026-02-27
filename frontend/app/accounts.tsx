@@ -212,16 +212,16 @@ export default function AccountsScreen() {
 
             {/* Debug info - only visible in dev or if specific env is set */}
             {(__DEV__ || true) && (
-              <View className="absolute bottom-1 left-0 right-0 items-center bg-black/5 py-1">
-                <Text style={{ fontSize: 9, color: '#666', fontWeight: 'bold' }}>
-                  DEBUG - Backend: "{BACKEND_URL || 'VIDE'}"
+              <View className="absolute bottom-1 left-0 right-0 items-center bg-black/10 py-2 border-t border-black/10">
+                <Text style={{ fontSize: 9, color: BACKEND_URL.includes('vercel.app') ? 'red' : '#666', fontWeight: 'bold' }}>
+                  DEBUG - Backend: {BACKEND_URL || 'VIDE'}
                 </Text>
                 <Text style={{ fontSize: 8, color: '#999' }}>
-                  Env: "{process.env.EXPO_PUBLIC_BACKEND_URL || 'NON DÉTECTÉE'}"
+                  Raw Env: {process.env.EXPO_PUBLIC_BACKEND_URL || 'ABSENTE'}
                 </Text>
-                {!process.env.EXPO_PUBLIC_BACKEND_URL && (
-                  <Text style={{ fontSize: 7, color: 'red' }}>
-                    ERREUR: EXPO_PUBLIC_BACKEND_URL manquante sur Vercel
+                {BACKEND_URL.includes('vercel.app') && (
+                  <Text style={{ fontSize: 7, color: 'red', marginTop: 2 }}>
+                    ⚠️ ERREUR: Votre variable pointe sur Vercel, pas sur Railway !
                   </Text>
                 )}
               </View>
