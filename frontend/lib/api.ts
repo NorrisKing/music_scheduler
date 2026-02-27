@@ -1,4 +1,5 @@
 export const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3002';
+console.log('Using backend:', BACKEND_URL);
 
 export interface SpotifyAccount {
   id: string;
