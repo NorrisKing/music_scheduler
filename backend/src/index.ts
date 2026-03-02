@@ -268,4 +268,5 @@ initScheduler();
 export default {
   fetch: app.fetch,
   port: parseInt(process.env.PORT || '3002'),
+  hostname: '0.0.0.0',
 };
