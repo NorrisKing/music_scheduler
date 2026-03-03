@@ -19,10 +19,10 @@ app.use(
   })
 );
 
-// ─── Health ──────────────────────────────────────────────────────────────────
+// --- Health ---
 app.get('/', (c) => c.json({ ok: true, service: 'Spotify Scheduler' }));
 
-// ─── Auth: exchange code for tokens ──────────────────────────────────────────
+// --- Auth: exchange code for tokens ---
 app.post(
   '/auth/spotify/token',
   zValidator(
@@ -87,14 +87,14 @@ app.post(
   }
 );
 
-// ─── Auth: OAuth callback relay (redirect URI pointe ici, puis redirige vers le frontend) ───
+// --- Auth: OAuth callback relay (redirect URI pointe ici, puis redirige vers le frontend) ---
 app.get('/auth/spotify/callback', (c) => {
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
   const params = new URL(c.req.url).search; // preserve ?code=...&state=...
   return c.redirect(`${frontendUrl}/spotify-callback${params}`);
 });
 
-// ─── Accounts ─────────────────────────────────────────────────────────────────
+// --- Accounts ---
 app.get('/accounts', async (c) => {
   console.log('--- REQUEST FOR ACCOUNTS RECEIVED --- origin:', c.req.header('origin'));
   const accounts = (await db.getAccounts()).map(({ accessToken, refreshToken, ...safe }) => safe);
@@ -112,7 +112,7 @@ app.delete('/accounts/:id', async (c) => {
   return c.json({ ok: true });
 });
 
-// ─── Spotify resources ────────────────────────────────────────────────────────
+// --- Spotify resources ---
 app.get('/accounts/:id/playlists', async (c) => {
   const { id } = c.req.param();
   const data = await getSpotifyPlaylists(id);
@@ -133,7 +133,7 @@ app.get('/accounts/:id/currently-playing', async (c) => {
   return c.json(data);
 });
 
-// ─── Schedules ────────────────────────────────────────────────────────────────
+// --- Schedules ---
 const ScheduleInput = z.object({
   name: z.string().optional(),
   accountId: z.string(),
@@ -253,7 +253,7 @@ app.delete('/schedules/:id', async (c) => {
   return c.json({ ok: true });
 });
 
-// ─── Trigger manually ─────────────────────────────────────────────────────────
+// --- Trigger manually ---
 app.post('/schedules/:id/trigger', async (c) => {
   const { id } = c.req.param();
   const schedule = await db.getSchedule(id);
@@ -268,7 +268,7 @@ app.post('/schedules/:id/trigger', async (c) => {
   return c.json({ error: 'Failed to start playlist. Is Spotify active on a device?' }, 400);
 });
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// --- Init ---
 initScheduler();
 
 export default {
