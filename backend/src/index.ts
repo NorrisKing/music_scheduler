@@ -127,6 +127,12 @@ app.get('/accounts/:id/devices', async (c) => {
   return c.json(data);
 });
 
+app.get('/accounts/:id/currently-playing', async (c) => {
+  const { id } = c.req.param();
+  const data = await getCurrentlyPlaying(id);
+  return c.json(data);
+});
+
 // ─── Schedules ────────────────────────────────────────────────────────────────
 const ScheduleInput = z.object({
   name: z.string().optional(),
