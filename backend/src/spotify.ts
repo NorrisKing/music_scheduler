@@ -129,7 +129,7 @@ export async function getCurrentlyPlaying(accountId: string) {
 
   if (!data.item) return null;
 
-  let playlistName = null;
+  let contextName = null;
   if (data.context?.type === 'playlist') {
     const playlistId = data.context.uri.split(':').pop();
     const pRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}?fields=name`, {
@@ -137,15 +137,19 @@ export async function getCurrentlyPlaying(accountId: string) {
     });
     if (pRes.ok) {
       const pData: any = await pRes.json();
-      playlistName = pData.name;
+      contextName = pData.name;
     }
+  } else if (data.context?.type === 'album') {
+    contextName = `Album : ${data.item.album.name}`;
+  } else if (data.context?.type === 'artist') {
+    contextName = `Artiste : ${data.item.artists[0].name}`;
   }
 
   return {
     isPlaying: data.is_playing,
     trackName: data.item.name,
     artistName: data.item.artists.map((a: any) => a.name).join(', '),
-    playlistName: playlistName,
+    playlistName: contextName,
     albumImageUrl: data.item.album.images[0]?.url,
   };
 }
