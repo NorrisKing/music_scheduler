@@ -181,26 +181,31 @@ export default function SchedulesScreen() {
         }} />
       <View className="flex-1 bg-background p-4">
         {accountId && currentlyPlaying && (
-          <View className="mb-6 flex-row items-center gap-3 rounded-2xl bg-[#1DB954]/10 p-3 border border-[#1DB954]/20">
-            <View className="h-12 w-12 items-center justify-center rounded-xl bg-[#1DB954]/20">
+          <View className="mb-6 flex-row items-center gap-3 rounded-2xl bg-[#1DB954]/10 p-4 border border-[#1DB954]/20">
+            <View className="h-14 w-14 items-center justify-center rounded-xl bg-[#1DB954]/20 overflow-hidden">
               {currentlyPlaying.albumImageUrl ? (
                 <img 
                   src={currentlyPlaying.albumImageUrl} 
-                  style={{ width: '100%', height: '100%', borderRadius: 8, objectFit: 'cover' }} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                 />
               ) : (
-                <MusicIcon size={24} color="#1DB954" />
+                <MusicIcon size={28} color="#1DB954" />
               )}
             </View>
             <View className="flex-1">
-              <Text className="text-[10px] font-bold uppercase tracking-wider text-[#1DB954]">
-                {currentlyPlaying.isPlaying ? 'En cours de lecture' : 'En pause'}
+              <View className="flex-row items-center gap-2 mb-1">
+                <View className={`h-1.5 w-1.5 rounded-full ${currentlyPlaying.isPlaying ? 'bg-[#1DB954]' : 'bg-muted-foreground'}`} />
+                <Text className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                  {currentlyPlaying.isPlaying ? 'EN COURS DE LECTURE' : 'EN PAUSE'}
+                </Text>
+              </View>
+              
+              <Text className="text-base font-black text-foreground" numberOfLines={1}>
+                Playlist : <Text className="text-[#1DB954]">{currentlyPlaying.playlistName || 'Lecture seule'}</Text>
               </Text>
-              <Text className="text-sm font-bold text-foreground" numberOfLines={1}>
-                {currentlyPlaying.trackName}
-              </Text>
-              <Text className="text-xs text-muted-foreground" numberOfLines={1}>
-                {currentlyPlaying.playlistName ? `Playlist : ${currentlyPlaying.playlistName}` : currentlyPlaying.artistName}
+              
+              <Text className="text-sm font-medium text-muted-foreground" numberOfLines={1}>
+                {currentlyPlaying.trackName} • {currentlyPlaying.artistName}
               </Text>
             </View>
           </View>
