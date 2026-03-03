@@ -1,5 +1,4 @@
-import { useCallback } from 'react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -30,6 +29,22 @@ export default function SchedulesScreen() {
     albumImageUrl?: string;
   } | null>(null);
 
+  const fetchCurrentlyPlaying = useCallback(async () => {
+    if (!accountId) return;
+    try {
+      const cp = await api.getCurrentlyPlaying(accountId);
+      setCurrentlyPlaying(cp);
+    } catch (e) {
+      console.error('Failed to fetch currently playing', e);
+    }
+  }, [accountId]);
+
+  useEffect(() => {
+    fetchCurrentlyPlaying();
+    const interval = setInterval(fetchCurrentlyPlaying, 10000); // Poll every 10s
+    return () => clearInterval(interval);
+  }, [fetchCurrentlyPlaying]);
+
   const load = useCallback(async () => {
     try {
       const [all, accounts] = await Promise.all([
@@ -44,21 +59,13 @@ export default function SchedulesScreen() {
         const found = accounts.find((a) => a.id === accountId);
         if (found) setResolvedName(found.displayName);
       }
-
-      if (accountId) {
-        try {
-          const cp = await api.getCurrentlyPlaying(accountId);
-          setCurrentlyPlaying(cp);
-        } catch (e) {
-          console.error('Failed to fetch currently playing', e);
-        }
-      }
+      await fetchCurrentlyPlaying();
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }, [accountId, accountNameParam]);
+  }, [accountId, accountNameParam, fetchCurrentlyPlaying]);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
