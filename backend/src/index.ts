@@ -4,7 +4,7 @@ import { logger } from 'hono/logger';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from './store.js';
-import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded } from './spotify.js';
+import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying } from './spotify.js';
 import { initScheduler, scheduler } from './scheduler.js';
 import { randomUUID } from 'crypto';
 
