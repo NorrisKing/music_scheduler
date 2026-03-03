@@ -115,3 +115,37 @@ export async function startPlaylist(
 
   return true;
 }
+
+export async function getCurrentlyPlaying(accountId: string) {
+  const token = await refreshTokenIfNeeded(accountId);
+  if (!token) return null;
+
+  const res = await fetch('https://api.spotify.com/v1/me/player', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (res.status === 204 || !res.ok) return null;
+  const data: any = await res.json();
+
+  if (!data.item) return null;
+
+  let playlistName = null;
+  if (data.context?.type === 'playlist') {
+    const playlistId = data.context.uri.split(':').pop();
+    const pRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}?fields=name`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (pRes.ok) {
+      const pData: any = await pRes.json();
+      playlistName = pData.name;
+    }
+  }
+
+  return {
+    isPlaying: data.is_playing,
+    trackName: data.item.name,
+    artistName: data.item.artists.map((a: any) => a.name).join(', '),
+    playlistName: playlistName,
+    albumImageUrl: data.item.album.images[0]?.url,
+  };
+}
