@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { PlusCircleIcon, CalendarIcon, PlayCircleIcon, Trash2Icon, ToggleLeftIcon, ToggleRightIcon, ChevronRightIcon, ShuffleIcon, TrashIcon } from 'lucide-react-native';
+import { PlusCircleIcon, CalendarIcon, PlayCircleIcon, Trash2Icon, ToggleLeftIcon, ToggleRightIcon, ChevronRightIcon, ShuffleIcon, TrashIcon, MusicIcon } from 'lucide-react-native';
 import { api, type Schedule } from '@/lib/api';
 
 const DAYS_SHORT = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -22,6 +22,13 @@ export default function SchedulesScreen() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [resolvedName, setResolvedName] = useState<string>(accountNameParam || '');
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<{
+    isPlaying: boolean;
+    trackName: string;
+    artistName: string;
+    playlistName: string | null;
+    albumImageUrl?: string;
+  } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -36,6 +43,15 @@ export default function SchedulesScreen() {
       if (accountId && !accountNameParam) {
         const found = accounts.find((a) => a.id === accountId);
         if (found) setResolvedName(found.displayName);
+      }
+
+      if (accountId) {
+        try {
+          const cp = await api.getCurrentlyPlaying(accountId);
+          setCurrentlyPlaying(cp);
+        } catch (e) {
+          console.error('Failed to fetch currently playing', e);
+        }
       }
     } catch (e) {
       console.error(e);
