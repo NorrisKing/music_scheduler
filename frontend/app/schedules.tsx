@@ -173,6 +173,32 @@ export default function SchedulesScreen() {
           ) : undefined,
         }} />
       <View className="flex-1 bg-background p-4">
+        {accountId && currentlyPlaying && (
+          <View className="mb-6 flex-row items-center gap-3 rounded-2xl bg-[#1DB954]/10 p-3 border border-[#1DB954]/20">
+            <View className="h-12 w-12 items-center justify-center rounded-xl bg-[#1DB954]/20">
+              {currentlyPlaying.albumImageUrl ? (
+                <img 
+                  src={currentlyPlaying.albumImageUrl} 
+                  style={{ width: '100%', height: '100%', borderRadius: 8, objectFit: 'cover' }} 
+                />
+              ) : (
+                <MusicIcon size={24} color="#1DB954" />
+              )}
+            </View>
+            <View className="flex-1">
+              <Text className="text-[10px] font-bold uppercase tracking-wider text-[#1DB954]">
+                {currentlyPlaying.isPlaying ? 'En cours de lecture' : 'En pause'}
+              </Text>
+              <Text className="text-sm font-bold text-foreground" numberOfLines={1}>
+                {currentlyPlaying.trackName}
+              </Text>
+              <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+                {currentlyPlaying.playlistName ? `Playlist : ${currentlyPlaying.playlistName}` : currentlyPlaying.artistName}
+              </Text>
+            </View>
+          </View>
+        )}
+
         {loading ? (
           <ActivityIndicator className="mt-8" color="#1DB954" />
         ) : schedules.length === 0 ? (
