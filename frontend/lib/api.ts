@@ -99,4 +99,12 @@ export const api = {
     request<{ ok: boolean }>(`/schedules/${id}`, { method: 'DELETE' }),
   triggerSchedule: (id: string) =>
     request<{ ok: boolean }>(`/schedules/${id}/trigger`, { method: 'POST' }),
+  getCurrentlyPlaying: (accountId: string) =>
+    request<{
+      isPlaying: boolean;
+      trackName: string;
+      artistName: string;
+      playlistName: string | null;
+      albumImageUrl?: string;
+    } | null>(`/accounts/${accountId}/currently-playing`),
 };
