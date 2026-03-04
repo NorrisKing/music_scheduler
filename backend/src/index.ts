@@ -163,7 +163,17 @@ app.get('/accounts/:id/devices', async (c) => {
 
 app.get('/accounts/:id/currently-playing', async (c) => {
   const { id } = c.req.param();
-  const data = await getCurrentlyPlaying(id);
+  const acc = await db.getAccount(id);
+  const data: any = await getCurrentlyPlaying(id);
+  
+  if (data && !data.playlistName && acc?.lastPushedPlaylistName) {
+    const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 24 * 60 * 60 * 1000);
+    if (isRecent) {
+      data.playlistName = acc.lastPushedPlaylistName;
+      data.isFallback = true;
+    }
+  }
+
   return c.json(data);
 });
 
