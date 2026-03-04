@@ -161,8 +161,8 @@ export default function AccountsScreen() {
           {status && (
             <View className="bg-[#1DB954]/5 border-t border-[#1DB954]/10 p-3 flex-row items-center gap-3">
               {status.albumImageUrl ? (
-                <img 
-                  src={status.albumImageUrl} 
+                <Image 
+                  source={{ uri: status.albumImageUrl }} 
                   style={{ width: 32, height: 32, borderRadius: 4 }} 
                 />
               ) : (
