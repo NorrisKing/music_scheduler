@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { db, type Schedule } from './store.js';
-import { startPlaylist } from './spotify.js';
+import { enqueuePlaylist, startPlaylist } from './spotify.js';
 
 // Map of schedule id -> cron task
 const activeTasks = new Map<string, ReturnType<typeof cron.schedule>>();
