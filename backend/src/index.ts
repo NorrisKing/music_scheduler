@@ -106,7 +106,18 @@ app.get('/accounts/status', async (c) => {
   const statuses = await Promise.all(
     accounts.map(async (acc) => {
       try {
-        const cp = await getCurrentlyPlaying(acc.id);
+        const cp: any = await getCurrentlyPlaying(acc.id);
+        
+        // If Spotify doesn't provide a playlist context, use our fallback
+        if (cp && !cp.playlistName && acc.lastPushedPlaylistName) {
+          // Only show fallback if it was pushed recently (e.g., within last 24 hours)
+          const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 24 * 60 * 60 * 1000);
+          if (isRecent) {
+            cp.playlistName = acc.lastPushedPlaylistName;
+            cp.isFallback = true;
+          }
+        }
+
         return {
           accountId: acc.id,
           displayName: acc.displayName,
