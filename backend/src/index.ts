@@ -310,7 +310,8 @@ app.post('/schedules/:id/trigger', async (c) => {
     schedule.accountId, 
     schedule.playlistId, 
     schedule.playlistName,
-    schedule.deviceId
+    schedule.deviceId,
+    schedule.shuffle
   );
 
   if (ok) {
