@@ -22,6 +22,13 @@ export default function SchedulesScreen() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [resolvedName, setResolvedName] = useState<string>(accountNameParam || '');
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<{
+    isPlaying: boolean;
+    trackName: string;
+    artistName: string;
+    playlistName: string | null;
+    albumImageUrl?: string;
+  } | null>(null);
   const [allStatuses, setAllStatuses] = useState<{
     accountId: string;
     displayName: string;
