@@ -82,6 +82,17 @@ export const api = {
     }),
 
   getAccounts: () => request<SpotifyAccount[]>('/accounts'),
+  getAccountsStatus: () => request<{
+    accountId: string;
+    displayName: string;
+    currentlyPlaying: {
+      isPlaying: boolean;
+      trackName: string;
+      artistName: string;
+      playlistName: string | null;
+      albumImageUrl?: string;
+    } | null;
+  }[]>('/accounts/status'),
   deleteAccount: (id: string) => request<{ ok: boolean }>(`/accounts/${id}`, { method: 'DELETE' }),
 
   getPlaylists: (accountId: string) =>
