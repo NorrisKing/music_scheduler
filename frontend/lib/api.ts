@@ -3,7 +3,7 @@
 const rawUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 export const BACKEND_URL = rawUrl.trim()
   ? rawUrl.trim().replace(/\/$/, '') 
-  : 'http://localhost:3002';
+  : 'https://spotify-scheduler-production.up.railway.app'; // Fallback vers Railway en production
 
 console.log('Backend configuré sur :', BACKEND_URL);
 if (BACKEND_URL.includes('vercel.app')) {
