@@ -8,14 +8,16 @@ import { api } from '@/lib/api';
 interface AccountStatus {
   accountId: string;
   displayName: string;
-  currentlyPlaying: {
-    isPlaying: boolean;
-    trackName: string;
-    artistName: string;
-    playlistName: string | null;
-    albumImageUrl?: string;
-  } | null;
-}
+    currentlyPlaying: {
+      isPlaying: boolean;
+      trackName: string;
+      artistName: string;
+      playlistName: string | null;
+      albumImageUrl?: string;
+      isFallback?: boolean;
+    } | null;
+  }
+
 
 export default function HomeScreen() {
   const { colorScheme, toggleColorScheme } = useColorScheme();
