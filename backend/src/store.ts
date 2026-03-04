@@ -13,6 +13,8 @@ export interface SpotifyAccount {
   refreshToken: string;
   expiresAt: number; // timestamp ms
   addedAt: number;
+  lastPushedPlaylistName?: string;
+  lastPushedAt?: number;
 }
 
 export interface Schedule {
