@@ -13,6 +13,8 @@ import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon, LogOutIcon, MusicIcon
 import { api, BACKEND_URL, type SpotifyAccount } from '@/lib/api';
 import { useSpotifyAuth, finishWebLogin } from '@/lib/useSpotifyAuth';
 
+const CLIENT_ID = process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || '';
+
 interface AccountStatus {
   accountId: string;
   displayName: string;
