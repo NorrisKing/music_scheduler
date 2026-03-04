@@ -23,12 +23,34 @@ function startTask(schedule: Schedule) {
   try {
     const task = cron.schedule(expression, async () => {
         console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
-          const success = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId, schedule.shuffle);
+        
+        // We use enqueuePlaylist for "radio style" gapless transition
+        // This adds tracks to the queue so it plays after the current song ends
+        const success = await enqueuePlaylist(
+          schedule.accountId, 
+          schedule.playlistId, 
+          schedule.playlistName,
+          schedule.deviceId
+        );
+
         if (success) {
           await db.markTriggered(schedule.id);
-          console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started`);
+          console.log(`[Scheduler] OK - playlist ${schedule.playlistId} enqueued`);
         } else {
-          console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
+          // Fallback to hard play if enqueue fails (e.g. no active device)
+          const fallbackSuccess = await startPlaylist(
+            schedule.accountId, 
+            schedule.playlistId, 
+            schedule.deviceId, 
+            schedule.shuffle
+          );
+          if (fallbackSuccess) {
+            await db.markTriggered(schedule.id);
+            await db.updateLastPushed(schedule.accountId, schedule.playlistName);
+            console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started (fallback)`);
+          } else {
+            console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
+          }
         }
       }, { timezone: 'Asia/Manila' });
 
