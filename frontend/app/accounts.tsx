@@ -19,14 +19,16 @@ const CLIENT_ID = process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || '';
 interface AccountStatus {
   accountId: string;
   displayName: string;
-  currentlyPlaying: {
-    isPlaying: boolean;
-    trackName: string;
-    artistName: string;
-    playlistName: string | null;
-    albumImageUrl?: string;
-  } | null;
-}
+    currentlyPlaying: {
+      isPlaying: boolean;
+      trackName: string;
+      artistName: string;
+      playlistName: string | null;
+      albumImageUrl?: string;
+      isFallback?: boolean;
+    } | null;
+  }
+
 
 export default function AccountsScreen() {
   const [accounts, setAccounts] = useState<SpotifyAccount[]>([]);
