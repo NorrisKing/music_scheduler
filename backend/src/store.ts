@@ -139,6 +139,13 @@ export const db = {
     const { error } = await supabase.from('spotify_accounts').update(updates).eq('id', id);
     if (error) throw error;
   },
+  async updateLastPushed(id: string, playlistName: string) {
+    const { error } = await supabase.from('spotify_accounts').update({
+      last_pushed_playlist_name: playlistName,
+      last_pushed_at: Date.now(),
+    }).eq('id', id);
+    if (error) throw error;
+  },
 
   // Schedules
   async getSchedules(): Promise<Schedule[]> {
