@@ -185,9 +185,10 @@ export default function SchedulesScreen() {
           <View className="mb-6 flex-row items-center gap-3 rounded-2xl bg-[#1DB954]/10 p-4 border border-[#1DB954]/20">
             <View className="h-14 w-14 items-center justify-center rounded-xl bg-[#1DB954]/20 overflow-hidden">
               {currentlyPlaying.albumImageUrl ? (
-                <img 
-                  src={currentlyPlaying.albumImageUrl} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                <Image 
+                  source={{ uri: currentlyPlaying.albumImageUrl }} 
+                  style={{ width: '100%', height: '100%' }} 
+                  resizeMode="cover"
                 />
               ) : (
                 <MusicIcon size={28} color="#1DB954" />
