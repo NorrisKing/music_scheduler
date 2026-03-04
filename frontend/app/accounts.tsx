@@ -7,6 +7,7 @@ import {
   Alert,
   ActivityIndicator,
   Platform,
+  Image,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon, LogOutIcon, MusicIcon } from 'lucide-react-native';
