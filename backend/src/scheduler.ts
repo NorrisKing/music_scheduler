@@ -30,7 +30,8 @@ function startTask(schedule: Schedule) {
           schedule.accountId, 
           schedule.playlistId, 
           schedule.playlistName,
-          schedule.deviceId
+          schedule.deviceId,
+          schedule.shuffle
         );
 
         if (success) {
