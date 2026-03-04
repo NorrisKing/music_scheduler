@@ -87,14 +87,17 @@ export default function HomeScreen() {
                       <RadioIcon size={20} color="#1DB954" />
                     )}
                   </View>
-                  <View className="flex-1">
-                    <Text className="text-xs font-black text-foreground" numberOfLines={1}>
-                      {acc.displayName} • <Text className="text-[#1DB954]">{acc.currentlyPlaying?.playlistName || 'Direct'}</Text>
-                    </Text>
-                    <Text className="text-[10px] text-muted-foreground" numberOfLines={1}>
-                      {acc.currentlyPlaying?.trackName} - {acc.currentlyPlaying?.artistName}
-                    </Text>
-                  </View>
+                    <View className="flex-1">
+                      <Text className="text-xs font-black text-foreground" numberOfLines={1}>
+                        {acc.displayName} • <Text className="text-[#1DB954]">{acc.currentlyPlaying?.playlistName || 'Direct'}</Text>
+                        {acc.currentlyPlaying?.isFallback && (
+                          <Text className="text-[8px] font-bold text-muted-foreground italic"> (Planifié)</Text>
+                        )}
+                      </Text>
+                      <Text className="text-[10px] text-muted-foreground" numberOfLines={1}>
+                        {acc.currentlyPlaying?.trackName} - {acc.currentlyPlaying?.artistName}
+                      </Text>
+                    </View>
                 </View>
               ))}
             </View>
