@@ -101,6 +101,29 @@ app.get('/accounts', async (c) => {
   return c.json(accounts);
 });
 
+app.get('/accounts/status', async (c) => {
+  const accounts = await db.getAccounts();
+  const statuses = await Promise.all(
+    accounts.map(async (acc) => {
+      try {
+        const cp = await getCurrentlyPlaying(acc.id);
+        return {
+          accountId: acc.id,
+          displayName: acc.displayName,
+          currentlyPlaying: cp,
+        };
+      } catch (e) {
+        return {
+          accountId: acc.id,
+          displayName: acc.displayName,
+          currentlyPlaying: null,
+        };
+      }
+    })
+  );
+  return c.json(statuses);
+});
+
 app.delete('/accounts/:id', async (c) => {
   const { id } = c.req.param();
   // Stop all schedules for this account
