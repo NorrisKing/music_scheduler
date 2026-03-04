@@ -22,29 +22,36 @@ export default function SchedulesScreen() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [resolvedName, setResolvedName] = useState<string>(accountNameParam || '');
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<{
-    isPlaying: boolean;
-    trackName: string;
-    artistName: string;
-    playlistName: string | null;
-    albumImageUrl?: string;
-  } | null>(null);
+  const [allStatuses, setAllStatuses] = useState<{
+    accountId: string;
+    displayName: string;
+    currentlyPlaying: {
+      isPlaying: boolean;
+      trackName: string;
+      artistName: string;
+      playlistName: string | null;
+      albumImageUrl?: string;
+    } | null;
+  }[]>([]);
 
-  const fetchCurrentlyPlaying = useCallback(async () => {
-    if (!accountId) return;
+  const fetchStatuses = useCallback(async () => {
     try {
-      const cp = await api.getCurrentlyPlaying(accountId);
-      setCurrentlyPlaying(cp);
+      const data = await api.getAccountsStatus();
+      setAllStatuses(data);
+      if (accountId) {
+        const found = data.find(s => s.accountId === accountId);
+        setCurrentlyPlaying(found?.currentlyPlaying || null);
+      }
     } catch (e) {
-      console.error('Failed to fetch currently playing', e);
+      console.error('Failed to fetch statuses', e);
     }
   }, [accountId]);
 
   useEffect(() => {
-    fetchCurrentlyPlaying();
-    const interval = setInterval(fetchCurrentlyPlaying, 10000); // Poll every 10s
+    fetchStatuses();
+    const interval = setInterval(fetchStatuses, 15000);
     return () => clearInterval(interval);
-  }, [fetchCurrentlyPlaying]);
+  }, [fetchStatuses]);
 
   const load = useCallback(async () => {
     try {
@@ -60,13 +67,13 @@ export default function SchedulesScreen() {
         const found = accounts.find((a) => a.id === accountId);
         if (found) setResolvedName(found.displayName);
       }
-      await fetchCurrentlyPlaying();
+      await fetchStatuses();
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }, [accountId, accountNameParam, fetchCurrentlyPlaying]);
+  }, [accountId, accountNameParam, fetchStatuses]);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
