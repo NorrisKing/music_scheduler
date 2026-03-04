@@ -154,9 +154,8 @@ export async function enqueuePlaylist(
 
     // 3. Add tracks to queue
     // We add them in order. 
-    // To avoid too many requests at once, we'll limit to 100 tracks total in the queue 
-    // for now to keep the server responsive, but that's already 5-6 hours of music!
-    const limit = Math.min(allTracks.length, 100);
+    // We'll enqueue up to 200 tracks (about 12 hours of music)
+    const limit = Math.min(allTracks.length, 200);
     for (let i = 0; i < limit; i++) {
       const queueUrl = deviceId
         ? `https://api.spotify.com/v1/me/player/queue?uri=${allTracks[i]}&device_id=${deviceId}`
