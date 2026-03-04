@@ -116,6 +116,51 @@ export async function startPlaylist(
   return true;
 }
 
+export async function enqueuePlaylist(
+  accountId: string,
+  playlistId: string,
+  playlistName: string,
+  deviceId?: string
+) {
+  const token = await refreshTokenIfNeeded(accountId);
+  if (!token) return false;
+
+  try {
+    // 1. Fetch tracks of the playlist
+    const tracksRes = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?fields=items(track(uri))&limit=50`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!tracksRes.ok) return false;
+    const tracksData: any = await tracksRes.json();
+    const tracks = tracksData.items.map((i: any) => i.track.uri).filter(Boolean);
+
+    // 2. Add each track to queue
+    // We do this sequentially to avoid rate limits and ensure order
+    // But we don't add 100 tracks, maybe just the first 20 for radio feel
+    const limit = Math.min(tracks.length, 20);
+    for (let i = 0; i < limit; i++) {
+      const queueUrl = deviceId
+        ? `https://api.spotify.com/v1/me/player/queue?uri=${tracks[i]}&device_id=${deviceId}`
+        : `https://api.spotify.com/v1/me/player/queue?uri=${tracks[i]}`;
+      
+      await fetch(queueUrl, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Small delay to be safe
+      await new Promise(r => setTimeout(r, 100));
+    }
+
+    // 3. Store the "pushed" playlist in DB for fallback display
+    await db.updateLastPushed(accountId, playlistName);
+
+    return true;
+  } catch (err) {
+    console.error('Enqueue playlist error:', err);
+    return false;
+  }
+}
+
 export async function getCurrentlyPlaying(accountId: string) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return null;
