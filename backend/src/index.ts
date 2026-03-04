@@ -303,12 +303,35 @@ app.post('/schedules/:id/trigger', async (c) => {
   const schedule = await db.getSchedule(id);
   if (!schedule) return c.json({ error: 'Schedule not found' }, 404);
 
-  const { startPlaylist } = await import('./spotify.js');
-    const ok = await startPlaylist(schedule.accountId, schedule.playlistId, schedule.deviceId, schedule.shuffle);
+  const { enqueuePlaylist, startPlaylist } = await import('./spotify.js');
+  
+  // Try enqueue first for gapless
+  const ok = await enqueuePlaylist(
+    schedule.accountId, 
+    schedule.playlistId, 
+    schedule.playlistName,
+    schedule.deviceId
+  );
+
   if (ok) {
     await db.markTriggered(id);
     return c.json({ ok: true });
   }
+
+  // Fallback to startPlaylist
+  const fallbackOk = await startPlaylist(
+    schedule.accountId, 
+    schedule.playlistId, 
+    schedule.deviceId, 
+    schedule.shuffle
+  );
+
+  if (fallbackOk) {
+    await db.markTriggered(id);
+    await db.updateLastPushed(schedule.accountId, schedule.playlistName);
+    return c.json({ ok: true });
+  }
+
   return c.json({ error: 'Failed to start playlist. Is Spotify active on a device?' }, 400);
 });
 
