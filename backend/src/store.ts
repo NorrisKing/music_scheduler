@@ -47,6 +47,8 @@ function mapAccountFromDb(data: any): SpotifyAccount {
     refreshToken: data.refresh_token,
     expiresAt: Number(data.expires_at),
     addedAt: Number(data.added_at),
+    lastPushedPlaylistName: data.last_pushed_playlist_name,
+    lastPushedAt: data.last_pushed_at ? Number(data.last_pushed_at) : undefined,
   };
 }
 
@@ -59,6 +61,8 @@ function mapAccountToDb(account: SpotifyAccount) {
     refresh_token: account.refreshToken,
     expires_at: account.expiresAt,
     added_at: account.addedAt,
+    last_pushed_playlist_name: account.lastPushedPlaylistName,
+    last_pushed_at: account.lastPushedAt,
   };
 }
 
