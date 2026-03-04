@@ -182,11 +182,11 @@ export default function AccountsScreen() {
                 <Text className="text-xs font-bold text-foreground" numberOfLines={1}>
                   {status.trackName} • <Text className="text-muted-foreground font-medium">{status.artistName}</Text>
                 </Text>
-                {status.playlistName && (
-                  <Text className="text-[10px] text-[#1DB954] font-medium" numberOfLines={1}>
-                    {status.playlistName}
-                  </Text>
-                )}
+                  {status.playlistName && (
+                    <Text className="text-[10px] text-[#1DB954] font-medium" numberOfLines={1}>
+                      {status.playlistName} {status.isFallback && <Text className="text-muted-foreground italic font-normal">(Planifié)</Text>}
+                    </Text>
+                  )}
               </View>
             </View>
           )}
