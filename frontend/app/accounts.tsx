@@ -140,20 +140,56 @@ export default function AccountsScreen() {
     }
   };
 
-    const renderAccount = ({ item }: { item: SpotifyAccount }) => (
-      <TouchableOpacity
-        onPress={() => router.push({ pathname: '/schedules', params: { accountId: item.id, accountName: item.displayName } })}
-        className="mb-3 flex-row items-center gap-3 rounded-2xl border border-border bg-card p-4 active:opacity-70">
-        <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1DB954]/20">
-          <UserCircleIcon size={28} color="#1DB954" />
-        </View>
-        <View className="flex-1">
-          <Text className="text-foreground font-semibold">{item.displayName}</Text>
-          <Text className="text-sm text-muted-foreground">{item.email}</Text>
-        </View>
-        <ChevronRightIcon size={20} color="#6b7280" />
-      </TouchableOpacity>
-    );
+    const renderAccount = ({ item }: { item: SpotifyAccount }) => {
+      const status = statuses[item.id];
+      return (
+        <TouchableOpacity
+          onPress={() => router.push({ pathname: '/schedules', params: { accountId: item.id, accountName: item.displayName } })}
+          className="mb-3 rounded-2xl border border-border bg-card active:opacity-70 overflow-hidden">
+          <View className="flex-row items-center gap-3 p-4">
+            <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1DB954]/20">
+              <UserCircleIcon size={28} color="#1DB954" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-foreground font-semibold">{item.displayName}</Text>
+              <Text className="text-sm text-muted-foreground">{item.email}</Text>
+            </View>
+            <ChevronRightIcon size={20} color="#6b7280" />
+          </View>
+
+          {status && (
+            <View className="bg-[#1DB954]/5 border-t border-[#1DB954]/10 p-3 flex-row items-center gap-3">
+              {status.albumImageUrl ? (
+                <img 
+                  src={status.albumImageUrl} 
+                  style={{ width: 32, height: 32, borderRadius: 4 }} 
+                />
+              ) : (
+                <View className="h-8 w-8 items-center justify-center rounded-md bg-[#1DB954]/20">
+                  <MusicIcon size={16} color="#1DB954" />
+                </View>
+              )}
+              <View className="flex-1">
+                <View className="flex-row items-center gap-1.5 mb-0.5">
+                  <View className={`h-1.5 w-1.5 rounded-full ${status.isPlaying ? 'bg-[#1DB954]' : 'bg-muted-foreground'}`} />
+                  <Text className="text-[9px] font-black uppercase tracking-widest text-[#1DB954]">
+                    {status.isPlaying ? 'LECTURE' : 'PAUSE'}
+                  </Text>
+                </View>
+                <Text className="text-xs font-bold text-foreground" numberOfLines={1}>
+                  {status.trackName} • <Text className="text-muted-foreground font-medium">{status.artistName}</Text>
+                </Text>
+                {status.playlistName && (
+                  <Text className="text-[10px] text-[#1DB954] font-medium" numberOfLines={1}>
+                    {status.playlistName}
+                  </Text>
+                )}
+              </View>
+            </View>
+          )}
+        </TouchableOpacity>
+      );
+    };
 
   return (
     <>
