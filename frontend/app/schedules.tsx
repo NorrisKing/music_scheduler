@@ -200,9 +200,14 @@ export default function SchedulesScreen() {
                 </Text>
               </View>
               
-              <Text className="text-base font-black text-foreground" numberOfLines={1}>
-                Playlist : <Text className="text-[#1DB954]">{currentlyPlaying.playlistName || 'Lecture seule'}</Text>
-              </Text>
+                <Text className="text-base font-black text-foreground" numberOfLines={1}>
+                  {currentlyPlaying.playlistName ? (
+                    <>Playlist : <Text className="text-[#1DB954]">{currentlyPlaying.playlistName}</Text></>
+                  ) : (
+                    <Text className="text-[#1DB954]">Lecture directe (hors playlist)</Text>
+                  )}
+                </Text>
+
               
               <Text className="text-sm font-medium text-muted-foreground" numberOfLines={1}>
                 {currentlyPlaying.trackName} • {currentlyPlaying.artistName}
