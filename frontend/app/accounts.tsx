@@ -9,32 +9,63 @@ import {
   Platform,
 } from 'react-native';
 import { Stack, router } from 'expo-router';
-import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon, LogOutIcon } from 'lucide-react-native';
+import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon, LogOutIcon, MusicIcon } from 'lucide-react-native';
 import { api, BACKEND_URL, type SpotifyAccount } from '@/lib/api';
 import { useSpotifyAuth, finishWebLogin } from '@/lib/useSpotifyAuth';
 
-const CLIENT_ID = process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || '';
+interface AccountStatus {
+  accountId: string;
+  displayName: string;
+  currentlyPlaying: {
+    isPlaying: boolean;
+    trackName: string;
+    artistName: string;
+    playlistName: string | null;
+    albumImageUrl?: string;
+  } | null;
+}
 
 export default function AccountsScreen() {
   const [accounts, setAccounts] = useState<SpotifyAccount[]>([]);
+  const [statuses, setStatuses] = useState<Record<string, AccountStatus['currentlyPlaying']>>({});
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const { login, ready } = useSpotifyAuth(CLIENT_ID);
 
-    const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-    const load = useCallback(async () => {
-      try {
-        setError(null);
-        const data = await api.getAccounts();
-        setAccounts(data);
-      } catch (e: any) {
-        console.error(e);
-        setError(e.message || 'Impossible de charger les comptes');
-      } finally {
-        setLoading(false);
-      }
-    }, []);
+  const loadStatus = useCallback(async () => {
+    try {
+      const data = await api.getAccountsStatus();
+      const newStatuses: Record<string, AccountStatus['currentlyPlaying']> = {};
+      data.forEach(s => {
+        newStatuses[s.accountId] = s.currentlyPlaying;
+      });
+      setStatuses(newStatuses);
+    } catch (e) {
+      console.error('Failed to fetch statuses', e);
+    }
+  }, []);
+
+  const load = useCallback(async () => {
+    try {
+      setError(null);
+      const data = await api.getAccounts();
+      setAccounts(data);
+      await loadStatus();
+    } catch (e: any) {
+      console.error(e);
+      setError(e.message || 'Impossible de charger les comptes');
+    } finally {
+      setLoading(false);
+    }
+  }, [loadStatus]);
+
+  useEffect(() => {
+    const interval = setInterval(loadStatus, 15000);
+    return () => clearInterval(interval);
+  }, [loadStatus]);
+
 
   const connectingRef = useRef(false);
 
