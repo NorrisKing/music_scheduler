@@ -45,6 +45,7 @@ export default function NewScheduleScreen() {
   const [playlistSearch, setPlaylistSearch] = useState('');
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
+  const [playlistError, setPlaylistError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
 
