@@ -61,10 +61,14 @@ export default function NewScheduleScreen() {
   useEffect(() => {
     if (!selectedAccount) return;
     setLoadingPlaylists(true);
+    setPlaylistError(null);
     api
       .getPlaylists(selectedAccount.id)
-      .then((d) => setPlaylists(d.items || []))
-      .catch(() => setPlaylists([]))
+      .then((d) => {
+        setPlaylists(d.items || []);
+        if ((d.items || []).length === 0) setPlaylistError('Aucune playlist trouvée. Spotify peut être temporairement limité, réessayez dans quelques secondes.');
+      })
+      .catch(() => setPlaylistError('Erreur lors du chargement des playlists. Réessayez.'))
       .finally(() => setLoadingPlaylists(false));
 
     setLoadingDevices(true);
