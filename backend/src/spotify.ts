@@ -41,6 +41,24 @@ export async function refreshTokenIfNeeded(accountId: string): Promise<string | 
   }
 }
 
+async function spotifyFetch(url: string, token: string, options?: RequestInit): Promise<Response> {
+  let retries = 3;
+  while (retries-- > 0) {
+    const res = await fetch(url, {
+      ...options,
+      headers: { Authorization: `Bearer ${token}`, ...(options?.headers ?? {}) },
+    });
+    if (res.status === 429) {
+      const retryAfter = parseInt(res.headers.get('Retry-After') || '2', 10);
+      console.warn(`[Spotify] Rate limited on ${url}, retrying after ${retryAfter}s...`);
+      await new Promise(r => setTimeout(r, (retryAfter + 1) * 1000));
+      continue;
+    }
+    return res;
+  }
+  throw new Error('Spotify rate limit: max retries exceeded');
+}
+
 export async function getSpotifyPlaylists(accountId: string) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return null;
@@ -49,13 +67,19 @@ export async function getSpotifyPlaylists(accountId: string) {
   let url: string | null = 'https://api.spotify.com/v1/me/playlists?limit=50';
 
   while (url) {
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) break;
-    const data: any = await res.json();
-    allItems.push(...data.items);
-    url = data.next ?? null;
+    try {
+      const res = await spotifyFetch(url, token);
+      if (!res.ok) {
+        console.error(`[Spotify] getPlaylists error ${res.status} for ${accountId}`);
+        break;
+      }
+      const data: any = await res.json();
+      allItems.push(...data.items);
+      url = data.next ?? null;
+    } catch (e) {
+      console.error('[Spotify] getPlaylists fetch error:', e);
+      break;
+    }
   }
 
   return { items: allItems, total: allItems.length };
