@@ -167,8 +167,25 @@ export default function NewScheduleScreen() {
               <SectionTitle>2. Playlist</SectionTitle>
               {loadingPlaylists ? (
                 <ActivityIndicator color="#1DB954" />
-              ) : playlists.length === 0 ? (
-                <Text className="text-muted-foreground">Aucune playlist trouvée.</Text>
+              ) : playlistError ? (
+                <View className="rounded-2xl border border-yellow-500/40 bg-yellow-500/10 p-4 gap-3">
+                  <Text className="text-yellow-300 text-sm">{playlistError}</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setPlaylistError(null);
+                      setLoadingPlaylists(true);
+                      api.getPlaylists(selectedAccount!.id)
+                        .then((d) => {
+                          setPlaylists(d.items || []);
+                          if ((d.items || []).length === 0) setPlaylistError('Toujours vide. Réessayez dans quelques secondes.');
+                        })
+                        .catch(() => setPlaylistError('Erreur. Réessayez.'))
+                        .finally(() => setLoadingPlaylists(false));
+                    }}
+                    className="rounded-xl bg-yellow-500/20 border border-yellow-500/40 py-2 items-center">
+                    <Text className="text-yellow-300 font-semibold text-sm">Réessayer</Text>
+                  </TouchableOpacity>
+                </View>
               ) : (
                 <>
                   <View className="mb-3 flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2">
