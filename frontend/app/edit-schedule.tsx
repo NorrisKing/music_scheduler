@@ -49,6 +49,7 @@ export default function EditScheduleScreen() {
   const [playlistSearch, setPlaylistSearch] = useState('');
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [loadingDevices, setLoadingDevices] = useState(false);
+  const [playlistError, setPlaylistError] = useState<string | null>(null);
   const [conflictError, setConflictError] = useState<string | null>(null);
   const [savedDeviceId, setSavedDeviceId] = useState<string | null>(null);
   const [savedDeviceName, setSavedDeviceName] = useState<string | null>(null);
