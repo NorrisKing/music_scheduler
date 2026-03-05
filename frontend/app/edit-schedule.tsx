@@ -83,29 +83,30 @@ export default function EditScheduleScreen() {
           };
           setSelectedPlaylist(savedPlaylist);
 
-          if (account) {
-            setLoadingPlaylists(true);
-            setLoadingDevices(true);
-            try {
-              const [pl, dv] = await Promise.all([
-                api.getPlaylists(account.id),
-                api.getDevices(account.id),
-              ]);
-              const playlistItems = pl.items || [];
-              const deviceItems = dv.devices || [];
-              setPlaylists(playlistItems);
-              setDevices(deviceItems);
-              // Remplacer par la version complète si trouvée dans la liste Spotify
-              const found = playlistItems.find((p) => p.id === schedule.playlistId);
-              if (found) setSelectedPlaylist(found);
-              setSelectedDevice(deviceItems.find((d) => d.id === schedule.deviceId) || null);
-            } catch {
-              // Si chargement des playlists échoue, on garde la playlist sauvegardée
-            } finally {
-              setLoadingPlaylists(false);
-              setLoadingDevices(false);
+            if (account) {
+              setLoadingPlaylists(true);
+              setLoadingDevices(true);
+              try {
+                const [pl, dv] = await Promise.all([
+                  api.getPlaylists(account.id),
+                  api.getDevices(account.id),
+                ]);
+                const playlistItems = pl.items || [];
+                const deviceItems = dv.devices || [];
+                setPlaylists(playlistItems);
+                setDevices(deviceItems);
+                if (playlistItems.length === 0) setPlaylistError('Spotify temporairement limité. Réessayez dans quelques secondes.');
+                // Remplacer par la version complète si trouvée dans la liste Spotify
+                const found = playlistItems.find((p) => p.id === schedule.playlistId);
+                if (found) setSelectedPlaylist(found);
+                setSelectedDevice(deviceItems.find((d) => d.id === schedule.deviceId) || null);
+              } catch {
+                setPlaylistError('Erreur lors du chargement des playlists. Réessayez.');
+              } finally {
+                setLoadingPlaylists(false);
+                setLoadingDevices(false);
+              }
             }
-          }
       } catch (e) {
         console.error(e);
       } finally {
