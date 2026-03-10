@@ -36,6 +36,7 @@ function startTask(schedule: Schedule) {
 
         if (success) {
           await db.markTriggered(schedule.id);
+          await db.updateLastPushed(schedule.accountId, schedule.playlistName);
           console.log(`[Scheduler] OK - playlist ${schedule.playlistId} enqueued`);
         } else {
           // Fallback to hard play if enqueue fails (e.g. no active device)

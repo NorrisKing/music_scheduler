@@ -108,13 +108,11 @@ app.get('/accounts/status', async (c) => {
       try {
         const cp: any = await getCurrentlyPlaying(acc.id);
         
-        // If Spotify doesn't provide a playlist context, use our fallback
-        if (cp && !cp.playlistName && acc.lastPushedPlaylistName) {
-          // Only show fallback if it was pushed recently (e.g., within last 24 hours)
-          const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 24 * 60 * 60 * 1000);
+        // lastPushedPlaylistName takes priority over Spotify context (enqueue doesn't change context)
+        if (cp && acc.lastPushedPlaylistName) {
+          const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 2 * 60 * 60 * 1000);
           if (isRecent) {
             cp.playlistName = acc.lastPushedPlaylistName;
-            cp.isFallback = true;
           }
         }
 
@@ -166,11 +164,10 @@ app.get('/accounts/:id/currently-playing', async (c) => {
   const acc = await db.getAccount(id);
   const data: any = await getCurrentlyPlaying(id);
   
-  if (data && !data.playlistName && acc?.lastPushedPlaylistName) {
-    const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 24 * 60 * 60 * 1000);
+  if (data && acc?.lastPushedPlaylistName) {
+    const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 2 * 60 * 60 * 1000);
     if (isRecent) {
       data.playlistName = acc.lastPushedPlaylistName;
-      data.isFallback = true;
     }
   }
 
