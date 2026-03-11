@@ -213,70 +213,29 @@ export async function fadeAndStartPlaylist(
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
 
-  const TRIGGER_BEFORE_END_MS = 15_000;
-  const FADE_STEPS = 10;
-  const FADE_STEP_MS = 500; // 10 × 500ms = 5s fade out
-
-  // 1. Get current playback state
+  // 1. Get current volume (default 100 if paused or unavailable)
   const stateRes = await fetch('https://api.spotify.com/v1/me/player', {
     headers: { Authorization: `Bearer ${token}` },
   });
-  let originalVolume = 50;
-  let waitBeforeFade = 0;
-
-  if (stateRes.ok) {
-    const state: any = await stateRes.json();
-    originalVolume = state?.device?.volume_percent ?? 50;
-    const durationMs: number = state?.item?.duration_ms ?? 0;
-    const progressMs: number = state?.progress_ms ?? 0;
-    const remainingMs = durationMs - progressMs;
-    if (remainingMs > TRIGGER_BEFORE_END_MS) {
-      waitBeforeFade = remainingMs - TRIGGER_BEFORE_END_MS;
-      console.log(`[Spotify] Waiting ${Math.round(waitBeforeFade / 1000)}s before fade for ${accountId}`);
-    }
+  let originalVolume = 100;
+  if (stateRes.ok && stateRes.status !== 204) {
+    try {
+      const state: any = await stateRes.json();
+      originalVolume = state?.device?.volume_percent ?? 100;
+    } catch { /* keep 100 */ }
   }
 
-  // 2. Wait until 15s before end of current track
-  if (waitBeforeFade > 0) await new Promise(r => setTimeout(r, waitBeforeFade));
-
-  // 3. Fade out over 5 seconds
-  for (let i = 1; i <= FADE_STEPS; i++) {
-    const vol = Math.round(originalVolume * (1 - i / FADE_STEPS));
+  // 2. Fade out over 5 seconds (10 steps × 500ms)
+  for (let i = 1; i <= 10; i++) {
+    const vol = Math.round(originalVolume * (1 - i / 10));
     await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${vol}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token}` },
     });
-    await new Promise(r => setTimeout(r, FADE_STEP_MS));
+    await new Promise(r => setTimeout(r, 500));
   }
 
-  // 4. Fetch playlist tracks (volume is 0, inaudible)
-  let trackUris: string[] = [];
-  let nextUrl: string | null = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?fields=items(track(uri)),next&limit=100`;
-  while (nextUrl && trackUris.length < 500) {
-    const res = await fetch(nextUrl, { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) break;
-    const data: any = await res.json();
-    trackUris.push(...data.items.map((i: any) => i.track?.uri).filter(Boolean));
-    nextUrl = data.next;
-  }
-
-  if (trackUris.length === 0) {
-    // Restore volume and bail
-    await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${originalVolume}`, {
-      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
-    });
-    return false;
-  }
-
-  // 5. Shuffle if requested
-  if (shuffle) {
-    for (let i = trackUris.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [trackUris[i], trackUris[j]] = [trackUris[j], trackUris[i]];
-    }
-  }
-
-  // 6. Start new playlist using uris — instantly replaces queue, no clearing needed
+  // 3. Start new playlist with context_uri (Spotify highlights it green, handles looping)
   const playUrl = deviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
@@ -284,7 +243,7 @@ export async function fadeAndStartPlaylist(
   const playRes = await fetch(playUrl, {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ uris: trackUris.slice(0, 500) }),
+    body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` }),
   });
 
   if (!playRes.ok && playRes.status !== 204) {
@@ -294,19 +253,25 @@ export async function fadeAndStartPlaylist(
     return false;
   }
 
-  // 7. Fade in smoothly over 4 seconds using easing curve
-  const FADE_IN_STEPS = 16;
-  const FADE_IN_STEP_MS = 250; // 16 × 250ms = 4s fade in
-  for (let i = 1; i <= FADE_IN_STEPS; i++) {
-    // Ease-in-out curve: starts slow, accelerates, ends slow
-    const t = i / FADE_IN_STEPS;
+  // 4. Set shuffle and repeat
+  if (shuffle !== undefined) {
+    await fetch(`https://api.spotify.com/v1/me/player/shuffle?state=${shuffle}`, {
+      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
+    });
+  }
+  await fetch('https://api.spotify.com/v1/me/player/repeat?state=context', {
+    method: 'PUT', headers: { Authorization: `Bearer ${token}` },
+  });
+
+  // 5. Fade in smoothly over 4 seconds (ease-in curve, 16 steps × 250ms)
+  for (let i = 1; i <= 16; i++) {
+    const t = i / 16;
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const vol = Math.round(originalVolume * eased);
     await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${vol}`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
+      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
     });
-    await new Promise(r => setTimeout(r, FADE_IN_STEP_MS));
+    await new Promise(r => setTimeout(r, 250));
   }
 
   return true;

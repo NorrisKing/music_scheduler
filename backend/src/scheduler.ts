@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { db, type Schedule } from './store.js';
-import { enqueuePlaylist, startPlaylist } from './spotify.js';
+import { fadeAndStartPlaylist, startPlaylist } from './spotify.js';
 
 // Map of schedule id -> cron task
 const activeTasks = new Map<string, ReturnType<typeof cron.schedule>>();
@@ -22,39 +22,35 @@ function startTask(schedule: Schedule) {
 
   try {
     const task = cron.schedule(expression, async () => {
-        console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
-        
-        // We use enqueuePlaylist for "radio style" gapless transition
-        // This adds tracks to the queue so it plays after the current song ends
-        const success = await enqueuePlaylist(
-          schedule.accountId, 
-          schedule.playlistId, 
-          schedule.playlistName,
+      console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
+
+      const success = await fadeAndStartPlaylist(
+        schedule.accountId,
+        schedule.playlistId,
+        schedule.deviceId,
+        schedule.shuffle
+      );
+
+      if (success) {
+        await db.markTriggered(schedule.id);
+        await db.updateLastPushed(schedule.accountId, schedule.playlistName);
+        console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started with fade`);
+      } else {
+        const fallbackSuccess = await startPlaylist(
+          schedule.accountId,
+          schedule.playlistId,
           schedule.deviceId,
           schedule.shuffle
         );
-
-        if (success) {
+        if (fallbackSuccess) {
           await db.markTriggered(schedule.id);
           await db.updateLastPushed(schedule.accountId, schedule.playlistName);
-          console.log(`[Scheduler] OK - playlist ${schedule.playlistId} enqueued`);
+          console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started (fallback)`);
         } else {
-          // Fallback to hard play if enqueue fails (e.g. no active device)
-          const fallbackSuccess = await startPlaylist(
-            schedule.accountId, 
-            schedule.playlistId, 
-            schedule.deviceId, 
-            schedule.shuffle
-          );
-          if (fallbackSuccess) {
-            await db.markTriggered(schedule.id);
-            await db.updateLastPushed(schedule.accountId, schedule.playlistName);
-            console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started (fallback)`);
-          } else {
-            console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
-          }
+          console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
         }
-      }, { timezone: 'Asia/Manila' });
+      }
+    }, { timezone: 'Asia/Manila' });
 
     activeTasks.set(schedule.id, task);
     console.log(`[Scheduler] Registered: ${schedule.id} (${expression})`);
@@ -69,11 +65,17 @@ function stopTask(scheduleId: string) {
     task.stop();
     activeTasks.delete(scheduleId);
     console.log(`[Scheduler] Stopped: ${scheduleId}`);
+  } else {
+    console.log(`[Scheduler] Unregister: ${scheduleId} not found in activeTasks`);
   }
 }
 
 export async function initScheduler() {
-  // Load all active schedules at startup
+  // Stop all existing tasks first to prevent ghost tasks
+  for (const [id, task] of activeTasks) {
+    task.stop();
+    activeTasks.delete(id);
+  }
   const all = await db.getSchedules();
   const schedules = all.filter((s) => s.active);
   for (const schedule of schedules) {
