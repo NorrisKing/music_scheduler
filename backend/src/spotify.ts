@@ -140,69 +140,6 @@ export async function startPlaylist(
   return true;
 }
 
-export async function enqueuePlaylist(
-  accountId: string,
-  playlistId: string,
-  playlistName: string,
-  deviceId?: string,
-  shuffle?: boolean
-) {
-  const token = await refreshTokenIfNeeded(accountId);
-  if (!token) return false;
-
-  try {
-    // 1. Fetch ALL tracks of the playlist (up to 100 per request, max 500 total)
-    let allTracks: string[] = [];
-    let url: string | null = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?fields=items(track(uri)),next&limit=100`;
-    
-    while (url && allTracks.length < 500) {
-      const tracksRes = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!tracksRes.ok) break;
-      const tracksData: any = await tracksRes.json();
-      const tracks = tracksData.items.map((i: any) => i.track?.uri).filter(Boolean);
-      allTracks.push(...tracks);
-      url = tracksData.next;
-    }
-
-    if (allTracks.length === 0) return false;
-
-    // 2. Handle shuffle manually if requested
-    if (shuffle) {
-      for (let i = allTracks.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [allTracks[i], allTracks[j]] = [allTracks[j], allTracks[i]];
-      }
-    }
-
-    // 3. Add tracks to queue
-    // We add them in order. 
-    // We'll enqueue up to 200 tracks (about 12 hours of music)
-    const limit = Math.min(allTracks.length, 200);
-    for (let i = 0; i < limit; i++) {
-      const queueUrl = deviceId
-        ? `https://api.spotify.com/v1/me/player/queue?uri=${allTracks[i]}&device_id=${deviceId}`
-        : `https://api.spotify.com/v1/me/player/queue?uri=${allTracks[i]}`;
-      
-      await fetch(queueUrl, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      // Small delay between track enqueues to avoid rate limiting
-      if (i % 5 === 0) await new Promise(r => setTimeout(r, 100));
-    }
-
-    // 4. Store the "pushed" playlist in DB for fallback display
-    await db.updateLastPushed(accountId, playlistName);
-
-    return true;
-  } catch (err) {
-    console.error('Enqueue playlist error:', err);
-    return false;
-  }
-}
 
 export async function fadeAndStartPlaylist(
   accountId: string,

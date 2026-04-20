@@ -4,7 +4,7 @@ import { logger } from 'hono/logger';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from './store.js';
-import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying } from './spotify.js';
+import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying, startPlaylist, fadeAndStartPlaylist } from './spotify.js';
 import { initScheduler, scheduler } from './scheduler.js';
 import { randomUUID } from 'crypto';
 
@@ -300,27 +300,24 @@ app.post('/schedules/:id/trigger', async (c) => {
   const schedule = await db.getSchedule(id);
   if (!schedule) return c.json({ error: 'Schedule not found' }, 404);
 
-  const { enqueuePlaylist, startPlaylist } = await import('./spotify.js');
-  
-  // Try enqueue first for gapless
-  const ok = await enqueuePlaylist(
-    schedule.accountId, 
-    schedule.playlistId, 
-    schedule.playlistName,
+  // Try fade+start first (best experience), then direct start as fallback
+  const ok = await fadeAndStartPlaylist(
+    schedule.accountId,
+    schedule.playlistId,
     schedule.deviceId,
     schedule.shuffle
   );
 
   if (ok) {
     await db.markTriggered(id);
+    await db.updateLastPushed(schedule.accountId, schedule.playlistName);
     return c.json({ ok: true });
   }
 
-  // Fallback to startPlaylist
   const fallbackOk = await startPlaylist(
-    schedule.accountId, 
-    schedule.playlistId, 
-    schedule.deviceId, 
+    schedule.accountId,
+    schedule.playlistId,
+    schedule.deviceId,
     schedule.shuffle
   );
 

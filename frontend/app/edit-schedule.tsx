@@ -9,12 +9,10 @@ import {
   TextInput,
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon, ShuffleIcon } from 'lucide-react-native';
+import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon, ShuffleIcon, RepeatIcon } from 'lucide-react-native';
 import { api, type SpotifyAccount, type SpotifyPlaylist, type SpotifyDevice } from '@/lib/api';
 
 const DAYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-const HOURS = Array.from({ length: 24 }, (_, i) => i);
-const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
 
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
@@ -27,7 +25,7 @@ function DeviceIcon({ type }: { type: string }) {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <Text className="mb-3 mt-6 text-base font-bold text-foreground">{children}</Text>;
+  return <Text className="mb-3 mt-6 text-sm font-bold uppercase tracking-widest text-muted-foreground">{children}</Text>;
 }
 
 export default function EditScheduleScreen() {
@@ -43,8 +41,7 @@ export default function EditScheduleScreen() {
   const [selectedPlaylist, setSelectedPlaylist] = useState<SpotifyPlaylist | null>(null);
   const [selectedDevice, setSelectedDevice] = useState<SpotifyDevice | null>(null);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const [hour, setHour] = useState(8);
-  const [minute, setMinute] = useState(0);
+  const [timeValue, setTimeValue] = useState('08:00');
   const [shuffle, setShuffle] = useState(true);
   const [playlistSearch, setPlaylistSearch] = useState('');
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
@@ -54,6 +51,9 @@ export default function EditScheduleScreen() {
   const [savedDeviceId, setSavedDeviceId] = useState<string | null>(null);
   const [savedDeviceName, setSavedDeviceName] = useState<string | null>(null);
 
+  const hour = parseInt(timeValue.split(':')[0] || '8', 10);
+  const minute = parseInt(timeValue.split(':')[1] || '0', 10);
+
   useEffect(() => {
     async function init() {
       try {
@@ -61,52 +61,49 @@ export default function EditScheduleScreen() {
           api.getSchedule(id),
           api.getAccounts(),
         ]);
-          setName(schedule.name || '');
-          setSchedulePlaylistName(schedule.playlistName || '');
+        setName(schedule.name || '');
+        setSchedulePlaylistName(schedule.playlistName || '');
         setSelectedDays(schedule.days);
-        setHour(schedule.hour);
-        setMinute(schedule.minute);
+        setTimeValue(`${pad(schedule.hour)}:${pad(schedule.minute)}`);
         setShuffle(schedule.shuffle ?? true);
 
-          const account = accts.find((a) => a.id === schedule.accountId) || null;
-            setSelectedAccount(account);
-            setSavedDeviceId(schedule.deviceId || null);
-            setSavedDeviceName(schedule.deviceName || null);
+        const account = accts.find((a) => a.id === schedule.accountId) || null;
+        setSelectedAccount(account);
+        setSavedDeviceId(schedule.deviceId || null);
+        setSavedDeviceName(schedule.deviceName || null);
 
-            // Pré-sélectionner la playlist depuis les données sauvegardées, immédiatement
-          const savedPlaylist: SpotifyPlaylist = {
-            id: schedule.playlistId,
-            name: schedule.playlistName,
-            images: schedule.playlistImageUrl ? [{ url: schedule.playlistImageUrl }] : [],
-            tracks: { total: 0 },
-            owner: { display_name: '' },
-          };
-          setSelectedPlaylist(savedPlaylist);
+        const savedPlaylist: SpotifyPlaylist = {
+          id: schedule.playlistId,
+          name: schedule.playlistName,
+          images: schedule.playlistImageUrl ? [{ url: schedule.playlistImageUrl }] : [],
+          tracks: { total: 0 },
+          owner: { display_name: '' },
+        };
+        setSelectedPlaylist(savedPlaylist);
 
-            if (account) {
-              setLoadingPlaylists(true);
-              setLoadingDevices(true);
-              try {
-                const [pl, dv] = await Promise.all([
-                  api.getPlaylists(account.id),
-                  api.getDevices(account.id),
-                ]);
-                const playlistItems = pl.items || [];
-                const deviceItems = dv.devices || [];
-                setPlaylists(playlistItems);
-                setDevices(deviceItems);
-                if (playlistItems.length === 0) setPlaylistError('Spotify temporairement limité. Réessayez dans quelques secondes.');
-                // Remplacer par la version complète si trouvée dans la liste Spotify
-                const found = playlistItems.find((p) => p.id === schedule.playlistId);
-                if (found) setSelectedPlaylist(found);
-                setSelectedDevice(deviceItems.find((d) => d.id === schedule.deviceId) || null);
-              } catch {
-                setPlaylistError('Erreur lors du chargement des playlists. Réessayez.');
-              } finally {
-                setLoadingPlaylists(false);
-                setLoadingDevices(false);
-              }
-            }
+        if (account) {
+          setLoadingPlaylists(true);
+          setLoadingDevices(true);
+          try {
+            const [pl, dv] = await Promise.all([
+              api.getPlaylists(account.id),
+              api.getDevices(account.id),
+            ]);
+            const playlistItems = pl.items || [];
+            const deviceItems = dv.devices || [];
+            setPlaylists(playlistItems);
+            setDevices(deviceItems);
+            if (playlistItems.length === 0) setPlaylistError('Spotify temporairement limité. Réessayez dans quelques secondes.');
+            const found = playlistItems.find((p) => p.id === schedule.playlistId);
+            if (found) setSelectedPlaylist(found);
+            setSelectedDevice(deviceItems.find((d) => d.id === schedule.deviceId) || null);
+          } catch {
+            setPlaylistError('Erreur lors du chargement des playlists.');
+          } finally {
+            setLoadingPlaylists(false);
+            setLoadingDevices(false);
+          }
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -130,47 +127,44 @@ export default function EditScheduleScreen() {
       const dv = await api.getDevices(selectedAccount.id);
       const deviceItems = dv.devices || [];
       setDevices(deviceItems);
-      // Mettre à jour l'appareil sélectionné si trouvé dans la nouvelle liste
       if (selectedDevice) {
         const found = deviceItems.find((d) => d.id === selectedDevice.id);
         if (found) setSelectedDevice(found);
       }
-    } catch {
-      // silencieux
-    } finally {
+    } catch { /* silencieux */ } finally {
       setLoadingDevices(false);
     }
   };
 
-    const handleSave = async () => {
-      if (!selectedAccount) return window.alert('Sélectionnez un compte Spotify');
-      if (!selectedPlaylist) return window.alert('Sélectionnez une playlist');
-      if (selectedDays.length === 0) return window.alert('Sélectionnez au moins un jour');
-      setConflictError(null);
-      setSaving(true);
-      try {
-        await api.updateSchedule(id, {
-          name: name.trim() || undefined,
-          accountId: selectedAccount.id,
-          playlistId: selectedPlaylist.id,
-          playlistName: selectedPlaylist.name,
-          playlistImageUrl: selectedPlaylist.images?.[0]?.url,
-          days: selectedDays,
-          hour,
-          minute,
-          deviceId: selectedDevice?.id,
-          deviceName: selectedDevice?.name,
-          shuffle,
-        });
-        router.back();
-      } catch (e: any) {
-        setConflictError(e.message || 'Impossible de sauvegarder');
-      } finally {
-        setSaving(false);
-      }
-    };
+  const handleSave = async () => {
+    if (!selectedAccount) return window.alert('Sélectionnez un compte Spotify');
+    if (!selectedPlaylist) return window.alert('Sélectionnez une playlist');
+    if (selectedDays.length === 0) return window.alert('Sélectionnez au moins un jour');
+    setConflictError(null);
+    setSaving(true);
+    try {
+      await api.updateSchedule(id, {
+        name: name.trim() || undefined,
+        accountId: selectedAccount.id,
+        playlistId: selectedPlaylist.id,
+        playlistName: selectedPlaylist.name,
+        playlistImageUrl: selectedPlaylist.images?.[0]?.url,
+        days: selectedDays,
+        hour,
+        minute,
+        deviceId: selectedDevice?.id,
+        deviceName: selectedDevice?.name,
+        shuffle,
+      });
+      router.back();
+    } catch (e: any) {
+      setConflictError(e.message || 'Impossible de sauvegarder');
+    } finally {
+      setSaving(false);
+    }
+  };
 
-  const pageTitle = name.trim() || selectedPlaylist?.name || schedulePlaylistName || 'Modifier la planification';
+  const pageTitle = name.trim() || selectedPlaylist?.name || schedulePlaylistName || 'Modifier';
 
   if (loading) {
     return (
@@ -190,80 +184,76 @@ export default function EditScheduleScreen() {
   return (
     <>
       <Stack.Screen options={{ title: pageTitle }} />
-      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-
-        {/* Titre affiché en haut */}
-        {(name.trim() || selectedPlaylist?.name || schedulePlaylistName) && (
-          <Text className="mb-4 text-xl font-bold text-foreground" numberOfLines={2}>
-            {name.trim() || selectedPlaylist?.name || schedulePlaylistName}
-          </Text>
-        )}
+      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ padding: 16, paddingBottom: 48 }}>
 
         {/* Nom */}
-        <SectionTitle>Nom de la planification</SectionTitle>
+        <SectionTitle>Nom (optionnel)</SectionTitle>
         <View className="rounded-2xl border border-border bg-card px-4 py-3">
           <TextInput
             value={name}
             onChangeText={setName}
-            placeholder="Ex : Matin ambiance, Soirée rock…"
+            placeholder="Ex : Matin café, Soirée détente…"
             placeholderTextColor="#6b7280"
             className="text-foreground text-base"
           />
         </View>
 
-          {/* 1. Compte */}
-          {selectedAccount && (
-            <>
-              <SectionTitle>1. Compte Spotify</SectionTitle>
-              <View className="flex-row items-center gap-3 rounded-2xl border border-[#1DB954] bg-[#1DB954]/10 p-4">
-                <View className="h-10 w-10 rounded-full bg-[#1DB954]/20 items-center justify-center">
-                  <Text className="font-bold text-[#1DB954]">{selectedAccount.displayName[0]?.toUpperCase()}</Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="font-semibold text-foreground">{selectedAccount.displayName}</Text>
-                  <Text className="text-xs text-muted-foreground">{selectedAccount.email}</Text>
-                </View>
-                <CheckCircleIcon size={20} color="#1DB954" />
+        {/* Compte — affiché mais non modifiable */}
+        {selectedAccount && (
+          <>
+            <SectionTitle>1 · Compte Spotify</SectionTitle>
+            <View className="flex-row items-center gap-3 rounded-2xl border border-[#1DB954] bg-[#1DB954]/10 p-4">
+              <View className="h-10 w-10 rounded-full bg-[#1DB954]/20 items-center justify-center">
+                <Text className="font-bold text-[#1DB954]">{selectedAccount.displayName[0]?.toUpperCase()}</Text>
               </View>
-            </>
-          )}
+              <View className="flex-1">
+                <Text className="font-semibold text-foreground">{selectedAccount.displayName}</Text>
+                <Text className="text-xs text-muted-foreground">{selectedAccount.email}</Text>
+              </View>
+              <CheckCircleIcon size={20} color="#1DB954" />
+            </View>
+          </>
+        )}
 
-          {/* 2. Playlist */}
-          {selectedAccount && (
-            <>
-              <SectionTitle>2. Playlist</SectionTitle>
-              {loadingPlaylists ? (
+        {/* 2. Playlist */}
+        {selectedAccount && (
+          <>
+            <SectionTitle>2 · Playlist</SectionTitle>
+            {loadingPlaylists ? (
+              <View className="py-6 items-center">
                 <ActivityIndicator color="#1DB954" />
-              ) : playlistError ? (
-                <View className="rounded-2xl border border-yellow-500/40 bg-yellow-500/10 p-4 gap-3">
-                  <Text className="text-yellow-300 text-sm">{playlistError}</Text>
-                  <TouchableOpacity
-                    onPress={async () => {
-                      setPlaylistError(null);
-                      setLoadingPlaylists(true);
-                      try {
-                        const pl = await api.getPlaylists(selectedAccount!.id);
-                        const items = pl.items || [];
-                        setPlaylists(items);
-                        if (items.length === 0) setPlaylistError('Toujours vide. Réessayez dans quelques secondes.');
-                        else {
-                          const found = items.find((p) => p.id === selectedPlaylist?.id);
-                          if (found) setSelectedPlaylist(found);
-                        }
-                      } catch {
-                        setPlaylistError('Erreur. Réessayez.');
-                      } finally {
-                        setLoadingPlaylists(false);
+                <Text className="mt-2 text-xs text-muted-foreground">Chargement des playlists…</Text>
+              </View>
+            ) : playlistError ? (
+              <View className="rounded-2xl border border-yellow-500/40 bg-yellow-500/10 p-4 gap-3">
+                <Text className="text-yellow-300 text-sm">{playlistError}</Text>
+                <TouchableOpacity
+                  onPress={async () => {
+                    setPlaylistError(null);
+                    setLoadingPlaylists(true);
+                    try {
+                      const pl = await api.getPlaylists(selectedAccount!.id);
+                      const items = pl.items || [];
+                      setPlaylists(items);
+                      if (items.length === 0) setPlaylistError('Toujours vide. Réessayez.');
+                      else {
+                        const found = items.find((p) => p.id === selectedPlaylist?.id);
+                        if (found) setSelectedPlaylist(found);
                       }
-                    }}
-                    className="rounded-xl bg-yellow-500/20 border border-yellow-500/40 py-2 items-center">
-                    <Text className="text-yellow-300 font-semibold text-sm">Réessayer</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
+                    } catch {
+                      setPlaylistError('Erreur. Réessayez.');
+                    } finally {
+                      setLoadingPlaylists(false);
+                    }
+                  }}
+                  className="rounded-xl bg-yellow-500/20 border border-yellow-500/40 py-2 items-center">
+                  <Text className="text-yellow-300 font-semibold text-sm">Réessayer</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
               <>
-                <View className="mb-3 flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2">
-                  <MusicIcon size={16} color="#6b7280" />
+                <View className="mb-3 flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2.5">
+                  <MusicIcon size={15} color="#6b7280" />
                   <TextInput
                     value={playlistSearch}
                     onChangeText={setPlaylistSearch}
@@ -273,11 +263,11 @@ export default function EditScheduleScreen() {
                   />
                   {playlistSearch.length > 0 && (
                     <TouchableOpacity onPress={() => setPlaylistSearch('')}>
-                      <Text className="text-muted-foreground text-base px-1">✕</Text>
+                      <Text className="text-muted-foreground text-sm px-1">✕</Text>
                     </TouchableOpacity>
                   )}
                 </View>
-                <View style={{ maxHeight: 320 }}>
+                <View style={{ maxHeight: 300 }}>
                   <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
                     {filteredPlaylists.map((p) => (
                       <TouchableOpacity
@@ -285,10 +275,10 @@ export default function EditScheduleScreen() {
                         onPress={() => setSelectedPlaylist(p)}
                         className={`mb-2 flex-row items-center gap-3 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
                         {p.images?.[0]?.url ? (
-                          <img src={p.images[0].url} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                          <img src={p.images[0].url} style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
                         ) : (
-                          <View className="h-12 w-12 rounded-lg bg-muted items-center justify-center flex-shrink-0">
-                            <MusicIcon size={20} color="#6b7280" />
+                          <View className="h-11 w-11 rounded-lg bg-muted items-center justify-center flex-shrink-0">
+                            <MusicIcon size={18} color="#6b7280" />
                           </View>
                         )}
                         <View className="flex-1">
@@ -299,7 +289,7 @@ export default function EditScheduleScreen() {
                       </TouchableOpacity>
                     ))}
                     {filteredPlaylists.length === 0 && (
-                      <Text className="text-center text-muted-foreground py-4">Aucune playlist trouvée pour "{playlistSearch}"</Text>
+                      <Text className="text-center text-muted-foreground py-4 text-sm">Aucun résultat pour "{playlistSearch}"</Text>
                     )}
                   </ScrollView>
                 </View>
@@ -311,75 +301,83 @@ export default function EditScheduleScreen() {
         {/* 3. Jours */}
         {selectedAccount && (
           <>
-            <SectionTitle>3. Jours</SectionTitle>
-            <View className="flex-row gap-2 flex-wrap">
-              {DAYS.map((d, i) => (
-                <TouchableOpacity
-                  key={i}
-                  onPress={() => toggleDay(i)}
-                  className={`h-10 w-10 rounded-full items-center justify-center ${selectedDays.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'}`}>
-                  <Text className={`text-sm font-bold ${selectedDays.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
-                    {d.charAt(0)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <SectionTitle>3 · Jours</SectionTitle>
+            <View className="rounded-2xl border border-border bg-card p-4">
+              <View className="flex-row gap-2 justify-between">
+                {DAYS.map((d, i) => (
+                  <TouchableOpacity
+                    key={i}
+                    onPress={() => toggleDay(i)}
+                    className={`flex-1 items-center justify-center py-2.5 rounded-xl ${selectedDays.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'}`}>
+                    <Text className={`text-xs font-bold ${selectedDays.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
+                      {d.charAt(0)}
+                    </Text>
+                    <Text className={`text-[9px] mt-0.5 ${selectedDays.includes(i) ? 'text-white/80' : 'text-muted-foreground/60'}`}>
+                      {d.slice(1)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              {selectedDays.length > 0 && (
+                <Text className="mt-2 text-xs text-muted-foreground text-center">
+                  {selectedDays.map((d) => DAYS[d]).join(' · ')}
+                </Text>
+              )}
             </View>
-            <Text className="mt-1 text-xs text-muted-foreground">
-              {selectedDays.length > 0 ? selectedDays.map((d) => DAYS[d]).join(', ') : 'Aucun jour sélectionné'}
-            </Text>
           </>
         )}
 
         {/* 4. Heure */}
         {selectedAccount && (
           <>
-            <SectionTitle>4. Heure</SectionTitle>
-            <View className="flex-row items-center gap-4">
-              <View>
-                <Text className="mb-1 text-xs text-muted-foreground">Heure</Text>
-                <ScrollView style={{ height: 120 }} showsVerticalScrollIndicator={false}>
-                  {HOURS.map((h) => (
-                    <TouchableOpacity
-                      key={h}
-                      onPress={() => setHour(h)}
-                      className={`mb-1 rounded-xl px-4 py-2 ${hour === h ? 'bg-[#1DB954]' : 'bg-muted'}`}>
-                      <Text className={`font-mono font-semibold ${hour === h ? 'text-white' : 'text-foreground'}`}>{pad(h)}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-              <Text className="text-2xl font-bold text-foreground">:</Text>
-              <View>
-                <Text className="mb-1 text-xs text-muted-foreground">Minute</Text>
-                <ScrollView style={{ height: 120 }} showsVerticalScrollIndicator={false}>
-                  {MINUTES.map((m) => (
-                    <TouchableOpacity
-                      key={m}
-                      onPress={() => setMinute(m)}
-                      className={`mb-1 rounded-xl px-4 py-2 ${minute === m ? 'bg-[#1DB954]' : 'bg-muted'}`}>
-                      <Text className={`font-mono font-semibold ${minute === m ? 'text-white' : 'text-foreground'}`}>{pad(m)}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-              <View className="ml-4 rounded-2xl bg-[#1DB954]/10 px-5 py-4 border border-[#1DB954]">
-                <Text className="font-mono text-3xl font-bold text-[#1DB954]">{pad(hour)}:{pad(minute)}</Text>
+            <SectionTitle>4 · Heure</SectionTitle>
+            <View className="rounded-2xl border border-border bg-card p-4">
+              <View className="flex-row items-center gap-4">
+                <View className="flex-1">
+                  <Text className="text-xs text-muted-foreground mb-2">Heure de déclenchement</Text>
+                  <input
+                    type="time"
+                    value={timeValue}
+                    onChange={(e) => setTimeValue(e.target.value)}
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: 12,
+                      padding: '10px 14px',
+                      color: '#f9fafb',
+                      fontSize: 28,
+                      fontWeight: 'bold',
+                      fontFamily: 'monospace',
+                      width: '100%',
+                      outline: 'none',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </View>
+                <View className="rounded-2xl bg-[#1DB954]/10 border border-[#1DB954]/30 px-5 py-4 items-center">
+                  <Text className="font-mono text-3xl font-bold text-[#1DB954]">
+                    {pad(hour)}:{pad(minute)}
+                  </Text>
+                  <Text className="text-[10px] text-[#1DB954]/60 mt-1 uppercase tracking-wider">heure locale</Text>
+                </View>
               </View>
             </View>
           </>
         )}
 
-        {/* 5. Options de lecture */}
+        {/* 5. Options */}
         {selectedAccount && (
           <>
-            <SectionTitle>5. Options de lecture</SectionTitle>
-            <View className="rounded-2xl border border-border bg-card p-4 gap-4">
+            <SectionTitle>5 · Options de lecture</SectionTitle>
+            <View className="rounded-2xl border border-border bg-card p-4">
               <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center gap-2 flex-1">
-                  <ShuffleIcon size={18} color={shuffle ? '#1DB954' : '#6b7280'} />
+                <View className="flex-row items-center gap-3 flex-1">
+                  <View className={`h-9 w-9 rounded-xl items-center justify-center ${shuffle ? 'bg-[#1DB954]/20' : 'bg-muted'}`}>
+                    <ShuffleIcon size={17} color={shuffle ? '#1DB954' : '#6b7280'} />
+                  </View>
                   <View>
-                    <Text className="text-foreground font-semibold">Lecture aléatoire</Text>
-                    <Text className="text-xs text-muted-foreground">Mélange les titres de la playlist</Text>
+                    <Text className="text-foreground font-semibold text-sm">Lecture aléatoire</Text>
+                    <Text className="text-xs text-muted-foreground">Mélange les titres</Text>
                   </View>
                 </View>
                 <Switch
@@ -389,99 +387,127 @@ export default function EditScheduleScreen() {
                   thumbColor="white"
                 />
               </View>
+              <View className="my-3 h-px bg-border/50" />
+              <View className="flex-row items-center gap-3">
+                <View className="h-9 w-9 rounded-xl items-center justify-center bg-[#1DB954]/20">
+                  <RepeatIcon size={17} color="#1DB954" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-foreground font-semibold text-sm">Lecture en boucle</Text>
+                  <Text className="text-xs text-muted-foreground">La playlist redémarre automatiquement</Text>
+                </View>
+                <View className="rounded-lg bg-[#1DB954]/10 px-2 py-1">
+                  <Text className="text-[10px] font-bold text-[#1DB954]">AUTO</Text>
+                </View>
+              </View>
             </View>
           </>
         )}
 
         {/* 6. Appareil */}
-          {selectedAccount && (
-            <>
-              <View className="flex-row items-center justify-between mt-6 mb-3">
-                <Text className="text-base font-bold text-foreground">
-                  6. Appareil <Text className="text-xs text-muted-foreground font-normal">(optionnel)</Text>
-                </Text>
-                <TouchableOpacity onPress={refreshDevices} disabled={loadingDevices} className="flex-row items-center gap-1 px-3 py-1 rounded-xl bg-muted">
-                  {loadingDevices
-                    ? <ActivityIndicator size="small" color="#1DB954" />
-                    : <Text className="text-xs text-[#1DB954] font-semibold">Actualiser</Text>
-                  }
-                </TouchableOpacity>
-              </View>
-              <View className="gap-2">
-                {/* Option : appareil actif */}
-                <TouchableOpacity
-                  onPress={() => setSelectedDevice(null)}
-                  className={`flex-row items-center gap-3 rounded-2xl border p-3 ${!selectedDevice ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-                  <Text className="text-foreground font-semibold flex-1">Appareil actif au moment du déclenchement</Text>
-                  {!selectedDevice && <CheckCircleIcon size={18} color="#1DB954" />}
-                </TouchableOpacity>
-
-                {/* Appareil sauvegardé (si non trouvé dans la liste Spotify) */}
-                {savedDeviceId && !devices.find((d) => d.id === savedDeviceId) && (
-                  <TouchableOpacity
-                    onPress={() => setSelectedDevice({ id: savedDeviceId, name: savedDeviceName || savedDeviceId, type: 'Unknown', is_active: false })}
-                    className={`flex-row items-center gap-3 rounded-2xl border p-3 ${selectedDevice?.id === savedDeviceId ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-                    <SpeakerIcon size={16} color="#6b7280" />
-                    <View className="flex-1">
-                      <Text className="text-foreground font-semibold">{savedDeviceName || savedDeviceId}</Text>
-                      <Text className="text-xs text-muted-foreground">Appareil enregistré · non détecté actuellement</Text>
-                    </View>
-                    {selectedDevice?.id === savedDeviceId && <CheckCircleIcon size={18} color="#1DB954" />}
-                  </TouchableOpacity>
-                )}
-
-                {/* Appareils Spotify actifs */}
-                {devices.length === 0 && !loadingDevices && (
-                  <Text className="text-xs text-muted-foreground px-1">Aucun appareil Spotify actif détecté. Ouvre Spotify sur un appareil puis appuie sur "Actualiser".</Text>
-                )}
-                {devices.map((d) => (
-                  <TouchableOpacity
-                    key={d.id}
-                    onPress={() => setSelectedDevice(d)}
-                    className={`flex-row items-center gap-3 rounded-2xl border p-3 ${selectedDevice?.id === d.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-                    <DeviceIcon type={d.type} />
-                    <View className="flex-1">
-                      <Text className="text-foreground font-semibold">{d.name}</Text>
-                      <Text className="text-xs text-muted-foreground">{d.type}{d.is_active ? ' · Actif' : ''}</Text>
-                    </View>
-                    {selectedDevice?.id === d.id && <CheckCircleIcon size={18} color="#1DB954" />}
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </>
-          )}
-
-          {/* Résumé */}
-          {selectedAccount && (
-            <View className="mt-6 rounded-2xl border border-[#1DB954] bg-[#1DB954]/5 p-4">
-              <Text className="mb-2 font-bold text-foreground">Résumé</Text>
-              <Text className="text-sm text-muted-foreground">
-                Compte : <Text className="text-foreground">{selectedAccount.displayName}</Text>{'\n'}
-                Playlist : <Text className="text-foreground">{selectedPlaylist?.name || '–'}</Text>{'\n'}
-                Jours : <Text className="text-foreground">{selectedDays.map((d) => DAYS[d]).join(', ') || '–'}</Text>{'\n'}
-                Heure : <Text className="text-foreground font-mono">{pad(hour)}:{pad(minute)}</Text>{'\n'}
-                Lecture : <Text className="text-foreground">{shuffle ? 'Aléatoire' : "Dans l'ordre"}</Text>
-                {selectedDevice ? `\nAppareil : ${selectedDevice.name}` : ''}
+        {selectedAccount && (
+          <>
+            <View className="flex-row items-center justify-between mt-6 mb-3">
+              <Text className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                6 · Appareil{' '}
+                <Text className="text-xs font-normal normal-case tracking-normal">(optionnel)</Text>
               </Text>
+              <TouchableOpacity
+                onPress={refreshDevices}
+                disabled={loadingDevices}
+                className="flex-row items-center gap-1 px-3 py-1.5 rounded-xl bg-muted">
+                {loadingDevices
+                  ? <ActivityIndicator size="small" color="#1DB954" />
+                  : <Text className="text-xs text-[#1DB954] font-semibold">Actualiser</Text>
+                }
+              </TouchableOpacity>
             </View>
-          )}
+            <View className="gap-2">
+              <TouchableOpacity
+                onPress={() => setSelectedDevice(null)}
+                className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${!selectedDevice ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                <View className={`h-9 w-9 rounded-xl items-center justify-center ${!selectedDevice ? 'bg-[#1DB954]/20' : 'bg-muted'}`}>
+                  <SpeakerIcon size={16} color={!selectedDevice ? '#1DB954' : '#6b7280'} />
+                </View>
+                <Text className={`flex-1 font-semibold text-sm ${!selectedDevice ? 'text-[#1DB954]' : 'text-foreground'}`}>
+                  Appareil actif au déclenchement
+                </Text>
+                {!selectedDevice && <CheckCircleIcon size={18} color="#1DB954" />}
+              </TouchableOpacity>
 
-          {conflictError && (
-            <View className="mt-4 rounded-2xl border border-red-500/50 bg-red-500/10 px-4 py-3">
-              <Text className="text-sm font-semibold text-red-400">Conflit d'horaire</Text>
-              <Text className="text-sm text-red-300 mt-1">{conflictError}</Text>
+              {savedDeviceId && !devices.find((d) => d.id === savedDeviceId) && (
+                <TouchableOpacity
+                  onPress={() => setSelectedDevice({ id: savedDeviceId, name: savedDeviceName || savedDeviceId, type: 'Unknown', is_active: false })}
+                  className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${selectedDevice?.id === savedDeviceId ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                  <View className="h-9 w-9 rounded-xl items-center justify-center bg-muted">
+                    <SpeakerIcon size={16} color="#6b7280" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-foreground font-semibold text-sm">{savedDeviceName || savedDeviceId}</Text>
+                    <Text className="text-xs text-muted-foreground">Enregistré · non détecté actuellement</Text>
+                  </View>
+                  {selectedDevice?.id === savedDeviceId && <CheckCircleIcon size={18} color="#1DB954" />}
+                </TouchableOpacity>
+              )}
+
+              {devices.length === 0 && !loadingDevices && (
+                <Text className="text-xs text-muted-foreground px-1">
+                  Aucun appareil Spotify actif. Ouvre Spotify sur un appareil puis appuie sur "Actualiser".
+                </Text>
+              )}
+              {devices.map((d) => (
+                <TouchableOpacity
+                  key={d.id}
+                  onPress={() => setSelectedDevice(d)}
+                  className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${selectedDevice?.id === d.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                  <View className={`h-9 w-9 rounded-xl items-center justify-center ${selectedDevice?.id === d.id ? 'bg-[#1DB954]/20' : 'bg-muted'}`}>
+                    <DeviceIcon type={d.type} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-foreground font-semibold text-sm">{d.name}</Text>
+                    <Text className="text-xs text-muted-foreground capitalize">{d.type}{d.is_active ? ' · Actif' : ''}</Text>
+                  </View>
+                  {selectedDevice?.id === d.id && <CheckCircleIcon size={18} color="#1DB954" />}
+                </TouchableOpacity>
+              ))}
             </View>
-          )}
+          </>
+        )}
 
-        <TouchableOpacity
-          onPress={handleSave}
-          disabled={saving || !selectedAccount}
-          className="mt-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-40">
-          {saving ? <ActivityIndicator color="white" /> : <CheckCircleIcon size={22} color="white" />}
-          <Text className="text-base font-bold text-white">
-            {saving ? 'Enregistrement...' : 'Sauvegarder'}
-          </Text>
-        </TouchableOpacity>
+        {/* Résumé */}
+        {selectedAccount && selectedPlaylist && (
+          <View className="mt-6 rounded-2xl border border-[#1DB954]/40 bg-[#1DB954]/5 p-4 gap-1">
+            <Text className="mb-1 font-bold text-foreground text-sm">Résumé</Text>
+            <Text className="text-sm text-muted-foreground">
+              <Text className="text-foreground font-semibold">{selectedAccount.displayName}</Text> · <Text className="text-[#1DB954] font-semibold">{selectedPlaylist.name}</Text>
+            </Text>
+            <Text className="text-sm text-muted-foreground">
+              {selectedDays.map((d) => DAYS[d]).join(', ') || '–'} à <Text className="font-mono text-foreground font-semibold">{pad(hour)}:{pad(minute)}</Text>
+            </Text>
+            <Text className="text-sm text-muted-foreground">
+              {shuffle ? 'Aléatoire' : "Dans l'ordre"} · {selectedDevice ? selectedDevice.name : 'Appareil actif'}
+            </Text>
+          </View>
+        )}
+
+        {conflictError && (
+          <View className="mt-4 rounded-2xl border border-red-500/50 bg-red-500/10 px-4 py-3">
+            <Text className="text-sm font-semibold text-red-400">Conflit d'horaire</Text>
+            <Text className="text-sm text-red-300 mt-1">{conflictError}</Text>
+          </View>
+        )}
+
+        {selectedAccount && (
+          <TouchableOpacity
+            onPress={handleSave}
+            disabled={saving}
+            className="mt-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-40">
+            {saving ? <ActivityIndicator color="white" /> : <CheckCircleIcon size={22} color="white" />}
+            <Text className="text-base font-bold text-white">
+              {saving ? 'Enregistrement…' : 'Sauvegarder les modifications'}
+            </Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </>
   );

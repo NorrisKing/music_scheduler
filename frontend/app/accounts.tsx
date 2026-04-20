@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { PlusCircleIcon, UserCircleIcon, ChevronRightIcon, LogOutIcon, MusicIcon } from 'lucide-react-native';
-import { api, BACKEND_URL, type SpotifyAccount } from '@/lib/api';
+import { api, type SpotifyAccount } from '@/lib/api';
 import { useSpotifyAuth, finishWebLogin } from '@/lib/useSpotifyAuth';
 
 const CLIENT_ID = process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || '';
@@ -282,22 +282,6 @@ export default function AccountsScreen() {
             </Text>
           </TouchableOpacity>
 
-            {/* Debug info - only visible in dev or if specific env is set */}
-            {(__DEV__ || true) && (
-              <View className="absolute bottom-1 left-0 right-0 items-center bg-black/10 py-2 border-t border-black/10">
-                <Text style={{ fontSize: 9, color: BACKEND_URL.includes('vercel.app') ? 'red' : '#666', fontWeight: 'bold' }}>
-                  DEBUG - Backend: {BACKEND_URL || 'VIDE'}
-                </Text>
-                <Text style={{ fontSize: 8, color: '#999' }}>
-                  Raw Env: {process.env.EXPO_PUBLIC_BACKEND_URL || 'ABSENTE'}
-                </Text>
-                {BACKEND_URL.includes('vercel.app') && (
-                  <Text style={{ fontSize: 7, color: 'red', marginTop: 2 }}>
-                    ⚠️ ERREUR: Votre variable pointe sur Vercel, pas sur Railway !
-                  </Text>
-                )}
-              </View>
-            )}
 
         </View>
     </>
