@@ -162,9 +162,9 @@ export async function fadeAndStartPlaylist(
     } catch { /* keep 100 */ }
   }
 
-  // 2. Fade out over 5 seconds (10 steps × 500ms)
-  for (let i = 1; i <= 10; i++) {
-    const vol = Math.round(originalVolume * (1 - i / 10));
+  // 2. Fade out over 2.5 seconds (5 steps × 500ms)
+  for (let i = 1; i <= 5; i++) {
+    const vol = Math.round(originalVolume * (1 - i / 5));
     await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${vol}`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token}` },
@@ -200,9 +200,9 @@ export async function fadeAndStartPlaylist(
     method: 'PUT', headers: { Authorization: `Bearer ${token}` },
   });
 
-  // 5. Fade in smoothly over 4 seconds (ease-in curve, 16 steps × 250ms)
-  for (let i = 1; i <= 16; i++) {
-    const t = i / 16;
+  // 5. Fade in smoothly over 2 seconds (ease-in curve, 8 steps × 250ms)
+  for (let i = 1; i <= 8; i++) {
+    const t = i / 8;
     const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     const vol = Math.round(originalVolume * eased);
     await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${vol}`, {
