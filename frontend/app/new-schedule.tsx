@@ -278,6 +278,7 @@ export default function NewScheduleScreen() {
                   <Text className="text-xs text-muted-foreground mb-2">Heure de déclenchement</Text>
                   <input
                     type="time"
+                    step="60"
                     value={timeValue}
                     onChange={(e) => setTimeValue(e.target.value)}
                     style={{
