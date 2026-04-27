@@ -22,6 +22,21 @@ function startTask(schedule: Schedule) {
 
   try {
     const task = cron.schedule(expression, async () => {
+      console.log(`[Scheduler] Cron fired for schedule ${schedule.id}`);
+
+      // DB-level guard: prevent double-trigger if process restarted within same minute
+      const fresh = await db.getSchedule(schedule.id);
+      if (!fresh || !fresh.active) return;
+      if (fresh.lastTriggeredAt) {
+        const secondsSinceLast = (Date.now() - fresh.lastTriggeredAt) / 1000;
+        if (secondsSinceLast < 300) {
+          console.log(`[Scheduler] Schedule ${schedule.id} already triggered ${Math.round(secondsSinceLast)}s ago, skipping`);
+          return;
+        }
+      }
+
+      // Mark triggered immediately in DB before starting (distributed lock)
+      await db.markTriggered(schedule.id);
       console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
 
       const success = await fadeAndStartPlaylist(
@@ -32,7 +47,6 @@ function startTask(schedule: Schedule) {
       );
 
       if (success) {
-        await db.markTriggered(schedule.id);
         await db.updateLastPushed(schedule.accountId, schedule.playlistName);
         console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started with fade`);
       } else {
@@ -43,7 +57,6 @@ function startTask(schedule: Schedule) {
           schedule.shuffle
         );
         if (fallbackSuccess) {
-          await db.markTriggered(schedule.id);
           await db.updateLastPushed(schedule.accountId, schedule.playlistName);
           console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started (fallback)`);
         } else {
