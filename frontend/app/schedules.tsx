@@ -105,6 +105,8 @@ export default function SchedulesScreen() {
     setTriggeringId(id);
     try {
       await api.triggerSchedule(id);
+      // Wait for Spotify to start before refreshing status
+      await new Promise(r => setTimeout(r, 2000));
       await fetchStatuses();
     } catch (err: any) {
       window.alert(err.message || 'Spotify est-il ouvert ?');

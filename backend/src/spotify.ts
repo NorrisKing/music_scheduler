@@ -104,17 +104,25 @@ export async function startPlaylist(
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
 
+  const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
+  const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+
   const url = deviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
 
-  const res = await fetch(url, {
-    method: 'PUT',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` }),
-  });
+  const res = await fetch(url, { method: 'PUT', headers, body });
+  console.log(`[Spotify] startPlaylist ${accountId} device=${deviceId || 'active'} → ${res.status}`);
 
-  return res.ok || res.status === 204;
+  // If device not found and we had a specific deviceId, retry on the active device
+  if ((res.status === 404 || res.status === 403) && deviceId) {
+    console.log(`[Spotify] Device ${deviceId} unavailable, retrying on active device`);
+    const fallback = await fetch('https://api.spotify.com/v1/me/player/play', { method: 'PUT', headers, body });
+    console.log(`[Spotify] startPlaylist fallback ${accountId} → ${fallback.status}`);
+    return fallback.ok;
+  }
+
+  return res.ok;
 }
 
 
