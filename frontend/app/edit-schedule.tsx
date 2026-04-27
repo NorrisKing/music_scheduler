@@ -9,7 +9,7 @@ import {
   TextInput,
 } from 'react-native';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon, ShuffleIcon, RepeatIcon } from 'lucide-react-native';
+import { CheckCircleIcon, MusicIcon, SpeakerIcon, MonitorIcon, SmartphoneIcon, TabletIcon, ShuffleIcon } from 'lucide-react-native';
 import { api, type SpotifyAccount, type SpotifyPlaylist, type SpotifyDevice } from '@/lib/api';
 
 const DAYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
@@ -387,19 +387,6 @@ export default function EditScheduleScreen() {
                   trackColor={{ false: '#374151', true: '#1DB954' }}
                   thumbColor="white"
                 />
-              </View>
-              <View className="my-3 h-px bg-border/50" />
-              <View className="flex-row items-center gap-3">
-                <View className="h-9 w-9 rounded-xl items-center justify-center bg-[#1DB954]/20">
-                  <RepeatIcon size={17} color="#1DB954" />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-foreground font-semibold text-sm">Lecture en boucle</Text>
-                  <Text className="text-xs text-muted-foreground">La playlist redémarre automatiquement</Text>
-                </View>
-                <View className="rounded-lg bg-[#1DB954]/10 px-2 py-1">
-                  <Text className="text-[10px] font-bold text-[#1DB954]">AUTO</Text>
-                </View>
               </View>
             </View>
           </>
