@@ -96,6 +96,37 @@ export async function getSpotifyDevices(accountId: string) {
   return res.json();
 }
 
+async function resolveTargetDevice(token: string, deviceId?: string): Promise<string | undefined> {
+  if (!deviceId) return undefined;
+  try {
+    const res = await fetch('https://api.spotify.com/v1/me/player/devices', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data: any = await res.json();
+      const found = data.devices?.some((d: any) => d.id === deviceId);
+      if (!found) {
+        console.log(`[Spotify] Device ${deviceId} not available, falling back to active device`);
+        return undefined;
+      }
+    }
+  } catch {
+    return undefined;
+  }
+  return deviceId;
+}
+
+async function setVolume(token: string, volume: number): Promise<void> {
+  await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(volume)}`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 export async function startPlaylist(
   accountId: string,
   playlistId: string,
@@ -104,36 +135,77 @@ export async function startPlaylist(
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
 
-  const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
-  const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
-
-  // If a specific device is requested, verify it's currently available before using it.
-  // This avoids making two consecutive play calls (primary + fallback) which double-fills the queue.
-  let targetDeviceId = deviceId;
-  if (deviceId) {
-    try {
-      const devRes = await fetch('https://api.spotify.com/v1/me/player/devices', { headers: { Authorization: `Bearer ${token}` } });
-      if (devRes.ok) {
-        const devData: any = await devRes.json();
-        const found = devData.devices?.some((d: any) => d.id === deviceId);
-        if (!found) {
-          console.log(`[Spotify] Device ${deviceId} not available, falling back to active device`);
-          targetDeviceId = undefined;
-        }
-      }
-    } catch {
-      targetDeviceId = undefined;
-    }
-  }
-
+  const targetDeviceId = await resolveTargetDevice(token, deviceId);
   const url = targetDeviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${targetDeviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
 
+  const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
+  const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+
   const res = await fetch(url, { method: 'PUT', headers, body });
   console.log(`[Spotify] startPlaylist ${accountId} device=${targetDeviceId || 'active'} → ${res.status}`);
-
   return res.ok || res.status === 204;
+}
+
+export async function fadeAndStartPlaylist(
+  accountId: string,
+  playlistId: string,
+  deviceId?: string,
+) {
+  const token = await refreshTokenIfNeeded(accountId);
+  if (!token) return false;
+
+  // Get current player state to know volume and whether music is playing
+  let originalVolume = 100;
+  let isPlaying = false;
+  try {
+    const playerRes = await fetch('https://api.spotify.com/v1/me/player', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (playerRes.ok && playerRes.status !== 204) {
+      const playerData: any = await playerRes.json();
+      isPlaying = playerData.is_playing === true;
+      if (playerData.device?.volume_percent != null) {
+        originalVolume = playerData.device.volume_percent;
+      }
+    }
+  } catch {
+    // Proceed without fade if player state is unavailable
+  }
+
+  // Fade out only if something is currently playing
+  if (isPlaying && originalVolume > 0) {
+    const steps = [
+      originalVolume * 0.55,
+      originalVolume * 0.25,
+      originalVolume * 0.08,
+      0,
+    ];
+    for (const vol of steps) {
+      await setVolume(token, vol);
+      await sleep(350);
+    }
+  }
+
+  // Start the new playlist
+  const targetDeviceId = await resolveTargetDevice(token, deviceId);
+  const url = targetDeviceId
+    ? `https://api.spotify.com/v1/me/player/play?device_id=${targetDeviceId}`
+    : 'https://api.spotify.com/v1/me/player/play';
+  const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
+  const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+  const res = await fetch(url, { method: 'PUT', headers, body });
+  console.log(`[Spotify] fadeAndStartPlaylist ${accountId} device=${targetDeviceId || 'active'} → ${res.status}`);
+  const ok = res.ok || res.status === 204;
+
+  // Restore volume immediately at full level
+  if (ok) {
+    await sleep(300);
+    await setVolume(token, originalVolume);
+  }
+
+  return ok;
 }
 
 

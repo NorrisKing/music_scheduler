@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { db, type Schedule } from './store.js';
-import { startPlaylist } from './spotify.js';
+import { fadeAndStartPlaylist } from './spotify.js';
 
 // Map of schedule id -> cron task
 const activeTasks = new Map<string, ReturnType<typeof cron.schedule>>();
@@ -44,7 +44,7 @@ function startTask(schedule: Schedule) {
         }
         console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
 
-        const success = await startPlaylist(
+        const success = await fadeAndStartPlaylist(
           schedule.accountId,
           schedule.playlistId,
           schedule.deviceId,

@@ -4,7 +4,7 @@ import { logger } from 'hono/logger';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { db } from './store.js';
-import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying, startPlaylist } from './spotify.js';
+import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying, fadeAndStartPlaylist } from './spotify.js';
 import { initScheduler, scheduler } from './scheduler.js';
 import { randomUUID } from 'crypto';
 
@@ -106,7 +106,7 @@ app.get('/auth/spotify/callback', (c) => {
 
 // --- Accounts ---
 app.get('/accounts', async (c) => {
-const accounts = (await db.getAccounts()).map(({ accessToken, refreshToken, ...safe }) => safe);
+  const accounts = (await db.getAccounts()).map(({ accessToken, refreshToken, ...safe }) => safe);
   return c.json(accounts);
 });
 
@@ -309,8 +309,7 @@ app.post('/schedules/:id/trigger', async (c) => {
   const schedule = await db.getSchedule(id);
   if (!schedule) return c.json({ error: 'Schedule not found' }, 404);
 
-  // Try fade+start first (best experience), then direct start as fallback
-  const ok = await startPlaylist(
+  const ok = await fadeAndStartPlaylist(
     schedule.accountId,
     schedule.playlistId,
     schedule.deviceId,
