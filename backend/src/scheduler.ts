@@ -24,19 +24,17 @@ function startTask(schedule: Schedule) {
     const task = cron.schedule(expression, async () => {
       console.log(`[Scheduler] Cron fired for schedule ${schedule.id}`);
 
-      // DB-level guard: prevent double-trigger if process restarted within same minute
+      // Check if schedule is still active
       const fresh = await db.getSchedule(schedule.id);
       if (!fresh || !fresh.active) return;
-      if (fresh.lastTriggeredAt) {
-        const secondsSinceLast = (Date.now() - fresh.lastTriggeredAt) / 1000;
-        if (secondsSinceLast < 300) {
-          console.log(`[Scheduler] Schedule ${schedule.id} already triggered ${Math.round(secondsSinceLast)}s ago, skipping`);
-          return;
-        }
-      }
 
-      // Mark triggered immediately in DB before starting (distributed lock)
-      await db.markTriggered(schedule.id);
+      // Atomic distributed lock: only one backend instance can claim this trigger window.
+      // Prevents double-trigger when local dev + Railway backend both run simultaneously.
+      const claimed = await db.tryMarkTriggered(schedule.id);
+      if (!claimed) {
+        console.log(`[Scheduler] Schedule ${schedule.id} already claimed by another instance, skipping`);
+        return;
+      }
       console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
 
       const success = await startPlaylist(

@@ -104,7 +104,11 @@ export async function startPlaylist(
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
 
-  const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
+  const body = JSON.stringify({
+    context_uri: `spotify:playlist:${playlistId}`,
+    offset: { position: 0 },
+    position_ms: 0,
+  });
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   const url = deviceId
