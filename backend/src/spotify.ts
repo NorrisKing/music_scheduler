@@ -100,22 +100,9 @@ export async function startPlaylist(
   accountId: string,
   playlistId: string,
   deviceId?: string,
-  shuffle?: boolean
 ) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
-
-  // Set shuffle and repeat BEFORE context switch to avoid Spotify reshuffling after load
-  if (shuffle !== undefined) {
-    await fetch(`https://api.spotify.com/v1/me/player/shuffle?state=${shuffle}`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-  }
-  await fetch('https://api.spotify.com/v1/me/player/repeat?state=context', {
-    method: 'PUT',
-    headers: { Authorization: `Bearer ${token}` },
-  });
 
   const url = deviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
@@ -123,106 +110,69 @@ export async function startPlaylist(
 
   const res = await fetch(url, {
     method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      context_uri: `spotify:playlist:${playlistId}`,
-    }),
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` }),
   });
 
-  if (!res.ok && res.status !== 204) return false;
-  return true;
+  return res.ok || res.status === 204;
 }
 
-
-// Per-account lock to prevent concurrent playlist switches
-const switchingAccounts = new Set<string>();
 
 export async function fadeAndStartPlaylist(
   accountId: string,
   playlistId: string,
   deviceId?: string,
-  shuffle?: boolean
 ) {
-  // Prevent concurrent triggers for the same account
-  if (switchingAccounts.has(accountId)) {
-    console.warn(`[Spotify] Already switching playlist for account ${accountId}, skipping`);
-    return false;
+  const token = await refreshTokenIfNeeded(accountId);
+  if (!token) return false;
+
+  // Get current volume
+  const stateRes = await fetch('https://api.spotify.com/v1/me/player', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  let originalVolume = 100;
+  if (stateRes.ok && stateRes.status !== 204) {
+    try {
+      const state: any = await stateRes.json();
+      originalVolume = state?.device?.volume_percent ?? 100;
+    } catch { /* keep 100 */ }
   }
-  switchingAccounts.add(accountId);
 
-  try {
-    const token = await refreshTokenIfNeeded(accountId);
-    if (!token) return false;
-
-    // 1. Get current volume (default 100 if paused or unavailable)
-    const stateRes = await fetch('https://api.spotify.com/v1/me/player', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    let originalVolume = 100;
-    if (stateRes.ok && stateRes.status !== 204) {
-      try {
-        const state: any = await stateRes.json();
-        originalVolume = state?.device?.volume_percent ?? 100;
-      } catch { /* keep 100 */ }
-    }
-
-    // 2. Fade out over 2.5 seconds (5 steps × 500ms)
-    for (let i = 1; i <= 5; i++) {
-      const vol = Math.round(originalVolume * (1 - i / 5));
-      await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${vol}`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      await new Promise(r => setTimeout(r, 500));
-    }
-
-    // 3. Pre-configure shuffle and repeat BEFORE context switch
-    //    This prevents Spotify from loading tracks sequentially then reshuffling
-    if (shuffle !== undefined) {
-      await fetch(`https://api.spotify.com/v1/me/player/shuffle?state=${shuffle}`, {
-        method: 'PUT', headers: { Authorization: `Bearer ${token}` },
-      });
-    }
-    await fetch('https://api.spotify.com/v1/me/player/repeat?state=context', {
+  // Fade out: 3 steps × 500ms = 1.5s
+  for (let i = 1; i <= 3; i++) {
+    await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(originalVolume * (1 - i / 3))}`, {
       method: 'PUT', headers: { Authorization: `Bearer ${token}` },
     });
-
-    // 4. Start new playlist at volume 0
-    const playUrl = deviceId
-      ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
-      : 'https://api.spotify.com/v1/me/player/play';
-
-    const playRes = await fetch(playUrl, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` }),
-    });
-
-    if (!playRes.ok && playRes.status !== 204) {
-      await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${originalVolume}`, {
-        method: 'PUT', headers: { Authorization: `Bearer ${token}` },
-      });
-      return false;
-    }
-
-    // 5. Fade in smoothly over 2 seconds (ease-in curve, 8 steps × 250ms)
-    for (let i = 1; i <= 8; i++) {
-      const t = i / 8;
-      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-      const vol = Math.round(originalVolume * eased);
-      await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${vol}`, {
-        method: 'PUT', headers: { Authorization: `Bearer ${token}` },
-      });
-      await new Promise(r => setTimeout(r, 250));
-    }
-
-    return true;
-  } finally {
-    switchingAccounts.delete(accountId);
+    await new Promise(r => setTimeout(r, 500));
   }
+
+  // Switch playlist
+  const playUrl = deviceId
+    ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
+    : 'https://api.spotify.com/v1/me/player/play';
+
+  const playRes = await fetch(playUrl, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` }),
+  });
+
+  if (!playRes.ok && playRes.status !== 204) {
+    await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${originalVolume}`, {
+      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
+    });
+    return false;
+  }
+
+  // Fade in: 4 steps × 250ms = 1s
+  for (let i = 1; i <= 4; i++) {
+    await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(originalVolume * i / 4)}`, {
+      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
+    });
+    await new Promise(r => setTimeout(r, 250));
+  }
+
+  return true;
 }
 
 export async function getCurrentlyPlaying(accountId: string) {

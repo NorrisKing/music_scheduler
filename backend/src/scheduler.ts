@@ -43,7 +43,6 @@ function startTask(schedule: Schedule) {
         schedule.accountId,
         schedule.playlistId,
         schedule.deviceId,
-        schedule.shuffle
       );
 
       if (success) {
@@ -54,7 +53,6 @@ function startTask(schedule: Schedule) {
           schedule.accountId,
           schedule.playlistId,
           schedule.deviceId,
-          schedule.shuffle
         );
         if (fallbackSuccess) {
           await db.updateLastPushed(schedule.accountId, schedule.playlistName);
