@@ -30,7 +30,7 @@ app.use(
 );
 
 // --- Health ---
-app.get('/', (c) => c.json({ ok: true, service: 'Spotify Scheduler' }));
+app.get('/', (c) => c.json({ ok: true, service: 'Spotify Scheduler', schedulerEnabled: SCHEDULER_ENABLED }));
 
 // --- Auth: exchange code for tokens ---
 app.post(

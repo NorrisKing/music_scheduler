@@ -107,22 +107,33 @@ export async function startPlaylist(
   const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
-  const url = deviceId
-    ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
+  // If a specific device is requested, verify it's currently available before using it.
+  // This avoids making two consecutive play calls (primary + fallback) which double-fills the queue.
+  let targetDeviceId = deviceId;
+  if (deviceId) {
+    try {
+      const devRes = await fetch('https://api.spotify.com/v1/me/player/devices', { headers: { Authorization: `Bearer ${token}` } });
+      if (devRes.ok) {
+        const devData: any = await devRes.json();
+        const found = devData.devices?.some((d: any) => d.id === deviceId);
+        if (!found) {
+          console.log(`[Spotify] Device ${deviceId} not available, falling back to active device`);
+          targetDeviceId = undefined;
+        }
+      }
+    } catch {
+      targetDeviceId = undefined;
+    }
+  }
+
+  const url = targetDeviceId
+    ? `https://api.spotify.com/v1/me/player/play?device_id=${targetDeviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
 
   const res = await fetch(url, { method: 'PUT', headers, body });
-  console.log(`[Spotify] startPlaylist ${accountId} device=${deviceId || 'active'} → ${res.status}`);
+  console.log(`[Spotify] startPlaylist ${accountId} device=${targetDeviceId || 'active'} → ${res.status}`);
 
-  // If device not found and we had a specific deviceId, retry on the active device
-  if ((res.status === 404 || res.status === 403) && deviceId) {
-    console.log(`[Spotify] Device ${deviceId} unavailable, retrying on active device`);
-    const fallback = await fetch('https://api.spotify.com/v1/me/player/play', { method: 'PUT', headers, body });
-    console.log(`[Spotify] startPlaylist fallback ${accountId} → ${fallback.status}`);
-    return fallback.ok;
-  }
-
-  return res.ok;
+  return res.ok || res.status === 204;
 }
 
 
