@@ -8,6 +8,16 @@ import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurren
 import { initScheduler, scheduler } from './scheduler.js';
 import { randomUUID } from 'crypto';
 
+// Scheduler runs ONLY on Railway (production) to avoid double-triggers when
+// both local dev and Railway backend share the same Supabase DB.
+// Override locally with ENABLE_SCHEDULER=true in .env.
+const SCHEDULER_ENABLED = !!(
+  process.env.RAILWAY_PROJECT_ID ||
+  process.env.RAILWAY_ENVIRONMENT_NAME ||
+  process.env.RAILWAY_SERVICE_ID ||
+  process.env.ENABLE_SCHEDULER === 'true'
+);
+
 const app = new Hono();
 
 app.use('*', logger());
@@ -234,7 +244,7 @@ app.post('/schedules', zValidator('json', ScheduleInput), async (c) => {
   };
 
   await db.upsertSchedule(schedule);
-  if (schedule.active) scheduler.register(schedule);
+  if (schedule.active && SCHEDULER_ENABLED) scheduler.register(schedule);
 
   return c.json(schedule, 201);
 });
@@ -281,7 +291,7 @@ app.put(
     }
 
     await db.upsertSchedule(updated);
-    await scheduler.reload(id);
+    if (SCHEDULER_ENABLED) await scheduler.reload(id);
 
     return c.json(updated);
   }
@@ -317,7 +327,12 @@ app.post('/schedules/:id/trigger', async (c) => {
 });
 
 // --- Init ---
-initScheduler();
+if (SCHEDULER_ENABLED) {
+  initScheduler();
+  console.log('[Init] Scheduler started');
+} else {
+  console.log('[Init] Scheduler disabled (local dev). Set ENABLE_SCHEDULER=true in .env to enable locally.');
+}
 
 export default {
   fetch: app.fetch,

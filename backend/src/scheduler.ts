@@ -71,16 +71,37 @@ function stopTask(scheduleId: string) {
 
 export async function initScheduler() {
   // Stop all existing tasks first to prevent ghost tasks
-  for (const [id, task] of activeTasks) {
-    task.stop();
-    activeTasks.delete(id);
-  }
+  for (const [, task] of activeTasks) task.stop();
+  activeTasks.clear();
+
   const all = await db.getSchedules();
-  const schedules = all.filter((s) => s.active);
-  for (const schedule of schedules) {
+  const active = all.filter((s) => s.active);
+  for (const schedule of active) {
     startTask(schedule);
   }
-  console.log(`[Scheduler] Initialized with ${schedules.length} active schedules`);
+  console.log(`[Scheduler] Initialized with ${active.length} active schedules`);
+
+  // Poll every minute to pick up schedules created after startup (e.g. from local dev)
+  setInterval(async () => {
+    try {
+      const latest = await db.getSchedules();
+      const latestActive = latest.filter(s => s.active);
+      // Register new schedules not yet in activeTasks
+      for (const s of latestActive) {
+        if (!activeTasks.has(s.id)) {
+          console.log(`[Scheduler] Discovered new schedule ${s.id}, registering`);
+          startTask(s);
+        }
+      }
+      // Stop tasks whose schedules have been deleted or deactivated
+      for (const [id] of activeTasks) {
+        const still = latestActive.find(s => s.id === id);
+        if (!still) stopTask(id);
+      }
+    } catch (e) {
+      console.error('[Scheduler] Sync poll error:', e);
+    }
+  }, 60_000);
 }
 
 export const scheduler = {
