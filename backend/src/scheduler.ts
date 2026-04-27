@@ -22,32 +22,42 @@ function startTask(schedule: Schedule) {
 
   try {
     const task = cron.schedule(expression, async () => {
-      console.log(`[Scheduler] Cron fired for schedule ${schedule.id}`);
+      try {
+        console.log(`[Scheduler] Cron fired for schedule ${schedule.id}`);
 
-      // Check if schedule is still active
-      const fresh = await db.getSchedule(schedule.id);
-      if (!fresh || !fresh.active) return;
+        // Check if schedule is still active
+        const fresh = await db.getSchedule(schedule.id);
+        if (!fresh || !fresh.active) return;
 
-      // Atomic distributed lock: only one backend instance can claim this trigger window.
-      // Prevents double-trigger when local dev + Railway backend both run simultaneously.
-      const claimed = await db.tryMarkTriggered(schedule.id);
-      if (!claimed) {
-        console.log(`[Scheduler] Schedule ${schedule.id} already claimed by another instance, skipping`);
-        return;
-      }
-      console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
+        // Debounce: skip if already triggered within the last 5 minutes
+        const fiveMinutesAgo = Date.now() - 300_000;
+        if (fresh.lastTriggeredAt && fresh.lastTriggeredAt > fiveMinutesAgo) {
+          console.log(`[Scheduler] Schedule ${schedule.id} already triggered recently, skipping`);
+          return;
+        }
 
-      const success = await startPlaylist(
-        schedule.accountId,
-        schedule.playlistId,
-        schedule.deviceId,
-      );
+        // Mark as triggered (best-effort — don't block playback if DB write fails)
+        try {
+          await db.markTriggered(schedule.id);
+        } catch (markErr) {
+          console.error(`[Scheduler] Warning: failed to mark triggered:`, JSON.stringify(markErr));
+        }
+        console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
 
-      if (success) {
-        await db.updateLastPushed(schedule.accountId, schedule.playlistName);
-        console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started`);
-      } else {
-        console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
+        const success = await startPlaylist(
+          schedule.accountId,
+          schedule.playlistId,
+          schedule.deviceId,
+        );
+
+        if (success) {
+          await db.updateLastPushed(schedule.accountId, schedule.playlistName);
+          console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started`);
+        } else {
+          console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
+        }
+      } catch (err) {
+        console.error(`[Scheduler] Error in cron callback for ${schedule.id}:`, JSON.stringify(err), err);
       }
     }, { timezone: 'Asia/Manila' });
 
