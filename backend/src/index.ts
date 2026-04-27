@@ -106,8 +106,7 @@ app.get('/auth/spotify/callback', (c) => {
 
 // --- Accounts ---
 app.get('/accounts', async (c) => {
-  console.log('--- REQUEST FOR ACCOUNTS RECEIVED --- origin:', c.req.header('origin'));
-  const accounts = (await db.getAccounts()).map(({ accessToken, refreshToken, ...safe }) => safe);
+const accounts = (await db.getAccounts()).map(({ accessToken, refreshToken, ...safe }) => safe);
   return c.json(accounts);
 });
 

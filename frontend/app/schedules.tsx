@@ -12,7 +12,6 @@ import { PlusCircleIcon, CalendarIcon, PlayCircleIcon, Trash2Icon, ToggleLeftIco
 import { api, type Schedule } from '@/lib/api';
 
 const DAYS_SHORT = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
-const DAYS_FULL = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
 function pad(n: number) {
   return String(n).padStart(2, '0');

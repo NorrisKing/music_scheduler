@@ -175,17 +175,4 @@ export const db = {
     const { error } = await supabase.from('schedules').update({ last_triggered_at: Date.now() }).eq('id', id);
     if (error) throw error;
   },
-  // Atomic distributed lock: only updates (and returns true) if not triggered within the last 5 minutes.
-  // Prevents race conditions when multiple backend instances fire the same schedule simultaneously.
-  async tryMarkTriggered(id: string): Promise<boolean> {
-    const fiveMinutesAgo = Date.now() - 300_000;
-    const { data, error } = await supabase
-      .from('schedules')
-      .update({ last_triggered_at: Date.now() })
-      .eq('id', id)
-      .or(`last_triggered_at.is.null,last_triggered_at.lt.${fiveMinutesAgo}`)
-      .select('id');
-    if (error) throw error;
-    return Array.isArray(data) && data.length > 0;
-  },
 };

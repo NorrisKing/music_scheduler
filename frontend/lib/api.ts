@@ -5,11 +5,6 @@ export const BACKEND_URL = rawUrl.trim()
   ? rawUrl.trim().replace(/\/$/, '') 
   : 'https://spotify-scheduler-production.up.railway.app'; // Fallback vers Railway en production
 
-console.log('Backend configuré sur :', BACKEND_URL);
-if (BACKEND_URL.includes('vercel.app')) {
-  console.warn('ATTENTION: Le backend semble pointer vers Vercel au lieu de Railway !');
-}
-
 export interface SpotifyAccount {
   id: string;
   displayName: string;
@@ -57,7 +52,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'ngrok-skip-browser-warning': 'true',
       ...options?.headers,
     },
   });
@@ -110,12 +104,4 @@ export const api = {
     request<{ ok: boolean }>(`/schedules/${id}`, { method: 'DELETE' }),
   triggerSchedule: (id: string) =>
     request<{ ok: boolean }>(`/schedules/${id}/trigger`, { method: 'POST' }),
-  getCurrentlyPlaying: (accountId: string) =>
-    request<{
-      isPlaying: boolean;
-      trackName: string;
-      artistName: string;
-      playlistName: string | null;
-      albumImageUrl?: string;
-    } | null>(`/accounts/${accountId}/currently-playing`),
 };
