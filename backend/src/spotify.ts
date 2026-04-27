@@ -118,62 +118,6 @@ export async function startPlaylist(
 }
 
 
-export async function fadeAndStartPlaylist(
-  accountId: string,
-  playlistId: string,
-  deviceId?: string,
-) {
-  const token = await refreshTokenIfNeeded(accountId);
-  if (!token) return false;
-
-  // Get current volume
-  const stateRes = await fetch('https://api.spotify.com/v1/me/player', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  let originalVolume = 100;
-  if (stateRes.ok && stateRes.status !== 204) {
-    try {
-      const state: any = await stateRes.json();
-      originalVolume = state?.device?.volume_percent ?? 100;
-    } catch { /* keep 100 */ }
-  }
-
-  // Fade out: 3 steps × 500ms = 1.5s
-  for (let i = 1; i <= 3; i++) {
-    await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(originalVolume * (1 - i / 3))}`, {
-      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
-    });
-    await new Promise(r => setTimeout(r, 500));
-  }
-
-  // Switch playlist
-  const playUrl = deviceId
-    ? `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`
-    : 'https://api.spotify.com/v1/me/player/play';
-
-  const playRes = await fetch(playUrl, {
-    method: 'PUT',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` }),
-  });
-
-  if (!playRes.ok && playRes.status !== 204) {
-    await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${originalVolume}`, {
-      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
-    });
-    return false;
-  }
-
-  // Fade in: 4 steps × 250ms = 1s
-  for (let i = 1; i <= 4; i++) {
-    await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(originalVolume * i / 4)}`, {
-      method: 'PUT', headers: { Authorization: `Bearer ${token}` },
-    });
-    await new Promise(r => setTimeout(r, 250));
-  }
-
-  return true;
-}
 
 export async function getCurrentlyPlaying(accountId: string) {
   const token = await refreshTokenIfNeeded(accountId);

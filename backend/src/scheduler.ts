@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { db, type Schedule } from './store.js';
-import { fadeAndStartPlaylist, startPlaylist } from './spotify.js';
+import { startPlaylist } from './spotify.js';
 
 // Map of schedule id -> cron task
 const activeTasks = new Map<string, ReturnType<typeof cron.schedule>>();
@@ -39,7 +39,7 @@ function startTask(schedule: Schedule) {
       await db.markTriggered(schedule.id);
       console.log(`[Scheduler] Triggering schedule ${schedule.id} for account ${schedule.accountId}`);
 
-      const success = await fadeAndStartPlaylist(
+      const success = await startPlaylist(
         schedule.accountId,
         schedule.playlistId,
         schedule.deviceId,
@@ -47,19 +47,9 @@ function startTask(schedule: Schedule) {
 
       if (success) {
         await db.updateLastPushed(schedule.accountId, schedule.playlistName);
-        console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started with fade`);
+        console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started`);
       } else {
-        const fallbackSuccess = await startPlaylist(
-          schedule.accountId,
-          schedule.playlistId,
-          schedule.deviceId,
-        );
-        if (fallbackSuccess) {
-          await db.updateLastPushed(schedule.accountId, schedule.playlistName);
-          console.log(`[Scheduler] OK - playlist ${schedule.playlistId} started (fallback)`);
-        } else {
-          console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
-        }
+        console.error(`[Scheduler] FAILED - playlist ${schedule.playlistId}`);
       }
     }, { timezone: 'Asia/Manila' });
 
