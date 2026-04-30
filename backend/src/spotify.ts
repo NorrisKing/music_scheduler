@@ -41,24 +41,6 @@ export async function refreshTokenIfNeeded(accountId: string): Promise<string | 
   }
 }
 
-async function spotifyFetch(url: string, token: string, options?: RequestInit): Promise<Response> {
-  let retries = 3;
-  while (retries-- > 0) {
-    const res = await fetch(url, {
-      ...options,
-      headers: { Authorization: `Bearer ${token}`, ...(options?.headers ?? {}) },
-    });
-    if (res.status === 429) {
-      const retryAfter = parseInt(res.headers.get('Retry-After') || '2', 10);
-      console.warn(`[Spotify] Rate limited on ${url}, retrying after ${retryAfter}s...`);
-      await new Promise(r => setTimeout(r, (retryAfter + 1) * 1000));
-      continue;
-    }
-    return res;
-  }
-  throw new Error('Spotify rate limit: max retries exceeded');
-}
-
 export async function getSpotifyPlaylists(accountId: string) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return null;
@@ -175,16 +157,12 @@ export async function fadeAndStartPlaylist(
   }
 
   // Fade out only if something is currently playing
+  // 12 steps over ~5 seconds — gentle ease-in curve starting at 95% of original
   if (isPlaying && originalVolume > 0) {
-    const steps = [
-      originalVolume * 0.55,
-      originalVolume * 0.25,
-      originalVolume * 0.08,
-      0,
-    ];
-    for (const vol of steps) {
-      await setVolume(token, vol);
-      await sleep(350);
+    const fractions = [0.95, 0.88, 0.79, 0.69, 0.59, 0.48, 0.38, 0.28, 0.19, 0.11, 0.05, 0];
+    for (const f of fractions) {
+      await setVolume(token, Math.round(originalVolume * f));
+      await sleep(400);
     }
   }
 
