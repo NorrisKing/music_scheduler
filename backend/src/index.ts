@@ -29,6 +29,11 @@ app.use(
   })
 );
 
+// --- In-memory cache for /accounts/status (30s TTL) ---
+// Prevents Spotify rate limits when multiple clients poll simultaneously
+let _statusCache: { data: any; timestamp: number } | null = null;
+const STATUS_CACHE_TTL = 30_000;
+
 // --- Health ---
 app.get('/', (c) => c.json({ ok: true, service: 'Spotify Scheduler', schedulerEnabled: SCHEDULER_ENABLED }));
 
@@ -111,12 +116,17 @@ app.get('/accounts', async (c) => {
 });
 
 app.get('/accounts/status', async (c) => {
+  // Serve from cache if fresh (avoids hammering Spotify when multiple clients poll)
+  if (_statusCache && Date.now() - _statusCache.timestamp < STATUS_CACHE_TTL) {
+    return c.json(_statusCache.data);
+  }
+
   const accounts = await db.getAccounts();
   const statuses = await Promise.all(
     accounts.map(async (acc) => {
       try {
         const cp: any = await getCurrentlyPlaying(acc.id);
-        
+
         // lastPushedPlaylistName takes priority over Spotify context (enqueue doesn't change context)
         if (cp && acc.lastPushedPlaylistName) {
           const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 2 * 60 * 60 * 1000);
@@ -139,6 +149,8 @@ app.get('/accounts/status', async (c) => {
       }
     })
   );
+
+  _statusCache = { data: statuses, timestamp: Date.now() };
   return c.json(statuses);
 });
 

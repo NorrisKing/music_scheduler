@@ -175,4 +175,5 @@ export const db = {
     const { error } = await supabase.from('schedules').update({ last_triggered_at: Date.now() }).eq('id', id);
     if (error) throw error;
   },
+
 };
