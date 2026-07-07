@@ -1,9 +1,9 @@
-// En production sur Vercel, on utilise EXPO_PUBLIC_BACKEND_URL (qui doit pointer vers Railway)
+// En production sur Vercel, on utilise EXPO_PUBLIC_BACKEND_URL
 // On enlève les espaces et les slashs à la fin
 const rawUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 export const BACKEND_URL = rawUrl.trim()
-  ? rawUrl.trim().replace(/\/$/, '') 
-  : 'https://spotify-scheduler-production.up.railway.app'; // Fallback vers Railway en production
+  ? rawUrl.trim().replace(/\/$/, '')
+  : 'https://3002-342fd69f-71e1-47d9-9c02-97b35f079e03.orchids.cloud'; // Fallback vers tunnel Orchids
 
 export interface SpotifyAccount {
   id: string;
