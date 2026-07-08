@@ -3,7 +3,7 @@
 const rawUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 export const BACKEND_URL = rawUrl.trim()
   ? rawUrl.trim().replace(/\/$/, '')
-  : 'https://3002-342fd69f-71e1-47d9-9c02-97b35f079e03.orchids.cloud'; // Fallback vers tunnel Orchids
+  : 'https://3002-45a15705-8597-4aac-82b2-c2f424ca6c89.orchids.cloud'; // Fallback vers tunnel Orchids
 
 export interface SpotifyAccount {
   id: string;
