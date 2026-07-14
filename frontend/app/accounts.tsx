@@ -25,7 +25,6 @@ interface AccountStatus {
       artistName: string;
       playlistName: string | null;
       albumImageUrl?: string;
-      isFallback?: boolean;
     } | null;
   }
 
@@ -67,7 +66,7 @@ export default function AccountsScreen() {
   }, [loadStatus]);
 
   useEffect(() => {
-    const interval = setInterval(loadStatus, 15000);
+    const interval = setInterval(loadStatus, 60000);
     return () => clearInterval(interval);
   }, [loadStatus]);
 
@@ -184,7 +183,7 @@ export default function AccountsScreen() {
                 </Text>
                   {status.playlistName && (
                     <Text className="text-[10px] text-[#1DB954] font-medium" numberOfLines={1}>
-                      {status.playlistName} {status.isFallback && <Text className="text-muted-foreground italic font-normal">(Planifié)</Text>}
+                      {status.playlistName}
                     </Text>
                   )}
               </View>

@@ -50,13 +50,23 @@ export async function getSpotifyPlaylists(accountId: string) {
 
   while (url) {
     try {
-      const res = await spotifyFetch(url, token);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      let res: Response;
+      try {
+        res = await fetch(url, {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
       if (!res.ok) {
         console.error(`[Spotify] getPlaylists error ${res.status} for ${accountId}`);
         break;
       }
       const data: any = await res.json();
-      allItems.push(...data.items);
+      allItems.push(...(data.items ?? []));
       url = data.next ?? null;
     } catch (e) {
       console.error('[Spotify] getPlaylists fetch error:', e);

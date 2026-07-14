@@ -50,6 +50,7 @@ export default function EditScheduleScreen() {
   const [conflictError, setConflictError] = useState<string | null>(null);
   const [savedDeviceId, setSavedDeviceId] = useState<string | null>(null);
   const [savedDeviceName, setSavedDeviceName] = useState<string | null>(null);
+  const [showPlaylistPicker, setShowPlaylistPicker] = useState(false);
 
   const hour = parseInt(timeValue.split(':')[0] || '8', 10);
   const minute = parseInt(timeValue.split(':')[1] || '0', 10);
@@ -81,29 +82,7 @@ export default function EditScheduleScreen() {
         };
         setSelectedPlaylist(savedPlaylist);
 
-        if (account) {
-          setLoadingPlaylists(true);
-          setLoadingDevices(true);
-          try {
-            const [pl, dv] = await Promise.all([
-              api.getPlaylists(account.id),
-              api.getDevices(account.id),
-            ]);
-            const playlistItems = pl.items || [];
-            const deviceItems = dv.devices || [];
-            setPlaylists(playlistItems);
-            setDevices(deviceItems);
-            if (playlistItems.length === 0) setPlaylistError('Spotify temporairement limité. Réessayez dans quelques secondes.');
-            const found = playlistItems.find((p) => p.id === schedule.playlistId);
-            if (found) setSelectedPlaylist(found);
-            setSelectedDevice(deviceItems.find((d) => d.id === schedule.deviceId) || null);
-          } catch {
-            setPlaylistError('Erreur lors du chargement des playlists.');
-          } finally {
-            setLoadingPlaylists(false);
-            setLoadingDevices(false);
-          }
-        }
+        // Devices loaded lazily via "Actualiser" button — no auto-load
       } catch (e) {
         console.error(e);
       } finally {
@@ -118,6 +97,23 @@ export default function EditScheduleScreen() {
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort((a, b) => a - b)
     );
+  };
+
+  const loadPlaylistsForChange = async () => {
+    if (!selectedAccount) return;
+    setShowPlaylistPicker(true);
+    setPlaylistError(null);
+    setLoadingPlaylists(true);
+    try {
+      const pl = await api.getPlaylists(selectedAccount.id);
+      const items = pl.items || [];
+      setPlaylists(items);
+      if (items.length === 0) setPlaylistError('Aucune playlist disponible. Spotify est temporairement limité, réessayez dans quelques secondes.');
+    } catch (e: any) {
+      setPlaylistError(`Impossible de charger les playlists : ${e?.message || 'erreur réseau'}`);
+    } finally {
+      setLoadingPlaylists(false);
+    }
   };
 
   const refreshDevices = async () => {
@@ -219,81 +215,94 @@ export default function EditScheduleScreen() {
         {selectedAccount && (
           <>
             <SectionTitle>2 · Playlist</SectionTitle>
-            {loadingPlaylists ? (
-              <View className="py-6 items-center">
-                <ActivityIndicator color="#1DB954" />
-                <Text className="mt-2 text-xs text-muted-foreground">Chargement des playlists…</Text>
-              </View>
-            ) : playlistError ? (
-              <View className="rounded-2xl border border-yellow-500/40 bg-yellow-500/10 p-4 gap-3">
-                <Text className="text-yellow-300 text-sm">{playlistError}</Text>
-                <TouchableOpacity
-                  onPress={async () => {
-                    setPlaylistError(null);
-                    setLoadingPlaylists(true);
-                    try {
-                      const pl = await api.getPlaylists(selectedAccount!.id);
-                      const items = pl.items || [];
-                      setPlaylists(items);
-                      if (items.length === 0) setPlaylistError('Toujours vide. Réessayez.');
-                      else {
-                        const found = items.find((p) => p.id === selectedPlaylist?.id);
-                        if (found) setSelectedPlaylist(found);
-                      }
-                    } catch {
-                      setPlaylistError('Erreur. Réessayez.');
-                    } finally {
-                      setLoadingPlaylists(false);
-                    }
-                  }}
-                  className="rounded-xl bg-yellow-500/20 border border-yellow-500/40 py-2 items-center">
-                  <Text className="text-yellow-300 font-semibold text-sm">Réessayer</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <>
-                <View className="mb-3 flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2.5">
-                  <MusicIcon size={15} color="#6b7280" />
-                  <TextInput
-                    value={playlistSearch}
-                    onChangeText={setPlaylistSearch}
-                    placeholder="Rechercher une playlist…"
-                    placeholderTextColor="#6b7280"
-                    className="flex-1 text-foreground text-sm"
-                  />
-                  {playlistSearch.length > 0 && (
-                    <TouchableOpacity onPress={() => setPlaylistSearch('')}>
-                      <Text className="text-muted-foreground text-sm px-1">✕</Text>
-                    </TouchableOpacity>
-                  )}
+
+            {/* Current playlist — always shown */}
+            {selectedPlaylist && !showPlaylistPicker && (
+              <View className="flex-row items-center gap-3 rounded-2xl border border-[#1DB954] bg-[#1DB954]/10 p-3 mb-2">
+                {selectedPlaylist.images?.[0]?.url ? (
+                  <img src={selectedPlaylist.images[0].url} style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                ) : (
+                  <View className="h-11 w-11 rounded-lg bg-[#1DB954]/20 items-center justify-center flex-shrink-0">
+                    <MusicIcon size={18} color="#1DB954" />
+                  </View>
+                )}
+                <View className="flex-1">
+                  <Text className="text-foreground font-semibold text-sm" numberOfLines={1}>{selectedPlaylist.name}</Text>
+                  <Text className="text-xs text-muted-foreground">Playlist sélectionnée</Text>
                 </View>
-                <View style={{ maxHeight: 300 }}>
-                  <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
-                    {filteredPlaylists.map((p) => (
-                      <TouchableOpacity
-                        key={p.id}
-                        onPress={() => setSelectedPlaylist(p)}
-                        className={`mb-2 flex-row items-center gap-3 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-                        {p.images?.[0]?.url ? (
-                          <img src={p.images[0].url} style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
-                        ) : (
-                          <View className="h-11 w-11 rounded-lg bg-muted items-center justify-center flex-shrink-0">
-                            <MusicIcon size={18} color="#6b7280" />
-                          </View>
-                        )}
-                        <View className="flex-1">
-                          <Text className="text-foreground font-semibold text-sm" numberOfLines={1}>{p.name}</Text>
-                          <Text className="text-muted-foreground text-xs">{p.tracks.total} titres</Text>
-                        </View>
-                        {selectedPlaylist?.id === p.id && <CheckCircleIcon size={18} color="#1DB954" />}
+                <CheckCircleIcon size={18} color="#1DB954" />
+              </View>
+            )}
+
+            {/* "Changer" button — triggers lazy load */}
+            {!showPlaylistPicker && (
+              <TouchableOpacity
+                onPress={loadPlaylistsForChange}
+                className="rounded-xl border border-border bg-card py-2.5 items-center">
+                <Text className="text-sm text-[#1DB954] font-semibold">Changer de playlist</Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Playlist picker — shown after clicking "Changer" */}
+            {showPlaylistPicker && (
+              loadingPlaylists ? (
+                <View className="py-6 items-center">
+                  <ActivityIndicator color="#1DB954" />
+                  <Text className="mt-2 text-xs text-muted-foreground">Chargement des playlists…</Text>
+                </View>
+              ) : playlistError ? (
+                <View className="rounded-2xl border border-yellow-500/40 bg-yellow-500/10 p-4 gap-3">
+                  <Text className="text-yellow-300 text-sm">{playlistError}</Text>
+                  <TouchableOpacity onPress={loadPlaylistsForChange}
+                    className="rounded-xl bg-yellow-500/20 border border-yellow-500/40 py-2 items-center">
+                    <Text className="text-yellow-300 font-semibold text-sm">Réessayer</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  <View className="mb-3 flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2.5">
+                    <MusicIcon size={15} color="#6b7280" />
+                    <TextInput
+                      value={playlistSearch}
+                      onChangeText={setPlaylistSearch}
+                      placeholder="Rechercher une playlist…"
+                      placeholderTextColor="#6b7280"
+                      className="flex-1 text-foreground text-sm"
+                    />
+                    {playlistSearch.length > 0 && (
+                      <TouchableOpacity onPress={() => setPlaylistSearch('')}>
+                        <Text className="text-muted-foreground text-sm px-1">✕</Text>
                       </TouchableOpacity>
-                    ))}
-                    {filteredPlaylists.length === 0 && (
-                      <Text className="text-center text-muted-foreground py-4 text-sm">Aucun résultat pour "{playlistSearch}"</Text>
                     )}
-                  </ScrollView>
-                </View>
-              </>
+                  </View>
+                  <View style={{ maxHeight: 300 }}>
+                    <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
+                      {filteredPlaylists.map((p) => (
+                        <TouchableOpacity
+                          key={p.id}
+                          onPress={() => { setSelectedPlaylist(p); setShowPlaylistPicker(false); }}
+                          className={`mb-2 flex-row items-center gap-3 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                          {p.images?.[0]?.url ? (
+                            <img src={p.images[0].url} style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
+                          ) : (
+                            <View className="h-11 w-11 rounded-lg bg-muted items-center justify-center flex-shrink-0">
+                              <MusicIcon size={18} color="#6b7280" />
+                            </View>
+                          )}
+                          <View className="flex-1">
+                            <Text className="text-foreground font-semibold text-sm" numberOfLines={1}>{p.name}</Text>
+                            <Text className="text-muted-foreground text-xs">{p.tracks.total} titres</Text>
+                          </View>
+                          {selectedPlaylist?.id === p.id && <CheckCircleIcon size={18} color="#1DB954" />}
+                        </TouchableOpacity>
+                      ))}
+                      {filteredPlaylists.length === 0 && playlists.length > 0 && (
+                        <Text className="text-center text-muted-foreground py-4 text-sm">Aucun résultat pour "{playlistSearch}"</Text>
+                      )}
+                    </ScrollView>
+                  </View>
+                </>
+              )
             )}
           </>
         )}

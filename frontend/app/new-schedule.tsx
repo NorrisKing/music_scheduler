@@ -75,7 +75,7 @@ export default function NewScheduleScreen() {
         setPlaylists(d.items || []);
         if ((d.items || []).length === 0) setPlaylistError('Aucune playlist trouvée. Réessayez dans quelques secondes.');
       })
-      .catch(() => setPlaylistError('Erreur lors du chargement des playlists.'))
+      .catch((e: any) => setPlaylistError(`Erreur: ${e?.message || 'impossible de charger les playlists'}`))
       .finally(() => setLoadingPlaylists(false));
 
     setLoadingDevices(true);
