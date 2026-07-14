@@ -4,12 +4,15 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
+  ScrollView,
   ActivityIndicator,
   Image,
 } from 'react-native';
 import { Stack, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { PlusCircleIcon, CalendarIcon, PlayCircleIcon, Trash2Icon, ToggleLeftIcon, ToggleRightIcon, ChevronRightIcon, ShuffleIcon, TrashIcon, MusicIcon, ClockIcon } from 'lucide-react-native';
 import { api, type Schedule } from '@/lib/api';
+
+const DAYS_LABELS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
 const DAYS_SHORT = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
 
@@ -31,6 +34,7 @@ export default function SchedulesScreen() {
   } | null>(null);
   const [triggeringId, setTriggeringId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar');
 
   const fetchStatuses = useCallback(async () => {
     try {
@@ -112,6 +116,89 @@ export default function SchedulesScreen() {
     } finally {
       setTriggeringId(null);
     }
+  };
+
+  const CalendarView = () => {
+    // Group schedules by hour
+    const hourMap = new Map<number, Schedule[][]>();
+    for (const s of schedules) {
+      if (!hourMap.has(s.hour)) {
+        hourMap.set(s.hour, Array.from({ length: 7 }, () => []));
+      }
+      for (const day of s.days) {
+        hourMap.get(s.hour)![day].push(s);
+      }
+    }
+    const populatedHours = Array.from(hourMap.entries())
+      .filter(([_, days]) => days.some(arr => arr.length > 0))
+      .sort(([a], [b]) => a - b);
+
+    const today = new Date().getDay();
+    const isCurrentlyPlaying = (s: Schedule, dayIdx: number) =>
+      currentlyPlaying?.playlistName != null &&
+      s.playlistName === currentlyPlaying.playlistName &&
+      dayIdx === today;
+
+    return (
+      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+        <ScrollView horizontal nestedScrollEnabled showsHorizontalScrollIndicator={false}>
+          <View className="min-w-full">
+            {/* Header row */}
+            <View className="flex-row border-b border-border/20">
+              <View className="w-14 h-10 justify-center items-center bg-background" style={{ position: 'sticky', left: 0, zIndex: 20 }} />
+              {DAYS_LABELS.map((d, i) => (
+                <View key={i} className="w-24 items-center justify-center h-10">
+                  <Text className={`text-xs font-bold uppercase ${i === today ? 'text-[#1DB954]' : 'text-muted-foreground'}`}>{d}</Text>
+                </View>
+              ))}
+            </View>
+            {/* Hour rows */}
+            {populatedHours.map(([hour, daySchedules]) => (
+              <View key={hour} className="flex-row border-b border-border/10">
+                <View className="w-14 justify-start items-center pt-2.5 bg-background" style={{ position: 'sticky', left: 0, zIndex: 10 }}>
+                  <Text className="font-mono text-xs text-muted-foreground">{pad(hour)}:00</Text>
+                </View>
+                {daySchedules.map((schedulesAtDay, dayIdx) => (
+                  <View key={dayIdx} className="w-24 p-1 min-h-[56px] justify-center">
+                    {schedulesAtDay.map(s => {
+                      const active = isCurrentlyPlaying(s, dayIdx);
+                      return (
+                        <TouchableOpacity
+                          key={s.id}
+                          onPress={() => router.push({ pathname: '/edit-schedule', params: { id: s.id } })}
+                          className={`rounded-lg px-2 py-1.5 mb-1 border ${
+                            active
+                              ? 'border-[#1DB954] bg-[#1DB954]/10'
+                              : s.active
+                                ? 'border-border/40 bg-card'
+                                : 'border-border/20 bg-card/50 opacity-50'
+                          }`}
+                        >
+                          <View className="flex-row items-center gap-1">
+                            {active && <View className="h-1.5 w-1.5 rounded-full bg-[#1DB954]" />}
+                            <Text
+                              className={`text-[10px] leading-tight ${active ? 'font-bold text-[#1DB954]' : 'text-foreground'}`}
+                              numberOfLines={2}
+                            >
+                              {s.name || s.playlistName}
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+        {populatedHours.length === 0 && (
+          <View className="flex-1 items-center justify-center py-20">
+            <Text className="text-sm text-muted-foreground">Aucune planification cette semaine</Text>
+          </View>
+        )}
+      </ScrollView>
+    );
   };
 
   const renderSchedule = ({ item }: { item: Schedule }) => (
@@ -207,6 +294,21 @@ export default function SchedulesScreen() {
       }} />
       <View className="flex-1 bg-background px-4 pt-4">
 
+        <View className="flex-row items-center rounded-xl bg-[#1DB954]/15 border border-[#1DB954]/30 p-0.5 mb-3">
+          <TouchableOpacity
+            onPress={() => setViewMode('calendar')}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${viewMode === 'calendar' ? 'bg-[#1DB954] shadow-sm' : 'bg-transparent'}`}
+          >
+            <Text className={`text-sm font-bold ${viewMode === 'calendar' ? 'text-white' : 'text-[#1DB954]'}`}>Calendrier</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setViewMode('list')}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${viewMode === 'list' ? 'bg-[#1DB954] shadow-sm' : 'bg-transparent'}`}
+          >
+            <Text className={`text-sm font-bold ${viewMode === 'list' ? 'text-white' : 'text-[#1DB954]'}`}>Liste</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Lecture en cours */}
         {accountId && currentlyPlaying && (
           <View className="mb-4 flex-row items-center gap-3 rounded-2xl bg-[#1DB954]/8 p-4 border border-[#1DB954]/20">
@@ -254,6 +356,8 @@ export default function SchedulesScreen() {
               Créez une planification pour démarrer automatiquement une playlist Spotify
             </Text>
           </View>
+        ) : viewMode === 'calendar' ? (
+          <CalendarView />
         ) : (
           <FlatList
             data={schedules}
