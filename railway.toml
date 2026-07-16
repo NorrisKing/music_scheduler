@@ -1,9 +1,0 @@
-[build]
-builder = "NIXPACKS"
-buildCommand = "cd backend && bun run build.js"
-
-[deploy]
-startCommand = "cd backend && bun dist/index.js"
-healthcheckPath = "/"
-healthcheckTimeout = 30
-restartPolicyType = "on_failure"
