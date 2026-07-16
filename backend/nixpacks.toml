@@ -4,5 +4,8 @@ nixPkgs = ["bun"]
 [phases.install]
 cmds = ["bun install"]
 
+[phases.build]
+cmds = ["bun run build.js"]
+
 [start]
-cmd = "bun run src/index.ts"
+cmd = "bun dist/index.js"
