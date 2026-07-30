@@ -231,13 +231,6 @@ async function runFadeAndStartPlaylist(
   const targetDeviceId = await resolveTargetDevice(token, deviceId);
   await setShuffle(token, targetDeviceId, !!shuffle);
 
-  // Restore volume on the target device *before* starting playback, so the new
-  // track begins at full volume instead of a few silent seconds followed by an
-  // audible jump. This device was already playing (or is already connected),
-  // so the volume call takes effect immediately here — unlike right after a
-  // device/context switch, where Spotify can silently drop it.
-  await setVolume(token, originalVolume, targetDeviceId);
-
   const url = targetDeviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${targetDeviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
@@ -271,14 +264,18 @@ async function runFadeAndStartPlaylist(
     }
   }
 
-  // Safety net: confirm the volume actually stuck once playback is underway.
-  // This re-applies the same value set above, so it has no audible effect if
-  // the earlier call already worked.
+  // Restore volume right after the switch takes effect — no deliberate delay,
+  // so there's no audible gap between the new track starting and it being
+  // back at full volume. A brief retry only kicks in if this first attempt
+  // is rejected.
   if (ok) {
-    await sleep(1500);
     const restored = await setVolume(token, originalVolume, targetDeviceId);
     if (!restored) {
-      console.error(`[Spotify] Failed to confirm volume for ${accountId}`);
+      await sleep(500);
+      const retried = await setVolume(token, originalVolume, targetDeviceId);
+      if (!retried) {
+        console.error(`[Spotify] Failed to restore volume for ${accountId}`);
+      }
     }
   }
 
