@@ -114,8 +114,10 @@ async function resolveTargetDevice(token: string, deviceId?: string): Promise<st
   }
 }
 
-async function setVolume(token: string, volume: number): Promise<boolean> {
-  const res = await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(volume)}`, {
+async function setVolume(token: string, volume: number, deviceId?: string): Promise<boolean> {
+  const params = new URLSearchParams({ volume_percent: String(Math.round(volume)) });
+  if (deviceId) params.set('device_id', deviceId);
+  const res = await fetch(`https://api.spotify.com/v1/me/player/volume?${params.toString()}`, {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -229,6 +231,13 @@ async function runFadeAndStartPlaylist(
   const targetDeviceId = await resolveTargetDevice(token, deviceId);
   await setShuffle(token, targetDeviceId, !!shuffle);
 
+  // Restore volume on the target device *before* starting playback, so the new
+  // track begins at full volume instead of a few silent seconds followed by an
+  // audible jump. This device was already playing (or is already connected),
+  // so the volume call takes effect immediately here — unlike right after a
+  // device/context switch, where Spotify can silently drop it.
+  await setVolume(token, originalVolume, targetDeviceId);
+
   const url = targetDeviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${targetDeviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
@@ -262,18 +271,14 @@ async function runFadeAndStartPlaylist(
     }
   }
 
-  // Restore volume once the device has actually taken over playback — right after
-  // switching context/device, Spotify can silently drop a volume change that arrives
-  // too soon, so give it more time and retry once if the first attempt is ignored.
+  // Safety net: confirm the volume actually stuck once playback is underway.
+  // This re-applies the same value set above, so it has no audible effect if
+  // the earlier call already worked.
   if (ok) {
-    await sleep(1200);
-    const restored = await setVolume(token, originalVolume);
+    await sleep(1500);
+    const restored = await setVolume(token, originalVolume, targetDeviceId);
     if (!restored) {
-      await sleep(1000);
-      const retried = await setVolume(token, originalVolume);
-      if (!retried) {
-        console.error(`[Spotify] Failed to restore volume for ${accountId} after retry`);
-      }
+      console.error(`[Spotify] Failed to confirm volume for ${accountId}`);
     }
   }
 
