@@ -149,32 +149,32 @@ export default function AccountsScreen() {
           onPress={() => router.push({ pathname: '/schedules', params: { accountId: item.id, accountName: item.displayName } })}
           className="mb-3 rounded-2xl border border-border bg-card active:opacity-70 overflow-hidden">
           <View className="flex-row items-center gap-3 p-4">
-            <View className="h-12 w-12 items-center justify-center rounded-full bg-[#1DB954]/20">
-              <UserCircleIcon size={28} color="#1DB954" />
+            <View className="h-12 w-12 items-center justify-center rounded-full bg-[#c9a227]/20">
+              <UserCircleIcon size={28} color="#c9a227" />
             </View>
             <View className="flex-1">
               <Text className="text-foreground font-semibold">{item.displayName}</Text>
               <Text className="text-sm text-muted-foreground">{item.email}</Text>
             </View>
-            <ChevronRightIcon size={20} color="#6b7280" />
+            <ChevronRightIcon size={20} color="#8a7c5f" />
           </View>
 
           {status && (
-            <View className="bg-[#1DB954]/5 border-t border-[#1DB954]/10 p-3 flex-row items-center gap-3">
+            <View className="bg-[#c9a227]/5 border-t border-[#c9a227]/10 p-3 flex-row items-center gap-3">
               {status.albumImageUrl ? (
                 <Image 
                   source={{ uri: status.albumImageUrl }} 
                   style={{ width: 32, height: 32, borderRadius: 4 }} 
                 />
               ) : (
-                <View className="h-8 w-8 items-center justify-center rounded-md bg-[#1DB954]/20">
-                  <MusicIcon size={16} color="#1DB954" />
+                <View className="h-8 w-8 items-center justify-center rounded-md bg-[#c9a227]/20">
+                  <MusicIcon size={16} color="#c9a227" />
                 </View>
               )}
               <View className="flex-1">
                 <View className="flex-row items-center gap-1.5 mb-0.5">
-                  <View className={`h-1.5 w-1.5 rounded-full ${status.isPlaying ? 'bg-[#1DB954]' : 'bg-muted-foreground'}`} />
-                  <Text className="text-[9px] font-black uppercase tracking-widest text-[#1DB954]">
+                  <View className={`h-1.5 w-1.5 rounded-full ${status.isPlaying ? 'bg-[#c9a227]' : 'bg-muted-foreground'}`} />
+                  <Text className="text-[9px] font-black uppercase tracking-widest text-[#c9a227]">
                     {status.isPlaying ? 'LECTURE' : 'PAUSE'}
                   </Text>
                 </View>
@@ -182,7 +182,7 @@ export default function AccountsScreen() {
                   {status.trackName} • <Text className="text-muted-foreground font-medium">{status.artistName}</Text>
                 </Text>
                   {status.playlistName && (
-                    <Text className="text-[10px] text-[#1DB954] font-medium" numberOfLines={1}>
+                    <Text className="text-[10px] text-[#c9a227] font-medium" numberOfLines={1}>
                       {status.playlistName}
                     </Text>
                   )}
@@ -213,7 +213,7 @@ export default function AccountsScreen() {
       <View className="flex-1 bg-background p-4">
           {loading || connecting ? (
             <View className="flex-1 items-center justify-center">
-              <ActivityIndicator size="large" color="#1DB954" />
+              <ActivityIndicator size="large" color="#c9a227" />
               {connecting && (
                 <Text className="mt-4 text-muted-foreground">
                   {sessionStorage && sessionStorage.getItem('spotify_pkce_verifier')
@@ -247,7 +247,7 @@ export default function AccountsScreen() {
             renderItem={renderAccount}
             ListEmptyComponent={
               <View className="mt-16 items-center">
-                <UserCircleIcon size={56} color="#6b7280" />
+                <UserCircleIcon size={56} color="#8a7c5f" />
                 <Text className="mt-4 text-center text-lg font-semibold text-foreground">
                   Aucun compte connecté
                 </Text>
@@ -270,7 +270,7 @@ export default function AccountsScreen() {
           <TouchableOpacity
             onPress={handleConnect}
             disabled={!ready || connecting || loading}
-            className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-50">
+            className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#c9a227] py-4 disabled:opacity-50">
             {connecting ? (
               <ActivityIndicator color="white" />
             ) : (

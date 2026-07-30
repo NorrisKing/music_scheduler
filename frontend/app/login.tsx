@@ -21,7 +21,8 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Spotify Scheduler</Text>
+      <Text style={styles.title}>Sonora</Text>
+      <Text style={styles.tagline}>L'ambiance, à l'heure près</Text>
       <View style={styles.card}>
         <Text style={styles.label}>Mot de passe</Text>
         <TextInput
@@ -31,7 +32,7 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
           onChangeText={t => { setValue(t); setError(false); }}
           onSubmitEditing={handleSubmit}
           placeholder="••••••••••••"
-          placeholderTextColor="#6b7280"
+          placeholderTextColor="#6b5f45"
           autoFocus
         />
         {error && (
@@ -48,29 +49,36 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f0f',
+    backgroundColor: '#0b0b0a',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1DB954',
-    marginBottom: 32,
+    fontFamily: 'PlayfairDisplay',
+    fontSize: 32,
+    fontWeight: '600',
+    color: '#c9a227',
     letterSpacing: 0.5,
   },
+  tagline: {
+    color: '#8a7c5f',
+    fontSize: 13,
+    letterSpacing: 0.5,
+    marginTop: 6,
+    marginBottom: 32,
+  },
   card: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#141210',
     borderRadius: 16,
     padding: 28,
     width: '100%',
     maxWidth: 360,
     borderWidth: 1,
-    borderColor: '#2a2a2a',
+    borderColor: '#3a3226',
   },
   label: {
-    color: '#9ca3af',
+    color: '#a89a7d',
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 8,
@@ -78,29 +86,29 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   input: {
-    backgroundColor: '#111',
+    backgroundColor: '#0f0d0b',
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: '#3a3226',
     borderRadius: 10,
     padding: 14,
-    color: '#fff',
+    color: '#f2ead9',
     fontSize: 16,
     marginBottom: 12,
   },
   error: {
-    color: '#ef4444',
+    color: '#e0745a',
     fontSize: 13,
     marginBottom: 12,
   },
   button: {
-    backgroundColor: '#1DB954',
+    backgroundColor: '#c9a227',
     borderRadius: 10,
     padding: 14,
     alignItems: 'center',
     marginTop: 4,
   },
   buttonText: {
-    color: '#000',
+    color: '#0b0b0a',
     fontWeight: '700',
     fontSize: 15,
   },

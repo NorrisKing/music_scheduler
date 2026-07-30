@@ -149,7 +149,7 @@ export default function SchedulesScreen() {
               <View className="w-14 h-10 justify-center items-center bg-background" style={{ position: 'sticky', left: 0, zIndex: 20 }} />
               {DAYS_LABELS.map((d, i) => (
                 <View key={i} className="w-24 items-center justify-center h-10">
-                  <Text className={`text-xs font-bold uppercase ${i === today ? 'text-[#1DB954]' : 'text-muted-foreground'}`}>{d}</Text>
+                  <Text className={`text-xs font-bold uppercase ${i === today ? 'text-[#c9a227]' : 'text-muted-foreground'}`}>{d}</Text>
                 </View>
               ))}
             </View>
@@ -169,16 +169,16 @@ export default function SchedulesScreen() {
                           onPress={() => router.push({ pathname: '/edit-schedule', params: { id: s.id } })}
                           className={`rounded-lg px-2 py-1.5 mb-1 border ${
                             active
-                              ? 'border-[#1DB954] bg-[#1DB954]/10'
+                              ? 'border-[#c9a227] bg-[#c9a227]/10'
                               : s.active
                                 ? 'border-border/40 bg-card'
                                 : 'border-border/20 bg-card/50 opacity-50'
                           }`}
                         >
                           <View className="flex-row items-center gap-1">
-                            {active && <View className="h-1.5 w-1.5 rounded-full bg-[#1DB954]" />}
+                            {active && <View className="h-1.5 w-1.5 rounded-full bg-[#c9a227]" />}
                             <Text
-                              className={`text-[10px] leading-tight ${active ? 'font-bold text-[#1DB954]' : 'text-foreground'}`}
+                              className={`text-[10px] leading-tight ${active ? 'font-bold text-[#c9a227]' : 'text-foreground'}`}
                               numberOfLines={2}
                             >
                               {s.name || s.playlistName}
@@ -211,8 +211,8 @@ export default function SchedulesScreen() {
         {/* Header : heure + toggle */}
         <View className="flex-row items-center justify-between px-4 pt-4 pb-3">
           <View className="flex-row items-center gap-3">
-            <View className={`rounded-xl px-3 py-2 ${item.active ? 'bg-[#1DB954]/10' : 'bg-muted'}`}>
-              <Text className={`font-mono text-2xl font-black ${item.active ? 'text-[#1DB954]' : 'text-muted-foreground'}`}>
+            <View className={`rounded-xl px-3 py-2 ${item.active ? 'bg-[#c9a227]/10' : 'bg-muted'}`}>
+              <Text className={`font-mono text-2xl font-black ${item.active ? 'text-[#c9a227]' : 'text-muted-foreground'}`}>
                 {pad(item.hour)}:{pad(item.minute)}
               </Text>
             </View>
@@ -227,8 +227,8 @@ export default function SchedulesScreen() {
           </View>
           <div onClick={(e) => { e.stopPropagation(); handleToggle(item.id, item.active, e); }} style={{ padding: 4 }}>
             {item.active
-              ? <ToggleRightIcon size={30} color="#1DB954" />
-              : <ToggleLeftIcon size={30} color="#6b7280" />}
+              ? <ToggleRightIcon size={30} color="#c9a227" />
+              : <ToggleLeftIcon size={30} color="#8a7c5f" />}
           </div>
         </View>
 
@@ -237,7 +237,7 @@ export default function SchedulesScreen() {
           {DAYS_SHORT.map((d, i) => (
             <View
               key={i}
-              className={`h-7 w-7 items-center justify-center rounded-full ${item.days.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'}`}>
+              className={`h-7 w-7 items-center justify-center rounded-full ${item.days.includes(i) ? 'bg-[#c9a227]' : 'bg-muted'}`}>
               <Text className={`text-[10px] font-black ${item.days.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
                 {d}
               </Text>
@@ -246,7 +246,7 @@ export default function SchedulesScreen() {
           <View className="flex-1" />
           {item.shuffle && (
             <View className="flex-row items-center gap-1 rounded-lg bg-muted px-2 py-1">
-              <ShuffleIcon size={11} color="#6b7280" />
+              <ShuffleIcon size={11} color="#8a7c5f" />
               <Text className="text-[10px] text-muted-foreground font-semibold">Aléatoire</Text>
             </View>
           )}
@@ -254,17 +254,17 @@ export default function SchedulesScreen() {
 
         {/* Footer */}
         <View className="flex-row items-center border-t border-border/40 px-4 py-2.5 gap-2">
-          <ClockIcon size={11} color="#6b7280" />
+          <ClockIcon size={11} color="#8a7c5f" />
           <Text className="flex-1 text-xs text-muted-foreground" numberOfLines={1}>
             {item.deviceName || 'Appareil actif'}
           </Text>
           <div onClick={(e) => { e.stopPropagation(); handleTrigger(item.id, e); }} style={{ padding: 2 }}>
-            <View className={`flex-row items-center gap-1.5 rounded-xl px-3 py-1.5 ${triggeringId === item.id ? 'bg-[#1DB954]/10' : 'bg-[#1DB954]/15'}`}>
+            <View className={`flex-row items-center gap-1.5 rounded-xl px-3 py-1.5 ${triggeringId === item.id ? 'bg-[#c9a227]/10' : 'bg-[#c9a227]/15'}`}>
               {triggeringId === item.id
-                ? <ActivityIndicator size="small" color="#1DB954" />
-                : <PlayCircleIcon size={14} color="#1DB954" />
+                ? <ActivityIndicator size="small" color="#c9a227" />
+                : <PlayCircleIcon size={14} color="#c9a227" />
               }
-              <Text className="text-xs font-bold text-[#1DB954]">Lancer</Text>
+              <Text className="text-xs font-bold text-[#c9a227]">Lancer</Text>
             </View>
           </div>
           <div onClick={(e) => { e.stopPropagation(); handleDelete(item, e); }} style={{ padding: 2 }}>
@@ -275,7 +275,7 @@ export default function SchedulesScreen() {
               }
             </View>
           </div>
-          <ChevronRightIcon size={15} color="#6b7280" />
+          <ChevronRightIcon size={15} color="#8a7c5f" />
         </View>
       </View>
     </div>
@@ -295,25 +295,25 @@ export default function SchedulesScreen() {
       }} />
       <View className="flex-1 bg-background px-4 pt-4">
 
-        <View className="flex-row items-center rounded-xl bg-[#1DB954]/15 border border-[#1DB954]/30 p-0.5 mb-3">
+        <View className="flex-row items-center rounded-xl bg-[#c9a227]/15 border border-[#c9a227]/30 p-0.5 mb-3">
           <TouchableOpacity
             onPress={() => setViewMode('calendar')}
-            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${viewMode === 'calendar' ? 'bg-[#1DB954] shadow-sm' : 'bg-transparent'}`}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${viewMode === 'calendar' ? 'bg-[#c9a227] shadow-sm' : 'bg-transparent'}`}
           >
-            <Text className={`text-sm font-bold ${viewMode === 'calendar' ? 'text-white' : 'text-[#1DB954]'}`}>Calendrier</Text>
+            <Text className={`text-sm font-bold ${viewMode === 'calendar' ? 'text-white' : 'text-[#c9a227]'}`}>Calendrier</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setViewMode('list')}
-            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${viewMode === 'list' ? 'bg-[#1DB954] shadow-sm' : 'bg-transparent'}`}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${viewMode === 'list' ? 'bg-[#c9a227] shadow-sm' : 'bg-transparent'}`}
           >
-            <Text className={`text-sm font-bold ${viewMode === 'list' ? 'text-white' : 'text-[#1DB954]'}`}>Liste</Text>
+            <Text className={`text-sm font-bold ${viewMode === 'list' ? 'text-white' : 'text-[#c9a227]'}`}>Liste</Text>
           </TouchableOpacity>
         </View>
 
         {/* Lecture en cours */}
         {accountId && currentlyPlaying && (
-          <View className="mb-4 flex-row items-center gap-3 rounded-2xl bg-[#1DB954]/8 p-4 border border-[#1DB954]/20">
-            <View className="h-12 w-12 items-center justify-center rounded-xl bg-[#1DB954]/15 overflow-hidden flex-shrink-0">
+          <View className="mb-4 flex-row items-center gap-3 rounded-2xl bg-[#c9a227]/8 p-4 border border-[#c9a227]/20">
+            <View className="h-12 w-12 items-center justify-center rounded-xl bg-[#c9a227]/15 overflow-hidden flex-shrink-0">
               {currentlyPlaying.albumImageUrl ? (
                 <Image
                   source={{ uri: currentlyPlaying.albumImageUrl }}
@@ -321,18 +321,18 @@ export default function SchedulesScreen() {
                   resizeMode="cover"
                 />
               ) : (
-                <MusicIcon size={24} color="#1DB954" />
+                <MusicIcon size={24} color="#c9a227" />
               )}
             </View>
             <View className="flex-1">
               <View className="flex-row items-center gap-2 mb-0.5">
-                <View className={`h-1.5 w-1.5 rounded-full ${currentlyPlaying.isPlaying ? 'bg-[#1DB954]' : 'bg-muted-foreground'}`} />
+                <View className={`h-1.5 w-1.5 rounded-full ${currentlyPlaying.isPlaying ? 'bg-[#c9a227]' : 'bg-muted-foreground'}`} />
                 <Text className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                   {currentlyPlaying.isPlaying ? 'EN LECTURE' : 'EN PAUSE'}
                 </Text>
               </View>
               {currentlyPlaying.playlistName && (
-                <Text className="text-xs font-black text-[#1DB954]" numberOfLines={1}>{currentlyPlaying.playlistName}</Text>
+                <Text className="text-xs font-black text-[#c9a227]" numberOfLines={1}>{currentlyPlaying.playlistName}</Text>
               )}
               <Text className="text-xs text-muted-foreground" numberOfLines={1}>
                 {currentlyPlaying.trackName} · {currentlyPlaying.artistName}
@@ -343,12 +343,12 @@ export default function SchedulesScreen() {
 
         {loading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator color="#1DB954" />
+            <ActivityIndicator color="#c9a227" />
           </View>
         ) : schedules.length === 0 ? (
           <View className="flex-1 items-center justify-center">
             <View className="h-20 w-20 items-center justify-center rounded-full bg-muted mb-4">
-              <CalendarIcon size={40} color="#6b7280" />
+              <CalendarIcon size={40} color="#8a7c5f" />
             </View>
             <Text className="text-center text-lg font-bold text-foreground">
               Aucune planification
@@ -371,7 +371,7 @@ export default function SchedulesScreen() {
 
         <TouchableOpacity
           onPress={() => router.push({ pathname: '/new-schedule', params: accountId ? { accountId } : {} })}
-          className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 shadow-lg">
+          className="absolute bottom-8 left-4 right-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#c9a227] py-4 shadow-lg">
           <PlusCircleIcon size={22} color="white" />
           <Text className="text-base font-bold text-white">Nouvelle planification</Text>
         </TouchableOpacity>

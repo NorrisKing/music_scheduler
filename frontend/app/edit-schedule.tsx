@@ -18,10 +18,10 @@ function pad(n: number) { return String(n).padStart(2, '0'); }
 
 function DeviceIcon({ type }: { type: string }) {
   const t = type?.toLowerCase();
-  if (t?.includes('computer')) return <MonitorIcon size={16} color="#6b7280" />;
-  if (t?.includes('smartphone')) return <SmartphoneIcon size={16} color="#6b7280" />;
-  if (t?.includes('tablet')) return <TabletIcon size={16} color="#6b7280" />;
-  return <SpeakerIcon size={16} color="#6b7280" />;
+  if (t?.includes('computer')) return <MonitorIcon size={16} color="#8a7c5f" />;
+  if (t?.includes('smartphone')) return <SmartphoneIcon size={16} color="#8a7c5f" />;
+  if (t?.includes('tablet')) return <TabletIcon size={16} color="#8a7c5f" />;
+  return <SpeakerIcon size={16} color="#8a7c5f" />;
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -167,7 +167,7 @@ export default function EditScheduleScreen() {
       <>
         <Stack.Screen options={{ title: pageTitle }} />
         <View className="flex-1 items-center justify-center bg-background">
-          <ActivityIndicator color="#1DB954" />
+          <ActivityIndicator color="#c9a227" />
         </View>
       </>
     );
@@ -189,7 +189,7 @@ export default function EditScheduleScreen() {
             value={name}
             onChangeText={setName}
             placeholder="Ex : Matin café, Soirée détente…"
-            placeholderTextColor="#6b7280"
+            placeholderTextColor="#8a7c5f"
             className="text-foreground text-base"
           />
         </View>
@@ -198,15 +198,15 @@ export default function EditScheduleScreen() {
         {selectedAccount && (
           <>
             <SectionTitle>1 · Compte Spotify</SectionTitle>
-            <View className="flex-row items-center gap-3 rounded-2xl border border-[#1DB954] bg-[#1DB954]/10 p-4">
-              <View className="h-10 w-10 rounded-full bg-[#1DB954]/20 items-center justify-center">
-                <Text className="font-bold text-[#1DB954]">{selectedAccount.displayName[0]?.toUpperCase()}</Text>
+            <View className="flex-row items-center gap-3 rounded-2xl border border-[#c9a227] bg-[#c9a227]/10 p-4">
+              <View className="h-10 w-10 rounded-full bg-[#c9a227]/20 items-center justify-center">
+                <Text className="font-bold text-[#c9a227]">{selectedAccount.displayName[0]?.toUpperCase()}</Text>
               </View>
               <View className="flex-1">
                 <Text className="font-semibold text-foreground">{selectedAccount.displayName}</Text>
                 <Text className="text-xs text-muted-foreground">{selectedAccount.email}</Text>
               </View>
-              <CheckCircleIcon size={20} color="#1DB954" />
+              <CheckCircleIcon size={20} color="#c9a227" />
             </View>
           </>
         )}
@@ -218,19 +218,19 @@ export default function EditScheduleScreen() {
 
             {/* Current playlist — always shown */}
             {selectedPlaylist && !showPlaylistPicker && (
-              <View className="flex-row items-center gap-3 rounded-2xl border border-[#1DB954] bg-[#1DB954]/10 p-3 mb-2">
+              <View className="flex-row items-center gap-3 rounded-2xl border border-[#c9a227] bg-[#c9a227]/10 p-3 mb-2">
                 {selectedPlaylist.images?.[0]?.url ? (
                   <img src={selectedPlaylist.images[0].url} style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
                 ) : (
-                  <View className="h-11 w-11 rounded-lg bg-[#1DB954]/20 items-center justify-center flex-shrink-0">
-                    <MusicIcon size={18} color="#1DB954" />
+                  <View className="h-11 w-11 rounded-lg bg-[#c9a227]/20 items-center justify-center flex-shrink-0">
+                    <MusicIcon size={18} color="#c9a227" />
                   </View>
                 )}
                 <View className="flex-1">
                   <Text className="text-foreground font-semibold text-sm" numberOfLines={1}>{selectedPlaylist.name}</Text>
                   <Text className="text-xs text-muted-foreground">Playlist sélectionnée</Text>
                 </View>
-                <CheckCircleIcon size={18} color="#1DB954" />
+                <CheckCircleIcon size={18} color="#c9a227" />
               </View>
             )}
 
@@ -239,7 +239,7 @@ export default function EditScheduleScreen() {
               <TouchableOpacity
                 onPress={loadPlaylistsForChange}
                 className="rounded-xl border border-border bg-card py-2.5 items-center">
-                <Text className="text-sm text-[#1DB954] font-semibold">Changer de playlist</Text>
+                <Text className="text-sm text-[#c9a227] font-semibold">Changer de playlist</Text>
               </TouchableOpacity>
             )}
 
@@ -247,7 +247,7 @@ export default function EditScheduleScreen() {
             {showPlaylistPicker && (
               loadingPlaylists ? (
                 <View className="py-6 items-center">
-                  <ActivityIndicator color="#1DB954" />
+                  <ActivityIndicator color="#c9a227" />
                   <Text className="mt-2 text-xs text-muted-foreground">Chargement des playlists…</Text>
                 </View>
               ) : playlistError ? (
@@ -261,12 +261,12 @@ export default function EditScheduleScreen() {
               ) : (
                 <>
                   <View className="mb-3 flex-row items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2.5">
-                    <MusicIcon size={15} color="#6b7280" />
+                    <MusicIcon size={15} color="#8a7c5f" />
                     <TextInput
                       value={playlistSearch}
                       onChangeText={setPlaylistSearch}
                       placeholder="Rechercher une playlist…"
-                      placeholderTextColor="#6b7280"
+                      placeholderTextColor="#8a7c5f"
                       className="flex-1 text-foreground text-sm"
                     />
                     {playlistSearch.length > 0 && (
@@ -281,19 +281,19 @@ export default function EditScheduleScreen() {
                         <TouchableOpacity
                           key={p.id}
                           onPress={() => { setSelectedPlaylist(p); setShowPlaylistPicker(false); }}
-                          className={`mb-2 flex-row items-center gap-3 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                          className={`mb-2 flex-row items-center gap-3 rounded-2xl border p-3 ${selectedPlaylist?.id === p.id ? 'border-[#c9a227] bg-[#c9a227]/10' : 'border-border bg-card'}`}>
                           {p.images?.[0]?.url ? (
                             <img src={p.images[0].url} style={{ width: 44, height: 44, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
                           ) : (
                             <View className="h-11 w-11 rounded-lg bg-muted items-center justify-center flex-shrink-0">
-                              <MusicIcon size={18} color="#6b7280" />
+                              <MusicIcon size={18} color="#8a7c5f" />
                             </View>
                           )}
                           <View className="flex-1">
                             <Text className="text-foreground font-semibold text-sm" numberOfLines={1}>{p.name}</Text>
                             <Text className="text-muted-foreground text-xs">{p.tracks.total} titres</Text>
                           </View>
-                          {selectedPlaylist?.id === p.id && <CheckCircleIcon size={18} color="#1DB954" />}
+                          {selectedPlaylist?.id === p.id && <CheckCircleIcon size={18} color="#c9a227" />}
                         </TouchableOpacity>
                       ))}
                       {filteredPlaylists.length === 0 && playlists.length > 0 && (
@@ -317,7 +317,7 @@ export default function EditScheduleScreen() {
                   <TouchableOpacity
                     key={i}
                     onPress={() => toggleDay(i)}
-                    className={`flex-1 items-center justify-center py-2.5 rounded-xl ${selectedDays.includes(i) ? 'bg-[#1DB954]' : 'bg-muted'}`}>
+                    className={`flex-1 items-center justify-center py-2.5 rounded-xl ${selectedDays.includes(i) ? 'bg-[#c9a227]' : 'bg-muted'}`}>
                     <Text className={`text-xs font-bold ${selectedDays.includes(i) ? 'text-white' : 'text-muted-foreground'}`}>
                       {d.charAt(0)}
                     </Text>
@@ -364,11 +364,11 @@ export default function EditScheduleScreen() {
                     }}
                   />
                 </View>
-                <View className="rounded-2xl bg-[#1DB954]/10 border border-[#1DB954]/30 px-5 py-4 items-center">
-                  <Text className="font-mono text-3xl font-bold text-[#1DB954]">
+                <View className="rounded-2xl bg-[#c9a227]/10 border border-[#c9a227]/30 px-5 py-4 items-center">
+                  <Text className="font-mono text-3xl font-bold text-[#c9a227]">
                     {pad(hour)}:{pad(minute)}
                   </Text>
-                  <Text className="text-[10px] text-[#1DB954]/60 mt-1 uppercase tracking-wider">heure locale</Text>
+                  <Text className="text-[10px] text-[#c9a227]/60 mt-1 uppercase tracking-wider">heure locale</Text>
                 </View>
               </View>
             </View>
@@ -382,8 +382,8 @@ export default function EditScheduleScreen() {
             <View className="rounded-2xl border border-border bg-card p-4">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-3 flex-1">
-                  <View className={`h-9 w-9 rounded-xl items-center justify-center ${shuffle ? 'bg-[#1DB954]/20' : 'bg-muted'}`}>
-                    <ShuffleIcon size={17} color={shuffle ? '#1DB954' : '#6b7280'} />
+                  <View className={`h-9 w-9 rounded-xl items-center justify-center ${shuffle ? 'bg-[#c9a227]/20' : 'bg-muted'}`}>
+                    <ShuffleIcon size={17} color={shuffle ? '#c9a227' : '#8a7c5f'} />
                   </View>
                   <View>
                     <Text className="text-foreground font-semibold text-sm">Lecture aléatoire</Text>
@@ -393,7 +393,7 @@ export default function EditScheduleScreen() {
                 <Switch
                   value={shuffle}
                   onValueChange={setShuffle}
-                  trackColor={{ false: '#374151', true: '#1DB954' }}
+                  trackColor={{ false: '#374151', true: '#c9a227' }}
                   thumbColor="white"
                 />
               </View>
@@ -414,36 +414,36 @@ export default function EditScheduleScreen() {
                 disabled={loadingDevices}
                 className="flex-row items-center gap-1 px-3 py-1.5 rounded-xl bg-muted">
                 {loadingDevices
-                  ? <ActivityIndicator size="small" color="#1DB954" />
-                  : <Text className="text-xs text-[#1DB954] font-semibold">Actualiser</Text>
+                  ? <ActivityIndicator size="small" color="#c9a227" />
+                  : <Text className="text-xs text-[#c9a227] font-semibold">Actualiser</Text>
                 }
               </TouchableOpacity>
             </View>
             <View className="gap-2">
               <TouchableOpacity
                 onPress={() => setSelectedDevice(null)}
-                className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${!selectedDevice ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-                <View className={`h-9 w-9 rounded-xl items-center justify-center ${!selectedDevice ? 'bg-[#1DB954]/20' : 'bg-muted'}`}>
-                  <SpeakerIcon size={16} color={!selectedDevice ? '#1DB954' : '#6b7280'} />
+                className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${!selectedDevice ? 'border-[#c9a227] bg-[#c9a227]/10' : 'border-border bg-card'}`}>
+                <View className={`h-9 w-9 rounded-xl items-center justify-center ${!selectedDevice ? 'bg-[#c9a227]/20' : 'bg-muted'}`}>
+                  <SpeakerIcon size={16} color={!selectedDevice ? '#c9a227' : '#8a7c5f'} />
                 </View>
-                <Text className={`flex-1 font-semibold text-sm ${!selectedDevice ? 'text-[#1DB954]' : 'text-foreground'}`}>
+                <Text className={`flex-1 font-semibold text-sm ${!selectedDevice ? 'text-[#c9a227]' : 'text-foreground'}`}>
                   Appareil actif au déclenchement
                 </Text>
-                {!selectedDevice && <CheckCircleIcon size={18} color="#1DB954" />}
+                {!selectedDevice && <CheckCircleIcon size={18} color="#c9a227" />}
               </TouchableOpacity>
 
               {savedDeviceId && !devices.find((d) => d.id === savedDeviceId) && (
                 <TouchableOpacity
                   onPress={() => setSelectedDevice({ id: savedDeviceId, name: savedDeviceName || savedDeviceId, type: 'Unknown', is_active: false })}
-                  className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${selectedDevice?.id === savedDeviceId ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
+                  className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${selectedDevice?.id === savedDeviceId ? 'border-[#c9a227] bg-[#c9a227]/10' : 'border-border bg-card'}`}>
                   <View className="h-9 w-9 rounded-xl items-center justify-center bg-muted">
-                    <SpeakerIcon size={16} color="#6b7280" />
+                    <SpeakerIcon size={16} color="#8a7c5f" />
                   </View>
                   <View className="flex-1">
                     <Text className="text-foreground font-semibold text-sm">{savedDeviceName || savedDeviceId}</Text>
                     <Text className="text-xs text-muted-foreground">Enregistré · non détecté actuellement</Text>
                   </View>
-                  {selectedDevice?.id === savedDeviceId && <CheckCircleIcon size={18} color="#1DB954" />}
+                  {selectedDevice?.id === savedDeviceId && <CheckCircleIcon size={18} color="#c9a227" />}
                 </TouchableOpacity>
               )}
 
@@ -456,15 +456,15 @@ export default function EditScheduleScreen() {
                 <TouchableOpacity
                   key={d.id}
                   onPress={() => setSelectedDevice(d)}
-                  className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${selectedDevice?.id === d.id ? 'border-[#1DB954] bg-[#1DB954]/10' : 'border-border bg-card'}`}>
-                  <View className={`h-9 w-9 rounded-xl items-center justify-center ${selectedDevice?.id === d.id ? 'bg-[#1DB954]/20' : 'bg-muted'}`}>
+                  className={`flex-row items-center gap-3 rounded-2xl border p-3.5 ${selectedDevice?.id === d.id ? 'border-[#c9a227] bg-[#c9a227]/10' : 'border-border bg-card'}`}>
+                  <View className={`h-9 w-9 rounded-xl items-center justify-center ${selectedDevice?.id === d.id ? 'bg-[#c9a227]/20' : 'bg-muted'}`}>
                     <DeviceIcon type={d.type} />
                   </View>
                   <View className="flex-1">
                     <Text className="text-foreground font-semibold text-sm">{d.name}</Text>
                     <Text className="text-xs text-muted-foreground capitalize">{d.type}{d.is_active ? ' · Actif' : ''}</Text>
                   </View>
-                  {selectedDevice?.id === d.id && <CheckCircleIcon size={18} color="#1DB954" />}
+                  {selectedDevice?.id === d.id && <CheckCircleIcon size={18} color="#c9a227" />}
                 </TouchableOpacity>
               ))}
             </View>
@@ -473,10 +473,10 @@ export default function EditScheduleScreen() {
 
         {/* Résumé */}
         {selectedAccount && selectedPlaylist && (
-          <View className="mt-6 rounded-2xl border border-[#1DB954]/40 bg-[#1DB954]/5 p-4 gap-1">
+          <View className="mt-6 rounded-2xl border border-[#c9a227]/40 bg-[#c9a227]/5 p-4 gap-1">
             <Text className="mb-1 font-bold text-foreground text-sm">Résumé</Text>
             <Text className="text-sm text-muted-foreground">
-              <Text className="text-foreground font-semibold">{selectedAccount.displayName}</Text> · <Text className="text-[#1DB954] font-semibold">{selectedPlaylist.name}</Text>
+              <Text className="text-foreground font-semibold">{selectedAccount.displayName}</Text> · <Text className="text-[#c9a227] font-semibold">{selectedPlaylist.name}</Text>
             </Text>
             <Text className="text-sm text-muted-foreground">
               {selectedDays.map((d) => DAYS[d]).join(', ') || '–'} à <Text className="font-mono text-foreground font-semibold">{pad(hour)}:{pad(minute)}</Text>
@@ -498,7 +498,7 @@ export default function EditScheduleScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={saving}
-            className="mt-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#1DB954] py-4 disabled:opacity-40">
+            className="mt-4 flex-row items-center justify-center gap-3 rounded-2xl bg-[#c9a227] py-4 disabled:opacity-40">
             {saving ? <ActivityIndicator color="white" /> : <CheckCircleIcon size={22} color="white" />}
             <Text className="text-base font-bold text-white">
               {saving ? 'Enregistrement…' : 'Sauvegarder les modifications'}

@@ -30,9 +30,9 @@ export default function SpotifyCallbackScreen() {
   }, []);
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#09090b' }}>
-      <ActivityIndicator size="large" color="#1DB954" />
-      <Text style={{ marginTop: 16, color: '#a1a1aa' }}>Connexion en cours...</Text>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0b0b0a' }}>
+      <ActivityIndicator size="large" color="#c9a227" />
+      <Text style={{ marginTop: 16, color: '#a89a7d' }}>Connexion en cours...</Text>
     </View>
   );
 }
