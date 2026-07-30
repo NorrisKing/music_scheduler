@@ -242,16 +242,24 @@ async function runFadeAndStartPlaylist(
   );
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
   let res = await fetch(url, { method: 'PUT', headers, body });
-  console.log(`[Spotify] fadeAndStartPlaylist ${accountId} device=${targetDeviceId || 'active'} shuffle=${!!shuffle} → ${res.status}`);
   let ok = res.ok || res.status === 204;
+  if (!ok) {
+    console.error(`[Spotify] fadeAndStartPlaylist ${accountId} device=${targetDeviceId || 'active'} shuffle=${!!shuffle} → ${res.status} body=${await res.text()}`);
+  } else {
+    console.log(`[Spotify] fadeAndStartPlaylist ${accountId} device=${targetDeviceId || 'active'} shuffle=${!!shuffle} → ${res.status}`);
+  }
 
   // Spotify occasionally answers this call with a transient error even though the
   // command still lands a moment later — retry once before reporting a failure.
   if (!ok) {
     await sleep(800);
     res = await fetch(url, { method: 'PUT', headers, body });
-    console.log(`[Spotify] fadeAndStartPlaylist retry ${accountId} → ${res.status}`);
     ok = res.ok || res.status === 204;
+    if (!ok) {
+      console.error(`[Spotify] fadeAndStartPlaylist retry ${accountId} → ${res.status} body=${await res.text()}`);
+    } else {
+      console.log(`[Spotify] fadeAndStartPlaylist retry ${accountId} → ${res.status}`);
+    }
   }
 
   // Restore volume once the device has actually taken over playback — right after
