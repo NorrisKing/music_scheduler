@@ -349,4 +349,7 @@ export default {
   fetch: app.fetch,
   port: parseInt(process.env.PORT || '3002'),
   hostname: '0.0.0.0',
+  // Default is 10s; the /trigger endpoint (fade-out + device/shuffle setup +
+  // volume restore, with retries) can legitimately take longer than that.
+  idleTimeout: 60,
 };
