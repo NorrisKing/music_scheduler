@@ -1,7 +1,6 @@
 import { Link, Stack } from 'expo-router';
 import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { CalendarDaysIcon, UsersIcon, MusicIcon, RadioIcon, ChevronRightIcon } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 
@@ -19,7 +18,6 @@ interface AccountStatus {
 }
 
 export default function HomeScreen() {
-  const { colorScheme, toggleColorScheme } = useColorScheme();
   const [statuses, setStatuses] = useState<AccountStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,16 +42,7 @@ export default function HomeScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: 'Sonora',
-          headerRight: () => (
-            <TouchableOpacity onPress={toggleColorScheme} className="p-2">
-              <Text className="text-lg">{colorScheme === 'dark' ? '☀️' : '🌙'}</Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Stack.Screen options={{ title: 'Sonora' }} />
       <View className="flex-1 bg-background px-5">
 
         {/* Hero */}
@@ -63,7 +52,7 @@ export default function HomeScreen() {
           </View>
           <Text style={{ fontFamily: 'PlayfairDisplay' }} className="text-foreground text-3xl font-semibold tracking-tight">Sonora</Text>
           <Text className="mt-2 text-center text-sm text-muted-foreground leading-relaxed px-4">
-            L'ambiance, à l'heure près
+            By Norris King{'\n'}The Music ? We take care of it.
           </Text>
         </View>
 

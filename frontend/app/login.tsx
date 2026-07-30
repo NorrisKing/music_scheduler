@@ -22,7 +22,7 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sonora</Text>
-      <Text style={styles.tagline}>L'ambiance, à l'heure près</Text>
+      <Text style={styles.tagline}>By Norris King{'\n'}The Music ? We take care of it.</Text>
       <View style={styles.card}>
         <Text style={styles.label}>Mot de passe</Text>
         <TextInput
@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 6,
     marginBottom: 32,
+    textAlign: 'center',
   },
   card: {
     backgroundColor: '#141210',

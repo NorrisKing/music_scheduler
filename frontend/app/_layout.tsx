@@ -15,11 +15,12 @@ function isAuthenticated() {
 }
 
 export default function RootLayout() {
-  const { colorScheme } = useColorScheme();
+  const { setColorScheme } = useColorScheme();
   const [authed, setAuthed] = useState(false);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
+    setColorScheme('dark');
     setAuthed(isAuthenticated());
     setChecked(true);
   }, []);
@@ -32,8 +33,8 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <ThemeProvider value={NAV_THEME.dark}>
+        <StatusBar style="light" />
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
