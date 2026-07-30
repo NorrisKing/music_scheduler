@@ -89,23 +89,29 @@ export async function getSpotifyDevices(accountId: string) {
 }
 
 async function resolveTargetDevice(token: string, deviceId?: string): Promise<string | undefined> {
-  if (!deviceId) return undefined;
   try {
     const res = await fetch('https://api.spotify.com/v1/me/player/devices', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (res.ok) {
-      const data: any = await res.json();
-      const found = data.devices?.some((d: any) => d.id === deviceId);
-      if (!found) {
-        console.log(`[Spotify] Device ${deviceId} not available, falling back to active device`);
-        return undefined;
-      }
+    if (!res.ok) return deviceId;
+    const data: any = await res.json();
+    const devices: any[] = data.devices ?? [];
+
+    if (deviceId) {
+      const found = devices.some((d) => d.id === deviceId);
+      if (found) return deviceId;
+      console.log(`[Spotify] Device ${deviceId} not available, falling back to another device`);
     }
-  } catch {
+
+    // No device saved (or the saved one is gone) — target the active device if there is
+    // one, otherwise just the first device Spotify reports (it only needs to be open).
+    const active = devices.find((d) => d.is_active);
+    if (active) return active.id;
+    if (devices.length > 0) return devices[0].id;
     return undefined;
+  } catch {
+    return deviceId;
   }
-  return deviceId;
 }
 
 async function setVolume(token: string, volume: number): Promise<void> {
