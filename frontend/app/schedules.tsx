@@ -105,6 +105,7 @@ export default function SchedulesScreen() {
 
   const handleTrigger = async (id: string, e: any) => {
     e?.stopPropagation?.();
+    if (triggeringId) return; // ignore taps while a trigger is already in flight
     setTriggeringId(id);
     try {
       await api.triggerSchedule(id);

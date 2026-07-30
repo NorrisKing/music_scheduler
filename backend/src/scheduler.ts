@@ -48,6 +48,7 @@ function startTask(schedule: Schedule) {
           schedule.accountId,
           schedule.playlistId,
           schedule.deviceId,
+          schedule.shuffle,
         );
 
         if (success) {

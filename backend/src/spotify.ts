@@ -114,8 +114,18 @@ async function resolveTargetDevice(token: string, deviceId?: string): Promise<st
   }
 }
 
-async function setVolume(token: string, volume: number): Promise<void> {
-  await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(volume)}`, {
+async function setVolume(token: string, volume: number): Promise<boolean> {
+  const res = await fetch(`https://api.spotify.com/v1/me/player/volume?volume_percent=${Math.round(volume)}`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.ok || res.status === 204;
+}
+
+async function setShuffle(token: string, deviceId: string | undefined, state: boolean): Promise<void> {
+  const params = new URLSearchParams({ state: String(state) });
+  if (deviceId) params.set('device_id', deviceId);
+  await fetch(`https://api.spotify.com/v1/me/player/shuffle?${params.toString()}`, {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -129,27 +139,60 @@ export async function startPlaylist(
   accountId: string,
   playlistId: string,
   deviceId?: string,
+  shuffle?: boolean,
 ) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
 
   const targetDeviceId = await resolveTargetDevice(token, deviceId);
+  await setShuffle(token, targetDeviceId, !!shuffle);
+
   const url = targetDeviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${targetDeviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
 
-  const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
+  // With shuffle on, forcing offset 0 fights Spotify's own shuffle order and can
+  // cause it to rapidly skip through several tracks — only pin position 0 when
+  // playing in order.
+  const body = JSON.stringify(
+    shuffle
+      ? { context_uri: `spotify:playlist:${playlistId}` }
+      : { context_uri: `spotify:playlist:${playlistId}`, offset: { position: 0 }, position_ms: 0 }
+  );
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
   const res = await fetch(url, { method: 'PUT', headers, body });
-  console.log(`[Spotify] startPlaylist ${accountId} device=${targetDeviceId || 'active'} → ${res.status}`);
+  console.log(`[Spotify] startPlaylist ${accountId} device=${targetDeviceId || 'active'} shuffle=${!!shuffle} → ${res.status}`);
   return res.ok || res.status === 204;
 }
+
+// Guards against two triggers (e.g. a manual click plus a cron fire, or a
+// double-click) stepping on each other's fade/volume/play calls for the same account.
+const accountsInFlight = new Set<string>();
 
 export async function fadeAndStartPlaylist(
   accountId: string,
   playlistId: string,
   deviceId?: string,
+  shuffle?: boolean,
+) {
+  if (accountsInFlight.has(accountId)) {
+    console.log(`[Spotify] fadeAndStartPlaylist ${accountId} already in progress, ignoring`);
+    return false;
+  }
+  accountsInFlight.add(accountId);
+  try {
+    return await runFadeAndStartPlaylist(accountId, playlistId, deviceId, shuffle);
+  } finally {
+    accountsInFlight.delete(accountId);
+  }
+}
+
+async function runFadeAndStartPlaylist(
+  accountId: string,
+  playlistId: string,
+  deviceId?: string,
+  shuffle?: boolean,
 ) {
   const token = await refreshTokenIfNeeded(accountId);
   if (!token) return false;
@@ -184,19 +227,37 @@ export async function fadeAndStartPlaylist(
 
   // Start the new playlist
   const targetDeviceId = await resolveTargetDevice(token, deviceId);
+  await setShuffle(token, targetDeviceId, !!shuffle);
+
   const url = targetDeviceId
     ? `https://api.spotify.com/v1/me/player/play?device_id=${targetDeviceId}`
     : 'https://api.spotify.com/v1/me/player/play';
-  const body = JSON.stringify({ context_uri: `spotify:playlist:${playlistId}` });
+  // With shuffle on, forcing offset 0 fights Spotify's own shuffle order and can
+  // cause it to rapidly skip through several tracks — only pin position 0 when
+  // playing in order.
+  const body = JSON.stringify(
+    shuffle
+      ? { context_uri: `spotify:playlist:${playlistId}` }
+      : { context_uri: `spotify:playlist:${playlistId}`, offset: { position: 0 }, position_ms: 0 }
+  );
   const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
   const res = await fetch(url, { method: 'PUT', headers, body });
-  console.log(`[Spotify] fadeAndStartPlaylist ${accountId} device=${targetDeviceId || 'active'} → ${res.status}`);
+  console.log(`[Spotify] fadeAndStartPlaylist ${accountId} device=${targetDeviceId || 'active'} shuffle=${!!shuffle} → ${res.status}`);
   const ok = res.ok || res.status === 204;
 
-  // Restore volume immediately at full level
+  // Restore volume once the device has actually taken over playback — right after
+  // switching context/device, Spotify can silently drop a volume change that arrives
+  // too soon, so give it more time and retry once if the first attempt is ignored.
   if (ok) {
-    await sleep(300);
-    await setVolume(token, originalVolume);
+    await sleep(1200);
+    const restored = await setVolume(token, originalVolume);
+    if (!restored) {
+      await sleep(1000);
+      const retried = await setVolume(token, originalVolume);
+      if (!retried) {
+        console.error(`[Spotify] Failed to restore volume for ${accountId} after retry`);
+      }
+    }
   }
 
   return ok;
