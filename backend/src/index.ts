@@ -41,7 +41,13 @@ app.get('/spotify/next-lot', async (c) => {
     counts[acc.lotId] = (counts[acc.lotId] || 0) + 1;
   }
   const next = pickNextLot(counts);
-  if (!next) return c.json({ error: 'Tous les lots Spotify sont pleins (5 comptes max par lot)', debugAllApps: getAllSpotifyApps(), debugCounts: counts }, 409);
+  if (!next) return c.json({
+    error: 'Tous les lots Spotify sont pleins (5 comptes max par lot)',
+    debugAllApps: getAllSpotifyApps(),
+    debugCounts: counts,
+    debugEnvKeysWithLot: Object.keys(process.env).filter(k => k.toUpperCase().includes('LOT')),
+    debugRawLot2: JSON.stringify(process.env.SPOTIFY_CLIENT_ID_LOT2 ?? null),
+  }, 409);
   return c.json(next); // { lotId, clientId }
 });
 
