@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { db } from './store.js';
 import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying, fadeAndStartPlaylist } from './spotify.js';
 import { initScheduler, scheduler } from './scheduler.js';
+import { getSpotifyApp, pickNextLot } from './spotifyApps.js';
 import { randomUUID } from 'crypto';
 
 // Scheduler runs ONLY on Railway (production) to avoid double-triggers when
@@ -29,13 +30,20 @@ app.use(
   })
 );
 
-// --- In-memory cache for /accounts/status (30s TTL) ---
-// Prevents Spotify rate limits when multiple clients poll simultaneously
-let _statusCache: { data: any; timestamp: number } | null = null;
-const STATUS_CACHE_TTL = 30_000;
-
 // --- Health ---
 app.get('/', (c) => c.json({ ok: true, service: 'Spotify Scheduler', schedulerEnabled: SCHEDULER_ENABLED }));
+
+// --- Spotify: quel lot utiliser pour un nouveau compte ---
+app.get('/spotify/next-lot', async (c) => {
+  const accounts = await db.getAccounts();
+  const counts: Record<string, number> = {};
+  for (const acc of accounts) {
+    counts[acc.lotId] = (counts[acc.lotId] || 0) + 1;
+  }
+  const next = pickNextLot(counts);
+  if (!next) return c.json({ error: 'Tous les lots Spotify sont pleins (5 comptes max par lot)' }, 409);
+  return c.json(next); // { lotId, clientId }
+});
 
 // --- Auth: exchange code for tokens ---
 app.post(
@@ -46,12 +54,14 @@ app.post(
       code: z.string(),
       codeVerifier: z.string(),
       redirectUri: z.string(),
+      lotId: z.string().optional(),
     })
   ),
   async (c) => {
-    const { code, codeVerifier, redirectUri } = c.req.valid('json');
-    console.log('Token exchange attempt:', { redirectUri, codeLength: code.length });
-    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    const { code, codeVerifier, redirectUri, lotId } = c.req.valid('json');
+    const spotifyApp = getSpotifyApp(lotId);
+    const clientId = spotifyApp.clientId;
+    console.log('Token exchange attempt:', { redirectUri, codeLength: code.length, lotId: spotifyApp.lotId });
     if (!clientId) return c.json({ error: 'Missing SPOTIFY_CLIENT_ID' }, 500);
 
     const res = await fetch('https://accounts.spotify.com/api/token', {
@@ -92,6 +102,7 @@ app.post(
       refreshToken: tokenData.refresh_token,
       expiresAt,
       addedAt: Date.now(),
+      lotId: spotifyApp.lotId,
     });
 
     return c.json({
@@ -116,17 +127,12 @@ app.get('/accounts', async (c) => {
 });
 
 app.get('/accounts/status', async (c) => {
-  // Serve from cache if fresh (avoids hammering Spotify when multiple clients poll)
-  if (_statusCache && Date.now() - _statusCache.timestamp < STATUS_CACHE_TTL) {
-    return c.json(_statusCache.data);
-  }
-
   const accounts = await db.getAccounts();
   const statuses = await Promise.all(
     accounts.map(async (acc) => {
       try {
         const cp: any = await getCurrentlyPlaying(acc.id);
-
+        
         // lastPushedPlaylistName takes priority over Spotify context (enqueue doesn't change context)
         if (cp && acc.lastPushedPlaylistName) {
           const isRecent = acc.lastPushedAt && (Date.now() - acc.lastPushedAt < 2 * 60 * 60 * 1000);
@@ -149,8 +155,6 @@ app.get('/accounts/status', async (c) => {
       }
     })
   );
-
-  _statusCache = { data: statuses, timestamp: Date.now() };
   return c.json(statuses);
 });
 
@@ -325,7 +329,6 @@ app.post('/schedules/:id/trigger', async (c) => {
     schedule.accountId,
     schedule.playlistId,
     schedule.deviceId,
-    schedule.shuffle,
   );
 
   if (ok) {
@@ -349,7 +352,4 @@ export default {
   fetch: app.fetch,
   port: parseInt(process.env.PORT || '3002'),
   hostname: '0.0.0.0',
-  // Default is 10s; the /trigger endpoint (fade-out + device/shuffle setup +
-  // volume restore, with retries) can legitimately take longer than that.
-  idleTimeout: 60,
 };
