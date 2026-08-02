@@ -47,7 +47,7 @@ function base64UrlEncode(bytes: Uint8Array): string {
 }
 
 // Web-mode: redirect the current tab to Spotify, come back via /spotify-callback
-function loginWeb(clientId: string): Promise<{ accountId: string; displayName: string; email: string } | null> {
+function loginWeb(clientId: string, lotId: string): Promise<{ accountId: string; displayName: string; email: string } | null> {
   return new Promise(async (resolve, reject) => {
     const verifier = await generateCodeVerifier();
     const challenge = await generateCodeChallenge(verifier);
@@ -61,11 +61,13 @@ function loginWeb(clientId: string): Promise<{ accountId: string; displayName: s
       sessionStorage.removeItem('spotify_pkce_verifier');
       sessionStorage.removeItem('spotify_pkce_state');
       sessionStorage.removeItem('spotify_pkce_redirect_uri');
+      sessionStorage.removeItem('spotify_pkce_lot_id');
 
       // Persist verifier + state so we can finish the exchange after redirect
       sessionStorage.setItem('spotify_pkce_verifier', verifier);
       sessionStorage.setItem('spotify_pkce_state', state);
       sessionStorage.setItem('spotify_pkce_redirect_uri', redirectUri);
+      sessionStorage.setItem('spotify_pkce_lot_id', lotId);
 
     const params = new URLSearchParams({
       client_id: clientId,
@@ -92,6 +94,7 @@ export async function finishWebLogin(): Promise<{ accountId: string; displayName
   const verifier = sessionStorage.getItem('spotify_pkce_verifier');
   const expectedState = sessionStorage.getItem('spotify_pkce_state');
   const redirectUri = sessionStorage.getItem('spotify_pkce_redirect_uri') || getRedirectUri();
+  const lotId = sessionStorage.getItem('spotify_pkce_lot_id') || undefined;
 
   const error = sessionStorage.getItem('spotify_oauth_error');
 
@@ -102,21 +105,22 @@ export async function finishWebLogin(): Promise<{ accountId: string; displayName
   sessionStorage.removeItem('spotify_pkce_verifier');
   sessionStorage.removeItem('spotify_pkce_state');
   sessionStorage.removeItem('spotify_pkce_redirect_uri');
+  sessionStorage.removeItem('spotify_pkce_lot_id');
 
   if (error) throw new Error(`Spotify error: ${error}`);
   if (!code || !verifier) return null;
   if (state !== expectedState) throw new Error('OAuth state mismatch');
 
-  return api.exchangeToken({ code, codeVerifier: verifier, redirectUri });
+  return api.exchangeToken({ code, codeVerifier: verifier, redirectUri, lotId });
 }
 
-export function useSpotifyAuth(clientId: string) {
-  const login = async (): Promise<{ accountId: string; displayName: string; email: string } | null> => {
-    if (!clientId) throw new Error('SPOTIFY_CLIENT_ID non configuré');
+export function useSpotifyAuth() {
+  const login = async (clientId: string, lotId: string): Promise<{ accountId: string; displayName: string; email: string } | null> => {
+    if (!clientId) throw new Error('Client ID Spotify manquant (impossible de déterminer le lot)');
 
     if (Platform.OS === 'web') {
       // Redirects the page — promise never resolves here; AccountsScreen handles the return
-      return loginWeb(clientId);
+      return loginWeb(clientId, lotId);
     }
 
     // Native: use WebBrowser in-app tab
@@ -147,7 +151,7 @@ export function useSpotifyAuth(clientId: string) {
 
     if (!code || returnedState !== state) throw new Error('OAuth state mismatch ou code manquant');
 
-    return api.exchangeToken({ code, codeVerifier: verifier, redirectUri });
+    return api.exchangeToken({ code, codeVerifier: verifier, redirectUri, lotId });
   };
 
   return { login, ready: true };
