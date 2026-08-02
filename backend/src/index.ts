@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { db } from './store.js';
 import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying, fadeAndStartPlaylist } from './spotify.js';
 import { initScheduler, scheduler } from './scheduler.js';
-import { getSpotifyApp, pickNextLot } from './spotifyApps.js';
+import { getSpotifyApp, pickNextLot, getAllSpotifyApps } from './spotifyApps.js';
 import { randomUUID } from 'crypto';
 
 // Scheduler runs ONLY on Railway (production) to avoid double-triggers when
@@ -41,7 +41,7 @@ app.get('/spotify/next-lot', async (c) => {
     counts[acc.lotId] = (counts[acc.lotId] || 0) + 1;
   }
   const next = pickNextLot(counts);
-  if (!next) return c.json({ error: 'Tous les lots Spotify sont pleins (5 comptes max par lot)' }, 409);
+  if (!next) return c.json({ error: 'Tous les lots Spotify sont pleins (5 comptes max par lot)', debugAllApps: getAllSpotifyApps(), debugCounts: counts }, 409);
   return c.json(next); // { lotId, clientId }
 });
 
