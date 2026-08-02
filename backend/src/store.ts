@@ -15,6 +15,7 @@ export interface SpotifyAccount {
   addedAt: number;
   lastPushedPlaylistName?: string;
   lastPushedAt?: number;
+  lotId: string; // quel "lot" Spotify (Client ID) gère ce compte, ex: "lot1", "lot2"
 }
 
 export interface Schedule {
@@ -49,6 +50,7 @@ function mapAccountFromDb(data: any): SpotifyAccount {
     addedAt: Number(data.added_at),
     lastPushedPlaylistName: data.last_pushed_playlist_name,
     lastPushedAt: data.last_pushed_at ? Number(data.last_pushed_at) : undefined,
+    lotId: data.lot_id || 'lot1',
   };
 }
 
@@ -63,6 +65,7 @@ function mapAccountToDb(account: SpotifyAccount) {
     added_at: account.addedAt,
     last_pushed_playlist_name: account.lastPushedPlaylistName,
     last_pushed_at: account.lastPushedAt,
+    lot_id: account.lotId,
   };
 }
 
@@ -175,5 +178,4 @@ export const db = {
     const { error } = await supabase.from('schedules').update({ last_triggered_at: Date.now() }).eq('id', id);
     if (error) throw error;
   },
-
 };
