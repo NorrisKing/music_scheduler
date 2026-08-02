@@ -69,7 +69,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  exchangeToken: (body: { code: string; codeVerifier: string; redirectUri: string }) =>
+  // Détermine automatiquement quel "lot" Spotify (Client ID) utiliser pour le prochain compte
+  getNextLot: () => request<{ lotId: string; clientId: string }>('/spotify/next-lot'),
+
+  exchangeToken: (body: { code: string; codeVerifier: string; redirectUri: string; lotId?: string }) =>
     request<{ accountId: string; displayName: string; email: string }>('/auth/spotify/token', {
       method: 'POST',
       body: JSON.stringify(body),
