@@ -1,6 +1,6 @@
 import { Link, Stack } from 'expo-router';
-import { View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { CalendarDaysIcon, UsersIcon, MusicIcon, RadioIcon, ChevronRightIcon } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, Image, ActivityIndicator, ScrollView } from 'react-native';
+import { CalendarDaysIcon, UsersIcon, RadioIcon, ChevronRightIcon } from 'lucide-react-native';
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 
@@ -43,16 +43,20 @@ export default function HomeScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Sonora' }} />
-      <View className="flex-1 bg-background px-5">
+      <ScrollView className="flex-1 bg-background px-5" contentContainerStyle={{ paddingBottom: 40 }}>
 
         {/* Hero */}
         <View className="pt-10 pb-8 items-center">
-          <View className="mb-5 h-20 w-20 items-center justify-center rounded-3xl bg-[#1DB954]">
-            <MusicIcon size={40} color="white" />
+          <View className="mb-5 h-20 w-20 items-center justify-center rounded-3xl overflow-hidden bg-black">
+            <Image
+              source={require('../assets/images/sonora-logo.png')}
+              style={{ width: '100%', height: '100%' }}
+              resizeMode="cover"
+            />
           </View>
           <Text style={{ fontFamily: 'PlayfairDisplay' }} className="text-foreground text-3xl font-semibold tracking-tight">Sonora</Text>
           <Text className="mt-2 text-center text-sm text-muted-foreground leading-relaxed px-4">
-            By Norris King{'\n'}The Music ? We take care of it.
+            The Music ? We take care of it.
           </Text>
         </View>
 
@@ -139,21 +143,7 @@ export default function HomeScreen() {
           </Link>
         </View>
 
-        {/* Comment ça marche */}
-        <View className="mt-6 rounded-2xl bg-muted p-4">
-          <Text className="mb-2 font-bold text-foreground text-sm">Comment ça marche</Text>
-          <View className="gap-1.5">
-            {[
-              '1.  Connectez vos comptes Spotify',
-              '2.  Créez une planification (playlist + jours + heure)',
-              '3.  Le serveur démarre la lecture automatiquement',
-            ].map((step, i) => (
-              <Text key={i} className="text-sm text-muted-foreground">{step}</Text>
-            ))}
-          </View>
-        </View>
-
-      </View>
+      </ScrollView>
     </>
   );
 }
