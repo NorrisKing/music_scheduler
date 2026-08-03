@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-
 const PASSWORD = 'Schedulebassline1';
-
 export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
-
   const handleSubmit = () => {
     if (value === PASSWORD) {
       if (typeof window !== 'undefined') {
@@ -18,7 +15,6 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
       setValue('');
     }
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sonora</Text>
@@ -32,7 +28,7 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
           onChangeText={t => { setValue(t); setError(false); }}
           onSubmitEditing={handleSubmit}
           placeholder="••••••••••••"
-          placeholderTextColor="#6b5f45"
+          placeholderTextColor="#6b7280"
           autoFocus
         />
         {error && (
@@ -45,11 +41,10 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b0b0a',
+    backgroundColor: '#0f0f0f',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
@@ -58,11 +53,11 @@ const styles = StyleSheet.create({
     fontFamily: 'PlayfairDisplay',
     fontSize: 32,
     fontWeight: '600',
-    color: '#c9a227',
+    color: '#1DB954',
     letterSpacing: 0.5,
   },
   tagline: {
-    color: '#8a7c5f',
+    color: '#9ca3af',
     fontSize: 13,
     letterSpacing: 0.5,
     marginTop: 6,
@@ -70,47 +65,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   card: {
-    backgroundColor: '#141210',
+    backgroundColor: '#1a1a1a',
     borderRadius: 16,
     padding: 28,
     width: '100%',
     maxWidth: 360,
     borderWidth: 1,
-    borderColor: '#3a3226',
+    borderColor: '#2a2a2a',
   },
   label: {
-    color: '#a89a7d',
+    color: '#9ca3af',
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 8,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  input: {
-    backgroundColor: '#0f0d0b',
-    borderWidth: 1,
-    borderColor: '#3a3226',
-    borderRadius: 10,
-    padding: 14,
-    color: '#f2ead9',
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  error: {
-    color: '#e0745a',
-    fontSize: 13,
-    marginBottom: 12,
-  },
-  button: {
-    backgroundColor: '#c9a227',
-    borderRadius: 10,
-    padding: 14,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  buttonText: {
-    color: '#0b0b0a',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-});
