@@ -149,7 +149,7 @@ export default function SchedulesScreen() {
               <View className="w-14 h-10 justify-center items-center bg-background" style={{ position: 'sticky', left: 0, zIndex: 20 }} />
               {DAYS_LABELS.map((d, i) => (
                 <View key={i} className="w-24 items-center justify-center h-10">
-                  <Text className={`text-xs font-bold uppercase ${i === today ? 'text-[#c9a227]' : 'text-muted-foreground'}`}>{d}</Text>
+                  <Text className={`text-xs font-bold uppercase ${i === today ? 'text-[##1DB954]' : 'text-muted-foreground'}`}>{d}</Text>
                 </View>
               ))}
             </View>
