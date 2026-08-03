@@ -79,3 +79,33 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 8,
     textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  input: {
+    backgroundColor: '#111',
+    borderWidth: 1,
+    borderColor: '#333',
+    borderRadius: 10,
+    padding: 14,
+    color: '#fff',
+    fontSize: 16,
+    marginBottom: 12,
+  },
+  error: {
+    color: '#ef4444',
+    fontSize: 13,
+    marginBottom: 12,
+  },
+  button: {
+    backgroundColor: '#1DB954',
+    borderRadius: 10,
+    padding: 14,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  buttonText: {
+    color: '#000',
+    fontWeight: '700',
+    fontSize: 15,
+  },
+});
