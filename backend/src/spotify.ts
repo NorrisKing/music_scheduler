@@ -51,7 +51,7 @@ export async function getSpotifyPlaylists(accountId: string) {
 
   while (url) {
     try {
-      const res = await spotifyFetch(url, token);
+      const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) {
         console.error(`[Spotify] getPlaylists error ${res.status} for ${accountId}`);
         break;
