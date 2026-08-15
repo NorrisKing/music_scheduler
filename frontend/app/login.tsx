@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: '100%',
-    maxWidth: 320,
     aspectRatio: 3.1,
   },
   tagline: {
