@@ -49,7 +49,7 @@ export default function HomeScreen() {
         <View className="pt-10 pb-8 items-center">
           <Image
             source={require('../assets/images/control-room-logo.png')}
-            style={{ width: '100%', maxWidth: 360, aspectRatio: 3.1 }}
+            style={{ width: '100%', aspectRatio: 3.1 }}
             resizeMode="contain"
           />
           <Text className="mt-3 text-center text-sm text-muted-foreground leading-relaxed px-4">
