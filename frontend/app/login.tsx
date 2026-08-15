@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 const PASSWORD = 'Schedulebassline1';
 export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
   const [value, setValue] = useState('');
@@ -17,8 +17,12 @@ export default function LoginScreen({ onLogin }: { onLogin: () => void }) {
   };
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sonora</Text>
-      <Text style={styles.tagline}>By Norris King{'\n'}The Music ? We take care of it.</Text>
+      <Image
+        source={require('../assets/images/control-room-logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <Text style={styles.tagline}>The Music ? We take care of it.</Text>
       <View style={styles.card}>
         <Text style={styles.label}>Mot de passe</Text>
         <TextInput
@@ -49,18 +53,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
-  title: {
-    fontFamily: 'PlayfairDisplay',
-    fontSize: 32,
-    fontWeight: '600',
-    color: '#1DB954',
-    letterSpacing: 0.5,
+  logo: {
+    width: '100%',
+    maxWidth: 320,
+    aspectRatio: 3.1,
   },
   tagline: {
     color: '#9ca3af',
     fontSize: 13,
     letterSpacing: 0.5,
-    marginTop: 6,
+    marginTop: 10,
     marginBottom: 32,
     textAlign: 'center',
   },
