@@ -54,8 +54,9 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   logo: {
-    width: '100%',
-    aspectRatio: 3.1,
+    height: 60,
+    aspectRatio: 3.09,
+    alignSelf: 'center',
   },
   tagline: {
     color: '#9ca3af',
