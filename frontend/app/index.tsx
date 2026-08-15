@@ -42,20 +42,17 @@ export default function HomeScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Sonora' }} />
+      <Stack.Screen options={{ title: 'Control Room' }} />
       <ScrollView className="flex-1 bg-background px-5" contentContainerStyle={{ paddingBottom: 40 }}>
 
         {/* Hero */}
         <View className="pt-10 pb-8 items-center">
-          <View className="mb-5 h-20 w-20 items-center justify-center rounded-3xl overflow-hidden bg-black">
-            <Image
-              source={require('../assets/images/sonora-logo.png')}
-              style={{ width: '100%', height: '100%' }}
-              resizeMode="cover"
-            />
-          </View>
-          <Text style={{ fontFamily: 'PlayfairDisplay' }} className="text-foreground text-3xl font-semibold tracking-tight">Sonora</Text>
-          <Text className="mt-2 text-center text-sm text-muted-foreground leading-relaxed px-4">
+          <Image
+            source={require('../assets/images/control-room-logo.png')}
+            style={{ width: '100%', maxWidth: 360, aspectRatio: 3.1 }}
+            resizeMode="contain"
+          />
+          <Text className="mt-3 text-center text-sm text-muted-foreground leading-relaxed px-4">
             The Music ? We take care of it.
           </Text>
         </View>
