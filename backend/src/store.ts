@@ -233,4 +233,8 @@ export const db = {
     const { error } = await supabase.from('calendar_entries').update({ status }).eq('id', id);
     if (error) throw error;
   },
+  async deleteCalendarEntry(id: number) {
+    const { error } = await supabase.from('calendar_entries').delete().eq('id', id);
+    if (error) throw error;
+  },
 };
