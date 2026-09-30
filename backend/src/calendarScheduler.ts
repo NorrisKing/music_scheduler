@@ -113,3 +113,7 @@ export async function initCalendarScheduler() {
     }
   }, 60_000);
 }
+
+export function cancelCalendarEntry(id: number) {
+  stopTask(id);
+}
