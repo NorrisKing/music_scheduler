@@ -39,6 +39,17 @@ export interface Schedule {
   shuffle?: boolean;  // play in random order
 }
 
+export interface CalendarEntry {
+  id: number;
+  accountId: string;
+  playDate: string; // 'YYYY-MM-DD'
+  hour: number;
+  minute: number;
+  playlistName: string;
+  triggeredAt?: number;
+  status?: string;
+}
+
 function mapAccountFromDb(data: any): SpotifyAccount {
   return {
     id: data.id,
@@ -111,6 +122,20 @@ function mapScheduleToDb(schedule: Schedule) {
   };
 }
 
+
+function mapCalendarFromDb(data: any): CalendarEntry {
+  return {
+    id: data.id,
+    accountId: data.account_id,
+    playDate: data.play_date,
+    hour: data.hour,
+    minute: data.minute,
+    playlistName: data.playlist_name,
+    triggeredAt: data.triggered_at ? Number(data.triggered_at) : undefined,
+    status: data.status,
+  };
+}
+
 export const db = {
   // Accounts
   async getAccounts(): Promise<SpotifyAccount[]> {
@@ -176,6 +201,36 @@ export const db = {
   },
   async markTriggered(id: string) {
     const { error } = await supabase.from('schedules').update({ last_triggered_at: Date.now() }).eq('id', id);
+    if (error) throw error;
+  },
+
+  // Calendar (import Excel -> programmation datee)
+  async getCalendarEntry(id: number): Promise<CalendarEntry | undefined> {
+    const { data, error } = await supabase.from('calendar_entries').select('*').eq('id', id).maybeSingle();
+    if (error) throw error;
+    return data ? mapCalendarFromDb(data) : undefined;
+  },
+  async getUpcomingCalendarEntries(): Promise<CalendarEntry[]> {
+    const today = new Date().toISOString().slice(0, 10);
+    const { data, error } = await supabase
+      .from('calendar_entries')
+      .select('*')
+      .gte('play_date', today)
+      .is('triggered_at', null);
+    if (error) throw error;
+    return (data || []).map(mapCalendarFromDb);
+  },
+  async getCalendarEntriesByAccount(accountId: string): Promise<CalendarEntry[]> {
+    const { data, error } = await supabase.from('calendar_entries').select('*').eq('account_id', accountId);
+    if (error) throw error;
+    return (data || []).map(mapCalendarFromDb);
+  },
+  async markCalendarTriggered(id: number) {
+    const { error } = await supabase.from('calendar_entries').update({ triggered_at: Date.now() }).eq('id', id);
+    if (error) throw error;
+  },
+  async markCalendarStatus(id: number, status: string) {
+    const { error } = await supabase.from('calendar_entries').update({ status }).eq('id', id);
     if (error) throw error;
   },
 };
