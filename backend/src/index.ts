@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { db } from './store.js';
 import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying, fadeAndStartPlaylist } from './spotify.js';
 import { initScheduler, scheduler } from './scheduler.js';
-import { getSpotifyApp, pickNextLot, getAllSpotifyApps } from './spotifyApps.js';
+import { initCalendarScheduler } from './calendarScheduler.js';
+import { getSpotifyApp, pickNextLot } from './spotifyApps.js';
 import { randomUUID } from 'crypto';
 
 // Scheduler runs ONLY on Railway (production) to avoid double-triggers when
@@ -184,6 +185,25 @@ app.get('/accounts/:id/devices', async (c) => {
   return c.json(data);
 });
 
+// Verifie que chaque nom de playlist du calendrier existe bien sur Spotify pour ce compte
+app.get('/accounts/:id/calendar-check', async (c) => {
+  const { id } = c.req.param();
+  const entries = await db.getCalendarEntriesByAccount(id);
+  if (entries.length === 0) return c.json({ total: 0, missing: [], matched: [] });
+
+  const data = await getSpotifyPlaylists(id);
+  if (!data) return c.json({ error: 'Impossible de recuperer les playlists Spotify' }, 400);
+
+  const normalize = (s: string) => s.trim().replace(/\s+/g, ' ').toLowerCase();
+  const spotifyNames = new Set(data.items.map((p: any) => normalize(p.name)));
+
+  const uniqueNames = Array.from(new Set(entries.map(e => e.playlistName)));
+  const missing = uniqueNames.filter(n => !spotifyNames.has(normalize(n)));
+  const matched = uniqueNames.filter(n => spotifyNames.has(normalize(n)));
+
+  return c.json({ total: uniqueNames.length, missing, matched });
+});
+
 app.get('/accounts/:id/currently-playing', async (c) => {
   const { id } = c.req.param();
   const acc = await db.getAccount(id);
@@ -343,7 +363,8 @@ app.post('/schedules/:id/trigger', async (c) => {
 // --- Init ---
 if (SCHEDULER_ENABLED) {
   initScheduler();
-  console.log('[Init] Scheduler started');
+  initCalendarScheduler();
+  console.log('[Init] Scheduler + Calendar scheduler started');
 } else {
   console.log('[Init] Scheduler disabled (local dev). Set ENABLE_SCHEDULER=true in .env to enable locally.');
 }
