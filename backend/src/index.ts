@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { db } from './store.js';
 import { getSpotifyPlaylists, getSpotifyDevices, refreshTokenIfNeeded, getCurrentlyPlaying, fadeAndStartPlaylist } from './spotify.js';
 import { initScheduler, scheduler } from './scheduler.js';
-import { initCalendarScheduler } from './calendarScheduler.js';
+import { initCalendarScheduler, cancelCalendarEntry } from './calendarScheduler.js';
 import { getSpotifyApp, pickNextLot } from './spotifyApps.js';
 import { randomUUID } from 'crypto';
 
@@ -183,6 +183,21 @@ app.get('/accounts/:id/devices', async (c) => {
   const data = await getSpotifyDevices(id);
   if (!data) return c.json({ error: 'Failed to fetch devices' }, 400);
   return c.json(data);
+});
+
+// Liste le calendrier (import Excel) d'un compte, pour affichage dans l'app
+app.get('/accounts/:id/calendar', async (c) => {
+  const { id } = c.req.param();
+  const entries = await db.getCalendarEntriesByAccount(id);
+  return c.json(entries.sort((a, b) => (a.playDate + a.hour + a.minute).localeCompare(b.playDate + a.hour + a.minute)));
+});
+
+// Annule une entree du calendrier (avant son declenchement)
+app.delete('/calendar/:id', async (c) => {
+  const id = Number(c.req.param('id'));
+  cancelCalendarEntry(id);
+  await db.deleteCalendarEntry(id);
+  return c.json({ ok: true });
 });
 
 // Verifie que chaque nom de playlist du calendrier existe bien sur Spotify pour ce compte
