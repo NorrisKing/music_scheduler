@@ -65,7 +65,19 @@ export async function getSpotifyPlaylists(accountId: string) {
     }
   }
 
-  return { items: allItems, total: allItems.length };
+  // Spotify renvoie parfois des entrees incompletes ou nulles (playlist supprimee,
+  // Blend collaboratif, etc.) : on nettoie pour que le frontend ne plante jamais.
+  const cleaned = allItems
+    .filter((p) => p != null)
+    .map((p) => ({
+      ...p,
+      tracks: p.tracks && typeof p.tracks.total === 'number' ? p.tracks : { total: 0 },
+      images: Array.isArray(p.images) ? p.images : [],
+      owner: p.owner ?? { display_name: '' },
+      name: p.name ?? '(Playlist sans nom)',
+    }));
+
+  return { items: cleaned, total: cleaned.length };
 }
 
 export async function getSpotifyDevices(accountId: string) {
